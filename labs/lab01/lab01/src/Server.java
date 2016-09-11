@@ -13,7 +13,7 @@ public class Server implements Runnable {
 	private Thread mainThread = null;
 	private File file = new File("chat.txt");
 	private PrintWriter writer;
-	private ServerGUI frame;
+//	private ServerGUI frame;
 	private Thread guiMessageThread;
 
 	public Server(int port) {
@@ -86,9 +86,9 @@ public class Server implements Runnable {
 
 	}
 
-	private void addThread(Socket socket, int namer) {
-		Thread thr = new Thread(new chatClientHandler(socket, namer), "Client " + namer);
-		namer++;
+	private void addThread(Socket socket, int number) {
+		Thread thr = new Thread(new chatClientHandler(socket, number), "Client " + number);
+		number++;
 		thr.run();
 	}
 
@@ -112,7 +112,7 @@ class chatClientHandler implements Runnable {
 		// printSocketInfo(s); // just print some information at the server side
 		// about the connection
 		// Scanner in;
-		Thread reader = new Thread(new textReader(s, 0));
+		Thread reader = new Thread(new textReader(s, 0), "Client " + id + "'s reader");
 		reader.run();
 		// while (true) {
 		// try {
@@ -143,19 +143,29 @@ class textReader implements Runnable {
 
 	// This is the client handling code
 	public void run() {
-		InputStream in;
+		InputStream in = null;
 		while (true) {
 			try {
 				in = socket.getInputStream();
-				System.out.println("Client message: ");
-				for (int i = 0; i < 100; i++) {//TODO find out how many bytes are being sent
-					System.out.print((char) in.read());
-				}
 				
-
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			Scanner input = new Scanner(in);
+				
+			if (input.hasNext())
+			{
+				System.out.print(input.next());
+				
+				System.out.println("Client message: ");
+				for (int i = 0; i < 100; i++) {//TODO find out how many bytes are being sent
+					
+
+				}
+			}	
+
+
+			
 		}
 		// This handling code dies after doing all the printing
 	} // end of method run()
