@@ -36,29 +36,34 @@ public class Server implements Runnable {
 	}
 
 	public void start() {
-		// frame = new ServerGUI();
-		// frame.setVisible(true);
-		// TODO launch a thread to read for new messages by the server
-		int clientCount = 0;
-		while (true) {
 
-			// mainThread = new Thread(new listener(serverSocket, 1));
-			// mainThread.run();
+		// TODO launch a thread to read for new messages by the server
+		int clientNumber = 0;
+//		Thread clientReceiver = new Thread(new chatClientHandler(serverSocket), "clientReceiver");
+//		clientReceiver.run();
+		
+		while (true) {
 
 			Socket clientSocket = null;
 			try {
 				System.out.println("Waiting for client" + " to connect!");
 
 				clientSocket = serverSocket.accept();
-				System.out.println("Server connected to client " + clientCount);
-				clientCount++;
-				addThread(clientSocket, clientCount);
-
+				System.out.println("Server connected to client ");
+				
+				Thread reader = new Thread(new textReader(clientSocket, clientNumber));
+				reader.start();
+				
+//				Thread sender = new Thread(new textSender(clientSocket, clientNumber));
+//				sender.run();
+				
+				clientNumber++;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
 		}
+		
 
 	}
 
@@ -86,11 +91,11 @@ public class Server implements Runnable {
 
 	}
 
-	private void addThread(Socket socket, int namer) {
-		Thread thr = new Thread(new chatClientHandler(socket, namer), "Client " + namer);
-		namer++;
-		thr.run();
-	}
+//	private void addThread(Socket socket, int namer) {
+//		Thread thr = new Thread(new chatClientHandler(socket, namer), "Client " + namer);
+//		namer++;
+//		thr.run();
+//	}
 
 	public static void main(String args[]) {
 		Server server = null;
@@ -99,29 +104,38 @@ public class Server implements Runnable {
 }
 
 class chatClientHandler implements Runnable {
-	Socket s; // this is socket on the server side that connects to the CLIENT
-	int id; // keeps track of its number just for identifying purposes
+	ServerSocket s; // this is socket on the server side that connects to the CLIENT
+	int clientNumber = 0; // keeps track of its number just for identifying purposes
 
-	chatClientHandler(Socket s, int id) {
+	chatClientHandler(ServerSocket s) {
 		this.s = s;
-		this.id = id;
 	}
 
 	// This is the client handling code
 	public void run() {
-		// printSocketInfo(s); // just print some information at the server side
-		// about the connection
-		// Scanner in;
-		Thread reader = new Thread(new textReader(s, 0));
-		reader.run();
-		// while (true) {
-		// try {
-		// //TODO send stuff
-		// }
-		// catch (IOException e) {
-		// e.printStackTrace();
-		// }
-		// }
+		
+		while (true) {
+
+			Socket clientSocket = null;
+			try {
+				System.out.println("Waiting for client" + " to connect!");
+
+				clientSocket = s.accept();
+				System.out.println("Server connected to client ");
+				
+				Thread reader = new Thread(new textReader(clientSocket, clientNumber));
+				reader.start();
+				
+//				Thread sender = new Thread(new textSender(clientSocket, clientNumber));
+//				sender.run();
+				
+				clientNumber++;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+		
 	} // end of method run()
 
 	void printSocketInfo(Socket s) {
@@ -144,20 +158,52 @@ class textReader implements Runnable {
 	// This is the client handling code
 	public void run() {
 		InputStream in;
-		while (true) {
+		
 			try {
 				in = socket.getInputStream();
 				System.out.println("Client message: ");
-				for (int i = 0; i < 100; i++) {//TODO find out how many bytes are being sent
+				
+				while(true){
 					System.out.print((char) in.read());
 				}
-				
 
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+	} // end of method run()
+
+}
+
+class textSender implements Runnable {
+	int id; // keeps track of its number just for identifying purposes
+	Socket socket;
+	PrintWriter out;
+
+	textSender(Socket socket, int id) {
+		this.id = id;
+		this.socket = socket;
+		
+		try {
+			out = new PrintWriter(new BufferedOutputStream(socket.getOutputStream()));
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
-		// This handling code dies after doing all the printing
+	}
+
+	// This is the client handling code
+	public void run() {
+		
+//		while (true) {
+//			try {
+//
+//				out.println("Hi");
+//				out.flush(); // forces data from buffer to be sent to server
+////				out.close();
+//
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
 	} // end of method run()
 
 }
