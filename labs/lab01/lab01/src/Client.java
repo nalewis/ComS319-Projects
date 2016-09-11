@@ -70,7 +70,7 @@ public class Client {
 
 	public void start() throws IOException {
 
-		out.println("User: " + username);
+		out.println(username + ":endUsername");
 		out.flush(); // forces data from buffer to be sent to server
 //		out.close();
 

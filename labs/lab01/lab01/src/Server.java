@@ -13,8 +13,8 @@ public class Server implements Runnable {
 	private Thread mainThread = null;
 	private File file = new File("chat.txt");
 	private PrintWriter writer;
-	private ServerGUI frame;
-	private Thread guiMessageThread;
+	
+	private Thread[] threadArray = new Thread[100];
 
 	public Server(int port) {
 		// TODO Binding and starting server
@@ -36,33 +36,25 @@ public class Server implements Runnable {
 	}
 
 	public void start() {
-
-		// TODO launch a thread to read for new messages by the server
-		int clientNumber = 0;
-//		Thread clientReceiver = new Thread(new chatClientHandler(serverSocket), "clientReceiver");
-//		clientReceiver.run();
 		
-		while (true) {
-
+//		while (true) {
+		for(int i = 0; i< 100; i++){
 			Socket clientSocket = null;
 			try {
-				System.out.println("Waiting for client" + " to connect!");
+				System.out.println("Waiting for client to connect!");
 
 				clientSocket = serverSocket.accept();
 				System.out.println("Server connected to client ");
 				
-				Thread reader = new Thread(new textReader(clientSocket, clientNumber));
-				reader.start();
-				
-//				Thread sender = new Thread(new textSender(clientSocket, clientNumber));
-//				sender.run();
-				
-				clientNumber++;
+				threadArray[i] = new Thread(new textReader(clientSocket, i, threadArray));
+				threadArray[i].start();
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
 		}
+
+//		}
 		
 
 	}
@@ -103,68 +95,49 @@ public class Server implements Runnable {
 	}
 }
 
-class chatClientHandler implements Runnable {
-	ServerSocket s; // this is socket on the server side that connects to the CLIENT
-	int clientNumber = 0; // keeps track of its number just for identifying purposes
-
-	chatClientHandler(ServerSocket s) {
-		this.s = s;
-	}
-
-	// This is the client handling code
-	public void run() {
-		
-		while (true) {
-
-			Socket clientSocket = null;
-			try {
-				System.out.println("Waiting for client" + " to connect!");
-
-				clientSocket = s.accept();
-				System.out.println("Server connected to client ");
-				
-				Thread reader = new Thread(new textReader(clientSocket, clientNumber));
-				reader.start();
-				
-//				Thread sender = new Thread(new textSender(clientSocket, clientNumber));
-//				sender.run();
-				
-				clientNumber++;
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		}
-		
-	} // end of method run()
-
-	void printSocketInfo(Socket s) {
-		System.out.print("Socket on Server " + Thread.currentThread() + " ");
-		System.out.print("Server socket Local Address: " + s.getLocalAddress() + ":" + s.getLocalPort());
-		System.out.println("  Server socket Remote Address: " + s.getRemoteSocketAddress());
-	} // end of printSocketInfo
-
-}
-
 class textReader implements Runnable {
 	int id; // keeps track of its number just for identifying purposes
 	Socket socket;
+	Thread[] threads;
+	String username = null;
 
-	textReader(Socket socket, int id) {
+	textReader(Socket socket, int id, Thread[] t) {
 		this.id = id;
 		this.socket = socket;
+		threads = t;
 	}
 
 	// This is the client handling code
 	public void run() {
 		InputStream in;
+		String chat = "";
 		
 			try {
 				in = socket.getInputStream();
-				System.out.println("Client message: ");
+//				System.out.println("Client message: ");
+				
+				while(username == null){
+					chat += (char) in.read();
+					if(chat.endsWith(":endUsername")){
+						username = chat.substring(0, chat.length() - 12);
+					}
+				}
+				
+				System.out.println(username + " has joined the chat.");
+				chat = "";
 				
 				while(true){
-					System.out.print((char) in.read());
+					chat += (char) in.read();
+					System.out.print(chat);
+					
+					if(chat.substring(Math.max(chat.length() - 2, 0)) == "\n"){
+						for(int i = 0; i < 100; i++){
+							if(threads[i].isAlive() && threads[i].getId() != id){
+								
+							}
+//							threads[i].
+						}
+					}
 				}
 
 			} catch (IOException e) {
@@ -205,5 +178,47 @@ class textSender implements Runnable {
 //			}
 //		}
 	} // end of method run()
-
 }
+
+//class chatClientHandler implements Runnable {
+//	ServerSocket s; // this is socket on the server side that connects to the CLIENT
+//	int clientNumber = 0; // keeps track of its number just for identifying purposes
+//
+//	chatClientHandler(ServerSocket s) {
+//		this.s = s;
+//	}
+//
+//	// This is the client handling code
+//	public void run() {
+//		
+//		while (true) {
+//
+//			Socket clientSocket = null;
+//			try {
+//				System.out.println("Waiting for client" + " to connect!");
+//
+//				clientSocket = s.accept();
+//				System.out.println("Server connected to client ");
+//				
+//				Thread reader = new Thread(new textReader(clientSocket, clientNumber));
+//				reader.start();
+//				
+////				Thread sender = new Thread(new textSender(clientSocket, clientNumber));
+////				sender.run();
+//				
+//				clientNumber++;
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//
+//		}
+//		
+//	} // end of method run()
+//
+//	void printSocketInfo(Socket s) {
+//		System.out.print("Socket on Server " + Thread.currentThread() + " ");
+//		System.out.print("Server socket Local Address: " + s.getLocalAddress() + ":" + s.getLocalPort());
+//		System.out.println("  Server socket Remote Address: " + s.getRemoteSocketAddress());
+//	} // end of printSocketInfo
+//
+//}
