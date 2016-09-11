@@ -6,9 +6,10 @@ import java.awt.EventQueue;
 import java.io.*;
 
 public class Client {
-	private Socket socket = null;
+	private static Socket socket = null;
 	private Thread thread = null;
 	private DataOutputStream streamOut = null;
+	private static InputStream streamIn = null;
 	private static PrintWriter out = null;
 	// private ClientThread client = null;
 	private String username;
@@ -20,13 +21,32 @@ public class Client {
 		System.out.println("What is your username? ");
 		name = scan.nextLine();
 		ClientThread client = new ClientThread("localhost", name, 1222);
+		
+		while (true)
+		{
+			String messageFromServer = "";
+			String messageSender = null;
+			
+			try {
+				streamIn = socket.getInputStream();
+				
+				while(!(messageFromServer.endsWith(":endUsername"))){
+					messageFromServer += (char) streamIn.read();
+				}
+				
+				messageFromServer = messageFromServer.substring(0, messageFromServer.length() - 11);
+				
+				System.out.println(messageFromServer); 
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
 	}
 	
 	
 	private static class ClientThread implements Runnable
 	{
-		private Socket socket = null;
 		private DataOutputStream streamOut = null;
 		private String username;
 		
