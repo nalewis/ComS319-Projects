@@ -20,7 +20,9 @@ public class Client {
 
 		System.out.println("What is your username? ");
 		name = scan.nextLine();
-		ClientThread client = new ClientThread("localhost", name, 1222);
+		Thread client = new Thread(new ClientThread("localhost", name, 1222));
+		client.start();
+		System.out.println("END INIT");
 		
 		while (true)
 		{
@@ -30,7 +32,7 @@ public class Client {
 			try {
 				streamIn = socket.getInputStream();
 				
-				while(!(messageFromServer.endsWith(":endUsername"))){
+				while(!(messageFromServer.endsWith(":endMessage"))){
 					messageFromServer += (char) streamIn.read();
 				}
 				
@@ -58,7 +60,7 @@ public class Client {
 			try {
 				socket = new Socket(ipAddr, serverPort);
 				out = new PrintWriter(new BufferedOutputStream(socket.getOutputStream()));
-				start();
+//				start();
 			} catch (UnknownHostException h) {
 				System.out.println("Unknown Host " + h.getMessage());
 				System.exit(1);
@@ -75,6 +77,9 @@ public class Client {
 			// it to the server
 			String answer;
 			String message;
+			
+			out.println(username + ":endUsername");
+			out.flush(); // forces data from buffer to be sent to server
 				
 	
 			while (true) {
@@ -110,8 +115,7 @@ public class Client {
 	
 		public void start() throws IOException {
 	
-			out.println(username + ":endUsername");
-			out.flush(); // forces data from buffer to be sent to server
+			
 	//		out.close();
 	
 			run();

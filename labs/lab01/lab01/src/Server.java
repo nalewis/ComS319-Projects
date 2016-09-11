@@ -143,7 +143,6 @@ class textReader implements Runnable {
 									out = new PrintWriter(new BufferedOutputStream(clientSockets[i].getOutputStream()));
 									out.println(chat + ":endMessage");
 									out.flush();
-									out.close();
 								} catch (IOException e1) {
 									e1.printStackTrace();
 								}
