@@ -63,7 +63,7 @@ public class Client {
 	}
 
 	public synchronized void handleChat(String message) {
-		out.println(username + " says " + message);
+		out.println(username + ": " + message + ":endMessage");
 		out.flush();
 //		out.close();
 	}
