@@ -14,7 +14,7 @@ public class Server implements Runnable {
 	private File file = new File("chat.txt");
 	private PrintWriter writer;
 	
-	private Socket[] clientSocketArray = new Socket[100];
+	private static Socket[] clientSocketArray = new Socket[100];
 
 
 	public Server(int port) {
@@ -95,11 +95,16 @@ class textReader implements Runnable {
 	Socket socket;
 	String username = null;
 	Socket[] clientSockets;
+	Boolean isAdmin = false;
 
 	textReader(Socket[] clientSockets, int id) {
 		this.id = id;
 		this.socket = clientSockets[id];
 		this.clientSockets = clientSockets;
+	}
+	
+	public char decodeChar(byte b){
+		return (char) (b ^ (byte) 240);
 	}
 
 	// This is the client handling code
@@ -109,12 +114,15 @@ class textReader implements Runnable {
 		
 			try {
 				in = socket.getInputStream();
-//				System.out.println("Client message: ");
 				
 				while(username == null){
+//					chat += decodeChar((byte) in.read());
 					chat += (char) in.read();
 					if(chat.endsWith(":endUsername")){
 						username = chat.substring(0, chat.length() - 12);
+						if(username.equalsIgnoreCase("Admin")){
+							isAdmin = true;
+						}
 					}
 				}
 				
@@ -122,24 +130,23 @@ class textReader implements Runnable {
 				chat = "";
 				
 				while(true){
+					
 					chat += (char) in.read();
 					if(chat.endsWith(":endMessage")){
 						chat = chat.substring(0, chat.length() - 11);
 						System.out.print(chat);
 						
 						for(int i = 0; i < 100; i++){
-							if(i != id){
+							if(i != id && clientSockets[i] != null){
 								PrintWriter out = null;
 								try {
 									out = new PrintWriter(new BufferedOutputStream(clientSockets[i].getOutputStream()));
-									out.println(chat);
+									out.println(chat + ":endMessage");
 									out.flush();
 									out.close();
 								} catch (IOException e1) {
 									e1.printStackTrace();
 								}
-								
-								
 							}
 						}
 						//clears the current message TODO store the chat in text file later
