@@ -9,7 +9,7 @@ public class Client {
 	private Socket socket = null;
 	private Thread thread = null;
 	private DataOutputStream streamOut = null;
-	private PrintWriter out = null;
+	private static PrintWriter out = null;
 	// private ClientThread client = null;
 	private String username;
 	private static Scanner scan = new Scanner(System.in);
@@ -19,7 +19,7 @@ public class Client {
 
 		System.out.println("What is your username? ");
 		name = scan.nextLine();
-		Client client = new Client("localhost", name, 1222);
+		ClientThread client = new ClientThread("localhost", name, 1222);
 
 	}
 	
@@ -28,11 +28,12 @@ public class Client {
 	{
 		private Socket socket = null;
 		private DataOutputStream streamOut = null;
+		private String username;
 		
 	
 		public ClientThread(String ipAddr, String username, int serverPort)
 		{
-	
+			this.username = username;
 			// set up the socket to connect to the gui
 			try {
 				socket = new Socket(ipAddr, serverPort);
