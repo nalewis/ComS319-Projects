@@ -14,7 +14,7 @@ public class Server implements Runnable {
 	private File file = new File("chat.txt");
 	private PrintWriter writer;
 	
-	private Thread[] threadArray = new Thread[100];
+	private Socket[] clientSocketArray = new Socket[100];
 
 
 	public Server(int port) {
@@ -37,26 +37,20 @@ public class Server implements Runnable {
 	}
 
 	public void start() {
-		
-//		while (true) {
 		for(int i = 0; i< 100; i++){
-			Socket clientSocket = null;
 			try {
-				System.out.println("Waiting for client to connect!");
+//				System.out.println("Waiting for client to connect!");
 
-				clientSocket = serverSocket.accept();
-				System.out.println("Server connected to client ");
+				clientSocketArray[i] = serverSocket.accept();
+				System.out.println("Server connected to client.");
 				
-				threadArray[i] = new Thread(new textReader(clientSocket, i, threadArray));
-				threadArray[i].start();
+				Thread thr = new Thread(new textReader(clientSocketArray, i));
+				thr.start();
 
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
-
-//		}
-		
+		}		
 
 	}
 
@@ -99,13 +93,13 @@ public class Server implements Runnable {
 class textReader implements Runnable {
 	int id; // keeps track of its number just for identifying purposes
 	Socket socket;
-	Thread[] threads;
 	String username = null;
+	Socket[] clientSockets;
 
-	textReader(Socket socket, int id, Thread[] t) {
+	textReader(Socket[] clientSockets, int id) {
 		this.id = id;
-		this.socket = socket;
-		threads = t;
+		this.socket = clientSockets[id];
+		this.clientSockets = clientSockets;
 	}
 
 	// This is the client handling code
@@ -129,15 +123,27 @@ class textReader implements Runnable {
 				
 				while(true){
 					chat += (char) in.read();
-					System.out.print(chat);
-					
-					if(chat.substring(Math.max(chat.length() - 2, 0)) == "\n"){
+					if(chat.endsWith(":endMessage")){
+						chat = chat.substring(0, chat.length() - 11);
+						System.out.print(chat);
+						
 						for(int i = 0; i < 100; i++){
-							if(threads[i].isAlive() && threads[i].getId() != id){
+							if(i != id){
+								PrintWriter out = null;
+								try {
+									out = new PrintWriter(new BufferedOutputStream(clientSockets[i].getOutputStream()));
+									out.println(chat);
+									out.flush();
+									out.close();
+								} catch (IOException e1) {
+									e1.printStackTrace();
+								}
+								
 								
 							}
-//							threads[i].
 						}
+						//clears the current message TODO store the chat in text file later
+						chat = "";
 					}
 				}
 
@@ -148,25 +154,25 @@ class textReader implements Runnable {
 
 }
 
-class textSender implements Runnable {
-	int id; // keeps track of its number just for identifying purposes
-	Socket socket;
-	PrintWriter out;
-
-	textSender(Socket socket, int id) {
-		this.id = id;
-		this.socket = socket;
-		
-		try {
-			out = new PrintWriter(new BufferedOutputStream(socket.getOutputStream()));
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-	}
-
-	// This is the client handling code
-	public void run() {
-		
+//class textSender implements Runnable {
+//	int id; // keeps track of its number just for identifying purposes
+//	Socket socket;
+//	PrintWriter out;
+//
+//	textSender(Socket socket, int id) {
+//		this.id = id;
+//		this.socket = socket;
+//		
+//		try {
+//			out = new PrintWriter(new BufferedOutputStream(socket.getOutputStream()));
+//		} catch (IOException e1) {
+//			e1.printStackTrace();
+//		}
+//	}
+//
+//	// This is the client handling code
+//	public void run() {
+//		
 //		while (true) {
 //			try {
 //
@@ -178,8 +184,8 @@ class textSender implements Runnable {
 //				e.printStackTrace();
 //			}
 //		}
-	} // end of method run()
-}
+//	} // end of method run()
+//}
 
 //class chatClientHandler implements Runnable {
 //	ServerSocket s; // this is socket on the server side that connects to the CLIENT
