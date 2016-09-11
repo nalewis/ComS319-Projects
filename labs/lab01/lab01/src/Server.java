@@ -13,8 +13,9 @@ public class Server implements Runnable {
 	private Thread mainThread = null;
 	private File file = new File("chat.txt");
 	private PrintWriter writer;
-//	private ServerGUI frame;
-	private Thread guiMessageThread;
+	
+	private Thread[] threadArray = new Thread[100];
+
 
 	public Server(int port) {
 		// TODO Binding and starting server
@@ -36,29 +37,26 @@ public class Server implements Runnable {
 	}
 
 	public void start() {
-		// frame = new ServerGUI();
-		// frame.setVisible(true);
-		// TODO launch a thread to read for new messages by the server
-		int clientCount = 0;
-		while (true) {
-
-			// mainThread = new Thread(new listener(serverSocket, 1));
-			// mainThread.run();
-
+		
+//		while (true) {
+		for(int i = 0; i< 100; i++){
 			Socket clientSocket = null;
 			try {
-				System.out.println("Waiting for client" + " to connect!");
+				System.out.println("Waiting for client to connect!");
 
 				clientSocket = serverSocket.accept();
-				System.out.println("Server connected to client " + clientCount);
-				clientCount++;
-				addThread(clientSocket, clientCount);
+				System.out.println("Server connected to client ");
+				
+				threadArray[i] = new Thread(new textReader(clientSocket, i, threadArray));
+				threadArray[i].start();
 
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
 		}
+
+//		}
+		
 
 	}
 
@@ -86,11 +84,11 @@ public class Server implements Runnable {
 
 	}
 
-	private void addThread(Socket socket, int number) {
-		Thread thr = new Thread(new chatClientHandler(socket, number), "Client " + number);
-		number++;
-		thr.run();
-	}
+//	private void addThread(Socket socket, int namer) {
+//		Thread thr = new Thread(new chatClientHandler(socket, namer), "Client " + namer);
+//		namer++;
+//		thr.run();
+//	}
 
 	public static void main(String args[]) {
 		Server server = null;
@@ -98,76 +96,130 @@ public class Server implements Runnable {
 	}
 }
 
-class chatClientHandler implements Runnable {
-	Socket s; // this is socket on the server side that connects to the CLIENT
-	int id; // keeps track of its number just for identifying purposes
-
-	chatClientHandler(Socket s, int id) {
-		this.s = s;
-		this.id = id;
-	}
-
-	// This is the client handling code
-	public void run() {
-		// printSocketInfo(s); // just print some information at the server side
-		// about the connection
-		// Scanner in;
-		Thread reader = new Thread(new textReader(s, 0), "Client " + id + "'s reader");
-		reader.run();
-		// while (true) {
-		// try {
-		// //TODO send stuff
-		// }
-		// catch (IOException e) {
-		// e.printStackTrace();
-		// }
-		// }
-	} // end of method run()
-
-	void printSocketInfo(Socket s) {
-		System.out.print("Socket on Server " + Thread.currentThread() + " ");
-		System.out.print("Server socket Local Address: " + s.getLocalAddress() + ":" + s.getLocalPort());
-		System.out.println("  Server socket Remote Address: " + s.getRemoteSocketAddress());
-	} // end of printSocketInfo
-
-}
-
 class textReader implements Runnable {
 	int id; // keeps track of its number just for identifying purposes
 	Socket socket;
+	Thread[] threads;
+	String username = null;
 
-	textReader(Socket socket, int id) {
+	textReader(Socket socket, int id, Thread[] t) {
 		this.id = id;
 		this.socket = socket;
+		threads = t;
 	}
 
 	// This is the client handling code
 	public void run() {
-		InputStream in = null;
-		while (true) {
+		InputStream in;
+		String chat = "";
+		
 			try {
 				in = socket.getInputStream();
+//				System.out.println("Client message: ");
 				
+				while(username == null){
+					chat += (char) in.read();
+					if(chat.endsWith(":endUsername")){
+						username = chat.substring(0, chat.length() - 12);
+					}
+				}
+				
+				System.out.println(username + " has joined the chat.");
+				chat = "";
+				
+				while(true){
+					chat += (char) in.read();
+					System.out.print(chat);
+					
+					if(chat.substring(Math.max(chat.length() - 2, 0)) == "\n"){
+						for(int i = 0; i < 100; i++){
+							if(threads[i].isAlive() && threads[i].getId() != id){
+								
+							}
+//							threads[i].
+						}
+					}
+				}
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			Scanner input = new Scanner(in);
-				
-			if (input.hasNext())
-			{
-				System.out.print(input.next());
-				
-				System.out.println("Client message: ");
-				for (int i = 0; i < 100; i++) {//TODO find out how many bytes are being sent
-					
-
-				}
-			}	
-
-
-			
-		}
-		// This handling code dies after doing all the printing
 	} // end of method run()
 
 }
+
+class textSender implements Runnable {
+	int id; // keeps track of its number just for identifying purposes
+	Socket socket;
+	PrintWriter out;
+
+	textSender(Socket socket, int id) {
+		this.id = id;
+		this.socket = socket;
+		
+		try {
+			out = new PrintWriter(new BufferedOutputStream(socket.getOutputStream()));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+
+	// This is the client handling code
+	public void run() {
+		
+//		while (true) {
+//			try {
+//
+//				out.println("Hi");
+//				out.flush(); // forces data from buffer to be sent to server
+////				out.close();
+//
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
+	} // end of method run()
+}
+
+//class chatClientHandler implements Runnable {
+//	ServerSocket s; // this is socket on the server side that connects to the CLIENT
+//	int clientNumber = 0; // keeps track of its number just for identifying purposes
+//
+//	chatClientHandler(ServerSocket s) {
+//		this.s = s;
+//	}
+//
+//	// This is the client handling code
+//	public void run() {
+//		
+//		while (true) {
+//
+//			Socket clientSocket = null;
+//			try {
+//				System.out.println("Waiting for client" + " to connect!");
+//
+//				clientSocket = s.accept();
+//				System.out.println("Server connected to client ");
+//				
+//				Thread reader = new Thread(new textReader(clientSocket, clientNumber));
+//				reader.start();
+//				
+////				Thread sender = new Thread(new textSender(clientSocket, clientNumber));
+////				sender.run();
+//				
+//				clientNumber++;
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//
+//		}
+//		
+//	} // end of method run()
+//
+//	void printSocketInfo(Socket s) {
+//		System.out.print("Socket on Server " + Thread.currentThread() + " ");
+//		System.out.print("Server socket Local Address: " + s.getLocalAddress() + ":" + s.getLocalPort());
+//		System.out.println("  Server socket Remote Address: " + s.getRemoteSocketAddress());
+//	} // end of printSocketInfo
+//
+//}
