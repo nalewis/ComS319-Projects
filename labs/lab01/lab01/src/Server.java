@@ -31,7 +31,7 @@ public class Server implements Runnable {
 			serverSocket = new ServerSocket(port);
 			System.out.println("Server started: " + serverSocket);
 			
-			chatLog.delete();
+//			chatLog.delete();
 			logWriter = new FileWriter(chatLog);
 			logBuffer = new BufferedWriter(logWriter);
 //			logPrinter = new PrintWriter(logBuffer);

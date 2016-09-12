@@ -52,11 +52,13 @@ public class Client {
 	{
 		private DataOutputStream streamOut = null;
 		private String username;
+		private boolean isAdmin;
 		
 	
 		public ClientThread(String ipAddr, String username, int serverPort)
 		{
 			this.username = username;
+			this.isAdmin = this.username.equalsIgnoreCase("admin");
 			// set up the socket to connect to the gui
 			try {
 				socket = new Socket(ipAddr, serverPort);
@@ -83,24 +85,51 @@ public class Client {
 				
 	
 			while (true) {
-	
-				System.out.println("Press '1' to send message, '2' for image.");
+				if (isAdmin){
+					System.out.println("ADMIN OPTIONS: Press '1' to send message to all clients, press '2' to list the images so far from chat.txt, press '3' to delete a message from chat.txt.");
+				}
+				else{
+					System.out.println("Press '1' to send message, '2' for image.");
+				}
+				
 				answer = scan.nextLine();
 				
-				if (answer.equals("1")) {
-					System.out.print("Enter your message: ");
-					
-					if (scan.hasNext())
-					{
-						message = scan.nextLine();
-						handleChat(message);
+				if (isAdmin)
+				{
+					if (answer.equals("1")){
+						System.out.print("Enter your message: ");
+						
+						if (scan.hasNext()){
+							message = scan.nextLine();
+							handleChat(message);
+						}
+					} else if (answer.equals("2")) {
+						//TODO implement reading whole chat.log
+					} else if (answer.equals("3")) {
+						//TODO implement deleting line
+					} else  {
+						System.out.println("Invalid input, try again.");
 					}
-					
-				} else if (answer.equals("2")) {
-					//TODO implement image encoding
-				} else {
-					System.out.println("Invalid input, try again.");
+						
 				}
+				else
+				{
+					if (answer.equals("1")) {
+						System.out.print("Enter your message: ");
+						
+						if (scan.hasNext()){
+							message = scan.nextLine();
+							handleChat(message);
+						}
+						
+					} else if (answer.equals("2")) {
+						//TODO implement image encoding
+					} else {
+						System.out.println("Invalid input, try again.");
+					}
+				}
+				
+				
 				answer = null;
 			}
 	
@@ -155,5 +184,7 @@ public class Client {
 	
 	
 		}
+		
+		
 	}
 }
