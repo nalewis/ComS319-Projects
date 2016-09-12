@@ -107,6 +107,17 @@ public class Client {
 					
 				} else if (answer.equals("2")) {
 					//TODO implement image encoding
+					try {
+						byte[] image = new byte[50000];
+						FileInputStream fis = new FileInputStream("pic.png");
+						fis.read(image);
+						FileOutputStream fos = new FileOutputStream("test2.png");
+						fos.write(image);
+						handleChat(image);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				} else {
 					System.out.println("Invalid input, try again.");
 				}
@@ -122,6 +133,14 @@ public class Client {
 			streamOut.flush();
 		}
 		
+		public synchronized void handleChat(byte[] image) throws IOException {
+			String message = username + ": :beginImage";
+			streamOut.write(encodeMessage(message));
+			streamOut.write(image);
+			String end = ":endImage";
+			streamOut.write(end.getBytes());
+			streamOut.flush();
+		}
 		
 		public byte[] encodeMessage(String message){
 			byte[] encoded = message.getBytes();

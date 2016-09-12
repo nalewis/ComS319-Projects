@@ -149,9 +149,37 @@ class textReader implements Runnable {
 						}
 						//clears the current message TODO store the chat in text file later
 						chat = "";
-					}
+					} else if(chat.endsWith(":beginImage")){
+						chat = "";
+						System.out.println("Receiving image");
+						Boolean imageTransfer = true;
+						byte[] image = new byte[50030];
+						int i = 0;
+						while(imageTransfer){
+							image[i] = (byte) in.read();
+							if(i > 9){
+								for(int j = i-9; j <= i; j++){
+									chat += (char) image[j];
+								}
+								if(chat.endsWith(":endImage")){
+									System.out.println("Image received");
+									chat = chat.substring(0, chat.length() - 9);
+									imageTransfer = false;
+									FileOutputStream fis = new FileOutputStream("test.png");
+									fis.write(image);
+									fis.close();
+								}
+							}
+							if(i<image.length){
+								i++;	
+							} else {
+								System.out.println("Failed, image too large");
+								imageTransfer = false;
+							}
+							
+						}
+					} 
 				}
-
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
