@@ -50,7 +50,7 @@ public class Client {
 	
 	private static class ClientThread implements Runnable
 	{
-		private DataOutputStream streamOut = null;
+		private OutputStream streamOut = null;
 		private String username;
 		private boolean isAdmin;
 		
@@ -63,6 +63,7 @@ public class Client {
 			try {
 				socket = new Socket(ipAddr, serverPort);
 				out = new PrintWriter(new BufferedOutputStream(socket.getOutputStream()));
+				streamOut = socket.getOutputStream();
 //				start();
 			} catch (UnknownHostException h) {
 				System.out.println("Unknown Host " + h.getMessage());
@@ -80,9 +81,13 @@ public class Client {
 			String answer;
 			String message;
 			
-			out.println(username + ":endUsername");
-			out.flush(); // forces data from buffer to be sent to server
-				
+			try {
+				streamOut.write(encodeMessage(username + ":endUsername"));
+				streamOut.flush(); // forces data from buffer to be sent to server
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 	
 			while (true) {
 				if (isAdmin){
@@ -136,37 +141,18 @@ public class Client {
 	
 		}
 	
-		public synchronized void handleChat(String message) {
+		public synchronized void handleChat(String message) throws IOException {
 			message = username + ": " + message + ":endMessage";
-			System.out.println(message);
-			out.println(encodeMessage(message));
-//			System.out.println(encodeMessage(message));
-			out.flush();
+			streamOut.write(encodeMessage(message));
+			streamOut.flush();
 		}
 		
-		public char decodeChar(byte b){
-//			System.out.println(b);
-//			System.out.println((char) b);
-//			System.out.println("---------------");
-			return (char) (b ^ (byte) 240);
-		}
 		
 		public byte[] encodeMessage(String message){
 			byte[] encoded = message.getBytes();
 			for(int i = 0; i<message.length(); i++){
 				encoded[i] = (byte) (encoded[i] ^ (byte) 240);
-//				encoded[i] = (byte) (encoded[i] ^ (byte) 240);
-				System.out.print(encoded[i]);
-				System.out.print(decodeChar(encoded[i]));
 			}
-			
-			
-			
-			message = encoded.toString();
-//			for(int i = 0; i<message.length(); i++){
-//				encoded[i] = (byte) (encoded[i] ^ (byte) 240);
-//			}
-//			message = encoded.toString();
 			return encoded;
 		}
 	
