@@ -14,7 +14,7 @@ public class Client {
 	// private ClientThread client = null;
 	private String username;
 	private static Scanner scan = new Scanner(System.in);
-
+	
 	public static void main(String[] args) {
 		String name;
 
@@ -38,7 +38,8 @@ public class Client {
 				
 				messageFromServer = messageFromServer.substring(0, messageFromServer.length() - 11);
 				
-				System.out.println(messageFromServer); 
+				System.out.println(messageFromServer);
+				
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
