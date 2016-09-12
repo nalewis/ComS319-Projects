@@ -67,7 +67,6 @@ public class Client {
 			} catch (IOException e) {
 				System.out.println("IO exception: " + e.getMessage());
 				System.exit(1);
-	
 			}
 		}
 		
@@ -108,9 +107,37 @@ public class Client {
 		}
 	
 		public synchronized void handleChat(String message) {
-			out.println(username + ": " + message + ":endMessage");
+			message = username + ": " + message + ":endMessage";
+			System.out.println(message);
+			out.println(encodeMessage(message));
+//			System.out.println(encodeMessage(message));
 			out.flush();
-	//		out.close();
+		}
+		
+		public char decodeChar(byte b){
+//			System.out.println(b);
+//			System.out.println((char) b);
+//			System.out.println("---------------");
+			return (char) (b ^ (byte) 240);
+		}
+		
+		public byte[] encodeMessage(String message){
+			byte[] encoded = message.getBytes();
+			for(int i = 0; i<message.length(); i++){
+				encoded[i] = (byte) (encoded[i] ^ (byte) 240);
+//				encoded[i] = (byte) (encoded[i] ^ (byte) 240);
+				System.out.print(encoded[i]);
+				System.out.print(decodeChar(encoded[i]));
+			}
+			
+			
+			
+			message = encoded.toString();
+//			for(int i = 0; i<message.length(); i++){
+//				encoded[i] = (byte) (encoded[i] ^ (byte) 240);
+//			}
+//			message = encoded.toString();
+			return encoded;
 		}
 	
 		public void start() throws IOException {

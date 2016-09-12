@@ -104,6 +104,9 @@ class textReader implements Runnable {
 	}
 	
 	public char decodeChar(byte b){
+		System.out.println(b);
+		System.out.println((char) b);
+		System.out.println("---------------");
 		return (char) (b ^ (byte) 240);
 	}
 
@@ -116,7 +119,6 @@ class textReader implements Runnable {
 				in = socket.getInputStream();
 				
 				while(username == null){
-//					chat += decodeChar((byte) in.read());
 					chat += (char) in.read();
 					if(chat.endsWith(":endUsername")){
 						username = chat.substring(0, chat.length() - 12);
@@ -130,8 +132,10 @@ class textReader implements Runnable {
 				chat = "";
 				
 				while(true){
-					
-					chat += (char) in.read();
+					chat += decodeChar((byte) in.read());
+//					chat.getBytes(charset)
+//					chat += (char) in.read();
+//					System.out.print(chat);
 					if(chat.endsWith(":endMessage")){
 						chat = chat.substring(0, chat.length() - 11);
 						System.out.print(chat);
