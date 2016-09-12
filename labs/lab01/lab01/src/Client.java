@@ -32,13 +32,21 @@ public class Client {
 			try {
 				streamIn = socket.getInputStream();
 				
-				while(!(messageFromServer.endsWith(":endMessage"))){
+				while(!(messageFromServer.endsWith(":endMessage")) && !(messageFromServer.endsWith(":endLog")) ){
 					messageFromServer += (char) streamIn.read();
 				}
 				
-				messageFromServer = messageFromServer.substring(0, messageFromServer.length() - 11);
+				if ((messageFromServer.endsWith(":endMessage"))){
+					messageFromServer = messageFromServer.substring(0, messageFromServer.length() - 11);
+					
+					System.out.println(messageFromServer);
+				}
+				else if (messageFromServer.endsWith(":endLog")){
+					if (name.equalsIgnoreCase("admin")){
+						System.out.print(messageFromServer.substring(0, messageFromServer.length() - 7));
+					}
+				}
 				
-				System.out.println(messageFromServer);
 				
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -106,10 +114,19 @@ public class Client {
 						
 						if (scan.hasNext()){
 							message = scan.nextLine();
-							handleChat(message);
+							try {
+								handleChat(message);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 					} else if (answer.equals("2")) {
-						//TODO implement reading whole chat.log
+						try {
+							handleChat("sendAdminChatLogs");
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					} else if (answer.equals("3")) {
 						//TODO implement deleting line
 					} else  {
@@ -124,7 +141,12 @@ public class Client {
 						
 						if (scan.hasNext()){
 							message = scan.nextLine();
-							handleChat(message);
+							try {
+								handleChat(message);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 						
 					} else if (answer.equals("2")) {
@@ -155,6 +177,14 @@ public class Client {
 			}
 			return encoded;
 		}
+		
+//		public void displayChatLog(){		
+//			try {
+//				
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
 	
 		public void start() throws IOException {
 	
