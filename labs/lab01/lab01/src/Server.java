@@ -11,15 +11,10 @@ public class Server implements Runnable {
 
 	private ServerSocket serverSocket = null;
 	private Thread mainThread = null;
-	
+	private File file = new File("chat.txt");
 	private PrintWriter writer;
 	
 	private static Socket[] clientSocketArray = new Socket[100];
-	private File chatLog = new File("chat.txt");
-	
-	private FileWriter logWriter;
-	private BufferedWriter logBuffer;
-
 
 
 	public Server(int port) {
@@ -30,12 +25,6 @@ public class Server implements Runnable {
 			System.out.println("Binding to port " + port + ", please wait  ...");
 			serverSocket = new ServerSocket(port);
 			System.out.println("Server started: " + serverSocket);
-			
-			chatLog.delete();
-			logWriter = new FileWriter(chatLog);
-			logBuffer = new BufferedWriter(logWriter);
-//			logPrinter = new PrintWriter(logBuffer);
-			
 			start();
 		} catch (IOException ioe) {
 			System.out.println("Can not bind to port " + port + ": " + ioe.getMessage());
@@ -55,7 +44,7 @@ public class Server implements Runnable {
 				clientSocketArray[i] = serverSocket.accept();
 				System.out.println("Server connected to client.");
 				
-				Thread thr = new Thread(new textReader(clientSocketArray, i, logBuffer));
+				Thread thr = new Thread(new textReader(clientSocketArray, i));
 				thr.start();
 
 			} catch (IOException e) {
@@ -107,14 +96,11 @@ class textReader implements Runnable {
 	String username = null;
 	Socket[] clientSockets;
 	Boolean isAdmin = false;
-	BufferedWriter myWriter;
-	
 
-	textReader(Socket[] clientSockets, int id, BufferedWriter logWriter) {
+	textReader(Socket[] clientSockets, int id) {
 		this.id = id;
 		this.socket = clientSockets[id];
 		this.clientSockets = clientSockets;
-		this.myWriter = logWriter;
 	}
 	
 	public char decodeChar(byte b){
@@ -126,11 +112,7 @@ class textReader implements Runnable {
 		InputStream in;
 		String chat = "";
 		
-		
-		
 			try {
-				
-				
 				in = socket.getInputStream();
 				
 				while(username == null){
@@ -147,22 +129,11 @@ class textReader implements Runnable {
 				chat = "";
 				
 				while(true){
-					
 					chat += decodeChar((byte) in.read());
 //					chat += (char) in.read();
 					if(chat.endsWith(":endMessage")){
 						chat = chat.substring(0, chat.length() - 11);
 						System.out.print(chat);
-						
-						myWriter.write(chat);
-						myWriter.flush();
-//						logPrinter.write(chat);
-//						logPrinter.flush();
-//						logBuffer.flush();
-//						logWriter.flush();
-//						logBuffer.write(chat);
-//						logBuffer.flush();
-						
 						
 						for(int i = 0; i < 100; i++){
 							if(i != id && clientSockets[i] != null){
@@ -178,10 +149,6 @@ class textReader implements Runnable {
 						}
 						//clears the current message TODO store the chat in text file later
 						chat = "";
-//						logPrinter.close();
-//						logBuffer.close();
-//						logWriter.close();
-						
 					} else if(chat.endsWith(":beginImage")){
 						chat = "";
 						System.out.println("Receiving image");

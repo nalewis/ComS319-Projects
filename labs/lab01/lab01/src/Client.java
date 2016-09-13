@@ -1,7 +1,7 @@
 
 import java.net.*;
 import java.util.Scanner;
-
+import java.lang.*;
 import java.awt.EventQueue;
 import java.io.*;
 
@@ -14,7 +14,9 @@ public class Client {
 	// private ClientThread client = null;
 	private String username;
 	private static Scanner scan = new Scanner(System.in);
-	
+	private static ObjectOutputStream oos = null;
+	private static ObjectInputStream ois = null; 
+
 	public static void main(String[] args) {
 		String name;
 
@@ -38,8 +40,7 @@ public class Client {
 				
 				messageFromServer = messageFromServer.substring(0, messageFromServer.length() - 11);
 				
-				System.out.println(messageFromServer);
-				
+				System.out.println(messageFromServer); 
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -108,16 +109,28 @@ public class Client {
 					
 				} else if (answer.equals("2")) {
 					//TODO implement image encoding
-					try {
-						byte[] image = new byte[50000];
-						FileInputStream fis = new FileInputStream("pic.png");
-						fis.read(image);
-						FileOutputStream fos = new FileOutputStream("test2.png");
-						fos.write(image);
-						handleChat(image);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					System.out.print("Please enter a file path: ");
+					if (scan.hasNext())
+					{
+						message = scan.nextLine();
+						try {
+							File f = new File(message);
+							if(f.exists() && f.canRead()){
+								byte[] image = new byte[10000];
+								FileInputStream fis = new FileInputStream(message);
+								fis.read(image);
+								String test = encodeImage(image);
+								System.out.print("finished encoding");
+								image = decodeImage(test.getBytes());
+								FileOutputStream fos = new FileOutputStream("test2.png");
+								fos.write(image);
+								System.out.print("finished writing");
+//								handleChat(image);
+							}
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				} else {
 					System.out.println("Invalid input, try again.");
@@ -151,6 +164,48 @@ public class Client {
 			return encoded;
 		}
 	
+		public String encodeImage(byte[] image){
+			String finalAnswer = "", chunk = "", piece = "";
+			int counter = 0;
+			for(int i = 0; i < image.length; i++){
+//				System.out.println(String.format("%8s", Integer.toBinaryString(image[i] & 0xFF)).replace(' ', '0'));
+				chunk += String.format("%8s", Integer.toBinaryString(image[i] & 0xFF)).replace(' ', '0');
+				counter++;
+				if(counter == 3){
+					for(int j = 0; j < 4; j++){
+						piece = chunk.substring(0,6);
+						chunk = chunk.substring(6);
+						piece += "00";
+						finalAnswer += piece;
+					}
+					counter = 0;
+					chunk = "";
+				} else if ((counter == 1) && (i == (image.length - 1))){
+					chunk += "0000000000000000";
+					finalAnswer += piece;
+				} else if ((counter == 2) && (i == (image.length - 1))){
+					chunk += "00000000";
+					finalAnswer += piece;
+				}
+			}
+			return finalAnswer;
+		}
+		
+		public byte[] decodeImage(byte[] b){
+			String chat = "";
+			for(int i = 0; i < b.length; i++){
+				chat += String.format("%8s", Integer.toBinaryString(b[i] & 0xFF)).replace(' ', '0').substring(0, 6);
+			}
+			
+//			byte[] bytes = new byte[b.length];
+//			for(int i = 0; i < b.length; ++i)
+//			{
+//			    b[i] = Convert.ToByte(chat.substring(8 * i, 8), 2);
+//			    c
+//			}
+			return chat.getBytes();
+		}
+		
 		public void start() throws IOException {
 	
 			
