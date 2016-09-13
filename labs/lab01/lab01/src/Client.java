@@ -34,13 +34,21 @@ public class Client {
 			try {
 				streamIn = socket.getInputStream();
 				
-				while(!(messageFromServer.endsWith(":endMessage"))){
+				while(!(messageFromServer.endsWith(":endMessage")) && !(messageFromServer.endsWith(":endLog")) ){
 					messageFromServer += (char) streamIn.read();
 				}
 				
-				messageFromServer = messageFromServer.substring(0, messageFromServer.length() - 11);
+				if ((messageFromServer.endsWith(":endMessage"))){
+					messageFromServer = messageFromServer.substring(0, messageFromServer.length() - 11);
+					
+					System.out.println(messageFromServer);
+				}
+				else if (messageFromServer.endsWith(":endLog")){
+					if (name.equalsIgnoreCase("admin")){
+						System.out.print(messageFromServer.substring(0, messageFromServer.length() - 7));
+					}
+				}
 				
-				System.out.println(messageFromServer); 
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -53,11 +61,13 @@ public class Client {
 	{
 		private OutputStream streamOut = null;
 		private String username;
+		private boolean isAdmin;
 		
 	
 		public ClientThread(String ipAddr, String username, int serverPort)
 		{
 			this.username = username;
+			this.isAdmin = this.username.equalsIgnoreCase("admin");
 			// set up the socket to connect to the gui
 			try {
 				socket = new Socket(ipAddr, serverPort);
@@ -89,22 +99,39 @@ public class Client {
 			}
 	
 			while (true) {
-	
-				System.out.println("Press '1' to send message, '2' for image.");
+				if (isAdmin){
+					System.out.println("ADMIN OPTIONS: Press '1' to send message to all clients, press '2' to list the images so far from chat.txt, press '3' to delete a message from chat.txt.");
+				}
+				else{
+					System.out.println("Press '1' to send message, '2' for image.");
+				}
+				
 				answer = scan.nextLine();
 				
-				if (answer.equals("1")) {
-					System.out.print("Enter your message: ");
-					
-					if (scan.hasNext())
-					{
-						message = scan.nextLine();
+				if (isAdmin)
+				{
+					if (answer.equals("1")){
+						System.out.print("Enter your message: ");
+						
+						if (scan.hasNext()){
+							message = scan.nextLine();
+							try {
+								handleChat(message);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					} else if (answer.equals("2")) {
 						try {
-							handleChat(message);
+							handleChat("sendAdminChatLogs");
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
+					} else if (answer.equals("3")) {
+						//TODO implement deleting line
+					} else  {
+						System.out.println("Invalid input, try again.");
 					}
 					
 				} else if (answer.equals("2")) {
@@ -131,10 +158,12 @@ public class Client {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
+					} else {
+						System.out.println("Invalid input, try again.");
 					}
-				} else {
-					System.out.println("Invalid input, try again.");
 				}
+				
+				
 				answer = null;
 			}
 	
@@ -163,6 +192,14 @@ public class Client {
 			}
 			return encoded;
 		}
+		
+//		public void displayChatLog(){		
+//			try {
+//				
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
 	
 		public String encodeImage(byte[] image){
 			String finalAnswer = "", chunk = "", piece = "";
@@ -220,5 +257,7 @@ public class Client {
 	
 	
 		}
+		
+		
 	}
 }

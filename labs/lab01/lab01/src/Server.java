@@ -25,6 +25,12 @@ public class Server implements Runnable {
 			System.out.println("Binding to port " + port + ", please wait  ...");
 			serverSocket = new ServerSocket(port);
 			System.out.println("Server started: " + serverSocket);
+			
+//			chatLog.delete();
+			logWriter = new FileWriter(chatLog, true);
+			logBuffer = new BufferedWriter(logWriter);
+//			logPrinter = new PrintWriter(logBuffer);
+			
 			start();
 		} catch (IOException ioe) {
 			System.out.println("Can not bind to port " + port + ": " + ioe.getMessage());
@@ -96,6 +102,9 @@ class textReader implements Runnable {
 	String username = null;
 	Socket[] clientSockets;
 	Boolean isAdmin = false;
+	BufferedWriter myWriter;
+	Boolean isLogRequest = false;
+	
 
 	textReader(Socket[] clientSockets, int id) {
 		this.id = id;
@@ -129,19 +138,62 @@ class textReader implements Runnable {
 				chat = "";
 				
 				while(true){
+					isLogRequest = false;
 					chat += decodeChar((byte) in.read());
 //					chat += (char) in.read();
 					if(chat.endsWith(":endMessage")){
 						chat = chat.substring(0, chat.length() - 11);
-						System.out.print(chat);
+						
+						if(chat.equalsIgnoreCase("admin: sendAdminChatLogs")){
+							isLogRequest = true;
+							chat = "";
+							File chatHistory = new File("chat.txt");
+							Scanner chatFileScanner = new Scanner(chatHistory);
+							
+							while (chatFileScanner.hasNext()){
+								chat += (chatFileScanner.nextLine()) + "\n";
+							}
+							
+							chatFileScanner.close();
+						}
+						else{
+							chat += "\n";
+							myWriter.write(chat);
+							myWriter.flush();
+						}
+						
+						
+//						System.out.print(chat);
+//						logPrinter.write(chat);
+//						logPrinter.flush();
+//						logBuffer.flush();
+//						logWriter.flush();
+//						logBuffer.write(chat);
+//						logBuffer.flush();
+						
 						
 						for(int i = 0; i < 100; i++){
-							if(i != id && clientSockets[i] != null){
+							if(i != id && clientSockets[i] != null && !isLogRequest){
 								PrintWriter out = null;
 								try {
 									out = new PrintWriter(new BufferedOutputStream(clientSockets[i].getOutputStream()));
+									
 									out.println(chat + ":endMessage");
+
 									out.flush();
+									System.out.println(chat);
+								} catch (IOException e1) {
+									e1.printStackTrace();
+								}
+							} else if (isLogRequest && clientSockets[i] != null) {
+								PrintWriter out = null;
+								try {
+									out = new PrintWriter(new BufferedOutputStream(clientSockets[i].getOutputStream()));
+									
+									out.println(chat + ":endLog");
+
+									out.flush();
+									System.out.println(chat);
 								} catch (IOException e1) {
 									e1.printStackTrace();
 								}
