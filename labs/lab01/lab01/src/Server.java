@@ -1,4 +1,3 @@
-
 //package lab3;
 
 import java.net.*;
@@ -13,27 +12,32 @@ public class Server implements Runnable {
 	private Thread mainThread = null;
 	private File file = new File("chat.txt");
 	private PrintWriter writer;
-	
-	private static Socket[] clientSocketArray = new Socket[100];
 
+	private static Socket[] clientSocketArray = new Socket[100];
+	private File chatLog = new File("chat.txt");
+
+	private FileWriter logWriter;
+	private BufferedWriter logBuffer;
 
 	public Server(int port) {
 		// TODO Binding and starting server
 		// serverSocket.bind("localhost", 1222);
 
 		try {
-			System.out.println("Binding to port " + port + ", please wait  ...");
+			System.out
+					.println("Binding to port " + port + ", please wait  ...");
 			serverSocket = new ServerSocket(port);
 			System.out.println("Server started: " + serverSocket);
-			
-//			chatLog.delete();
+
+			// chatLog.delete();
 			logWriter = new FileWriter(chatLog, true);
 			logBuffer = new BufferedWriter(logWriter);
-//			logPrinter = new PrintWriter(logBuffer);
-			
+			// logPrinter = new PrintWriter(logBuffer);
+
 			start();
 		} catch (IOException ioe) {
-			System.out.println("Can not bind to port " + port + ": " + ioe.getMessage());
+			System.out.println("Can not bind to port " + port + ": "
+					+ ioe.getMessage());
 		}
 	}
 
@@ -43,20 +47,20 @@ public class Server implements Runnable {
 	}
 
 	public void start() {
-		for(int i = 0; i< 100; i++){
+		for (int i = 0; i < 100; i++) {
 			try {
-//				System.out.println("Waiting for client to connect!");
+				// System.out.println("Waiting for client to connect!");
 
 				clientSocketArray[i] = serverSocket.accept();
 				System.out.println("Server connected to client.");
-				
+
 				Thread thr = new Thread(new textReader(clientSocketArray, i));
 				thr.start();
 
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}		
+		}
 
 	}
 
@@ -71,24 +75,11 @@ public class Server implements Runnable {
 		return -1;
 	}
 
-	public synchronized void handle(String input) {
-		// TODO new message, send to clients and then write it to history
-
-		// TODO update own gui
-
-	}
-
 	public synchronized void remove(int ID) {
 		// TODO get the serverthread, remove it from the array and then
 		// terminate it
 
 	}
-
-//	private void addThread(Socket socket, int namer) {
-//		Thread thr = new Thread(new chatClientHandler(socket, namer), "Client " + namer);
-//		namer++;
-//		thr.run();
-//	}
 
 	public static void main(String args[]) {
 		Server server = null;
@@ -104,80 +95,80 @@ class textReader implements Runnable {
 	Boolean isAdmin = false;
 	BufferedWriter myWriter;
 	Boolean isLogRequest = false;
-	
 
 	textReader(Socket[] clientSockets, int id) {
 		this.id = id;
 		this.socket = clientSockets[id];
 		this.clientSockets = clientSockets;
 	}
-	
-	public char decodeChar(byte b){
+
+	public char decodeChar(byte b) {
 		return (char) (b ^ (byte) 240);
+	}
+
+	//send message on to socket
+	public synchronized void handleChat(byte[] image, Socket socket)
+			throws IOException {
+		String message = username + ": :beginImage";
+		OutputStream streamOut = socket.getOutputStream();
+		streamOut.write(message.getBytes());
+		streamOut.write(image);
+		String end = ":endImage";
+		streamOut.write(end.getBytes());
+		streamOut.flush();
 	}
 
 	// This is the client handling code
 	public void run() {
 		InputStream in;
 		String chat = "";
-		
-			try {
-				in = socket.getInputStream();
-				
-				while(username == null){
-					chat += decodeChar((byte) in.read());
-					if(chat.endsWith(":endUsername")){
-						username = chat.substring(0, chat.length() - 12);
-						if(username.equalsIgnoreCase("Admin")){
-							isAdmin = true;
-						}
+
+		try {
+			in = socket.getInputStream();
+			//parse for this thread's client's username
+			while (username == null) {
+				chat += decodeChar((byte) in.read());
+				if (chat.endsWith(":endUsername")) {
+					username = chat.substring(0, chat.length() - 12);
+					if (username.equalsIgnoreCase("Admin")) {
+						isAdmin = true;
 					}
 				}
-				
-				System.out.println(username + " has joined the chat.");
-				chat = "";
-				
-				while(true){
-					isLogRequest = false;
-					chat += decodeChar((byte) in.read());
-//					chat += (char) in.read();
-					if(chat.endsWith(":endMessage")){
-						chat = chat.substring(0, chat.length() - 11);
-						
-						if(chat.equalsIgnoreCase("admin: sendAdminChatLogs")){
-							isLogRequest = true;
-							chat = "";
-							File chatHistory = new File("chat.txt");
-							Scanner chatFileScanner = new Scanner(chatHistory);
-							
-							while (chatFileScanner.hasNext()){
-								chat += (chatFileScanner.nextLine()) + "\n";
-							}
-							
-							chatFileScanner.close();
+			}
+
+			System.out.println(username + " has joined the chat.");
+			chat = "";
+			//begin checking for messages
+			while (true) {
+				isLogRequest = false;
+				chat += decodeChar((byte) in.read());
+				// chat += (char) in.read();
+				if (chat.endsWith(":endMessage")) {
+					chat = chat.substring(0, chat.length() - 11);
+
+					if (chat.equalsIgnoreCase("admin: sendAdminChatLogs")) {
+						isLogRequest = true;
+						chat = "";
+						File chatHistory = new File("chat.txt");
+						Scanner chatFileScanner = new Scanner(chatHistory);
+
+						while (chatFileScanner.hasNext()) {
+							chat += (chatFileScanner.nextLine()) + "\n";
 						}
-						else{
-							chat += "\n";
-							myWriter.write(chat);
-							myWriter.flush();
-						}
-						
-						
-//						System.out.print(chat);
-//						logPrinter.write(chat);
-//						logPrinter.flush();
-//						logBuffer.flush();
-//						logWriter.flush();
-//						logBuffer.write(chat);
-//						logBuffer.flush();
-						
-						
-						for(int i = 0; i < 100; i++){
-							if(i != id && clientSockets[i] != null && !isLogRequest){
+
+						chatFileScanner.close();
+					} else {
+
+						for (int i = 0; i < 100; i++) {
+							if (i != id && clientSockets[i] != null
+									&& !isLogRequest) {
 								PrintWriter out = null;
 								try {
-									out = new PrintWriter(new BufferedOutputStream(clientSockets[i].getOutputStream()));
-									
+									out = new PrintWriter(
+											new BufferedOutputStream(
+													clientSockets[i]
+															.getOutputStream()));
+
 									out.println(chat + ":endMessage");
 
 									out.flush();
@@ -188,8 +179,11 @@ class textReader implements Runnable {
 							} else if (isLogRequest && clientSockets[i] != null) {
 								PrintWriter out = null;
 								try {
-									out = new PrintWriter(new BufferedOutputStream(clientSockets[i].getOutputStream()));
-									
+									out = new PrintWriter(
+											new BufferedOutputStream(
+													clientSockets[i]
+															.getOutputStream()));
+
 									out.println(chat + ":endLog");
 
 									out.flush();
@@ -199,118 +193,48 @@ class textReader implements Runnable {
 								}
 							}
 						}
-						//clears the current message TODO store the chat in text file later
+						// clears the current message TODO store the chat in
+						// text file later
 						chat = "";
-					} else if(chat.endsWith(":beginImage")){
-						chat = "";
-						System.out.println("Receiving image");
-						Boolean imageTransfer = true;
-						byte[] image = new byte[50030];
-						int i = 0;
-						while(imageTransfer){
-							image[i] = (byte) in.read();
-							if(i > 9){
-								for(int j = i-9; j <= i; j++){
-									chat += (char) image[j];
-								}
-								if(chat.endsWith(":endImage")){
-									System.out.println("Image received");
-									chat = chat.substring(0, chat.length() - 9);
-									imageTransfer = false;
-									FileOutputStream fis = new FileOutputStream("test.png");
-									fis.write(image);
-									fis.close();
-								}
+					}
+				} else if (chat.endsWith(":beginImage")) {
+					chat = "";
+					System.out.println("Receiving image");
+					Boolean imageTransfer = true;
+					//max byte size of image is 30000
+					byte[] image = new byte[30030];
+					int i = 0;
+					while (imageTransfer) {
+						image[i] = (byte) in.read();
+						if (i > 29999) {
+							for (int j = i - 9; j <= i; j++) {
+								chat += (char) image[j];
 							}
-							if(i<image.length){
-								i++;	
-							} else {
-								System.out.println("Failed, image too large");
+							if (chat.endsWith(":endImage")) {
+								System.out.println("Image received");
+								for (int k = 0; k < 100; k++) {
+									if (clientSockets[k] != null) {
+										handleChat(image, clientSockets[k]);
+									}
+								}
+
 								imageTransfer = false;
+								chat = "";
 							}
-							
 						}
-					} 
+						if (i < image.length) {
+							i++;
+						} else {
+							System.out.println("Failed, image too large");
+							imageTransfer = false;
+						}
+
+					}
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	} // end of method run()
 
 }
-
-//class textSender implements Runnable {
-//	int id; // keeps track of its number just for identifying purposes
-//	Socket socket;
-//	PrintWriter out;
-//
-//	textSender(Socket socket, int id) {
-//		this.id = id;
-//		this.socket = socket;
-//		
-//		try {
-//			out = new PrintWriter(new BufferedOutputStream(socket.getOutputStream()));
-//		} catch (IOException e1) {
-//			e1.printStackTrace();
-//		}
-//	}
-//
-//	// This is the client handling code
-//	public void run() {
-//		
-//		while (true) {
-//			try {
-//
-//				out.println("Hi");
-//				out.flush(); // forces data from buffer to be sent to server
-////				out.close();
-//
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//	} // end of method run()
-//}
-
-//class chatClientHandler implements Runnable {
-//	ServerSocket s; // this is socket on the server side that connects to the CLIENT
-//	int clientNumber = 0; // keeps track of its number just for identifying purposes
-//
-//	chatClientHandler(ServerSocket s) {
-//		this.s = s;
-//	}
-//
-//	// This is the client handling code
-//	public void run() {
-//		
-//		while (true) {
-//
-//			Socket clientSocket = null;
-//			try {
-//				System.out.println("Waiting for client" + " to connect!");
-//
-//				clientSocket = s.accept();
-//				System.out.println("Server connected to client ");
-//				
-//				Thread reader = new Thread(new textReader(clientSocket, clientNumber));
-//				reader.start();
-//				
-////				Thread sender = new Thread(new textSender(clientSocket, clientNumber));
-////				sender.run();
-//				
-//				clientNumber++;
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//
-//		}
-//		
-//	} // end of method run()
-//
-//	void printSocketInfo(Socket s) {
-//		System.out.print("Socket on Server " + Thread.currentThread() + " ");
-//		System.out.print("Server socket Local Address: " + s.getLocalAddress() + ":" + s.getLocalPort());
-//		System.out.println("  Server socket Remote Address: " + s.getRemoteSocketAddress());
-//	} // end of printSocketInfo
-//
-//}
