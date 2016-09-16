@@ -54,7 +54,7 @@ public class Server implements Runnable {
 				clientSocketArray[i] = serverSocket.accept();
 				System.out.println("Server connected to client.");
 
-				Thread thr = new Thread(new textReader(clientSocketArray, i));
+				Thread thr = new Thread(new textReader(clientSocketArray, i, logBuffer));
 				thr.start();
 
 			} catch (IOException e) {
@@ -96,10 +96,11 @@ class textReader implements Runnable {
 	BufferedWriter myWriter;
 	Boolean isLogRequest = false;
 
-	textReader(Socket[] clientSockets, int id) {
+	textReader(Socket[] clientSockets, int id, BufferedWriter logWriter) {
 		this.id = id;
 		this.socket = clientSockets[id];
 		this.clientSockets = clientSockets;
+		this.myWriter = logWriter;
 	}
 
 	public char decodeChar(byte b) {
@@ -158,45 +159,45 @@ class textReader implements Runnable {
 
 						chatFileScanner.close();
 					} else {
+						
+						chat += "\n";
+						myWriter.write(chat);
+						myWriter.flush();
+					}
 
-						for (int i = 0; i < 100; i++) {
-							if (i != id && clientSockets[i] != null
-									&& !isLogRequest) {
-								PrintWriter out = null;
-								try {
-									out = new PrintWriter(
-											new BufferedOutputStream(
-													clientSockets[i]
-															.getOutputStream()));
-
+					for (int i = 0; i < 100; i++) {
+						if (i != id && clientSockets[i] != null
+								&& !isLogRequest) {
+							PrintWriter out = null;
+							try {
+								out = new PrintWriter(
+										new BufferedOutputStream(
+												clientSockets[i]
+														.getOutputStream()));
 									out.println(chat + ":endMessage");
-
 									out.flush();
-									System.out.println(chat);
-								} catch (IOException e1) {
-									e1.printStackTrace();
-								}
-							} else if (isLogRequest && clientSockets[i] != null) {
-								PrintWriter out = null;
-								try {
-									out = new PrintWriter(
-											new BufferedOutputStream(
-													clientSockets[i]
-															.getOutputStream()));
-
+								System.out.println(chat);
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							}
+						} else if (isLogRequest && clientSockets[i] != null) {
+							PrintWriter out = null;
+							try {
+								out = new PrintWriter(
+										new BufferedOutputStream(
+												clientSockets[i]
+														.getOutputStream()));
 									out.println(chat + ":endLog");
-
 									out.flush();
-									System.out.println(chat);
-								} catch (IOException e1) {
-									e1.printStackTrace();
-								}
+								System.out.println(chat);
+							} catch (IOException e1) {
+								e1.printStackTrace();
 							}
 						}
+					}
 						// clears the current message TODO store the chat in
 						// text file later
 						chat = "";
-					}
 				} else if (chat.endsWith(":beginImage")) {
 					chat = "";
 					System.out.println("Receiving image");
