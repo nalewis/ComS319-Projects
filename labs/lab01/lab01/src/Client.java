@@ -186,7 +186,7 @@ public class Client {
 						}
 						
 						if (lineNumber <= 0) {
-							System.out.println("Invalid line numebr input. Please enter a positive integer.");
+							System.out.println("Invalid line number input. Please enter a positive integer.");
 						}
 						
 						try {
