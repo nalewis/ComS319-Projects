@@ -95,7 +95,8 @@ class textReader implements Runnable {
 	Boolean isAdmin = false;
 	BufferedWriter myWriter;
 	Boolean isLogRequest = false;
-
+	Boolean isDeleteRequest = false;
+	
 	textReader(Socket[] clientSockets, int id, BufferedWriter logWriter) {
 		this.id = id;
 		this.socket = clientSockets[id];
@@ -132,6 +133,7 @@ class textReader implements Runnable {
 				if (chat.endsWith(":endUsername")) {
 					username = chat.substring(0, chat.length() - 12);
 					if (username.equalsIgnoreCase("Admin")) {
+
 						isAdmin = true;
 					}
 				}
@@ -142,6 +144,7 @@ class textReader implements Runnable {
 			//begin checking for messages
 			while (true) {
 				isLogRequest = false;
+				
 				chat += decodeChar((byte) in.read());
 				// chat += (char) in.read();
 				if (chat.endsWith(":endMessage")) {
@@ -158,8 +161,9 @@ class textReader implements Runnable {
 						}
 
 						chatFileScanner.close();
-					} if (chat.contains("admin: deleteLine")) {
-												
+					} else if (chat.toLowerCase().contains("admin: deleteline")) {
+						isDeleteRequest = true;						
+						
 						int lineToDelete = Integer.parseInt(chat.substring(17));
 						
 						File chatHistory = new File("chat.txt");
@@ -180,6 +184,8 @@ class textReader implements Runnable {
 							i++;
 						}
 						
+						chat = ("Line " + lineToDelete + " deleted from log file.");
+						
 						chatHistory.delete();
 						newHistory.renameTo(chatHistory);
 						
@@ -197,7 +203,7 @@ class textReader implements Runnable {
 
 					for (int i = 0; i < 100; i++) {
 						if (i != id && clientSockets[i] != null
-								&& !isLogRequest) {
+								&& !isLogRequest && !isDeleteRequest) {
 							PrintWriter out = null;
 							try {
 								out = new PrintWriter(
@@ -206,7 +212,7 @@ class textReader implements Runnable {
 														.getOutputStream()));
 									out.println(chat + ":endMessage");
 									out.flush();
-								System.out.println(chat);
+//								System.out.println(chat);
 							} catch (IOException e1) {
 								e1.printStackTrace();
 							}
@@ -219,12 +225,26 @@ class textReader implements Runnable {
 														.getOutputStream()));
 									out.println(chat + ":endLog");
 									out.flush();
-								System.out.println(chat);
+//								System.out.println(chat);
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							}
+						} else if (isDeleteRequest && clientSockets[i] != null) {
+							PrintWriter out = null;
+							try {
+								out = new PrintWriter(
+										new BufferedOutputStream(
+												clientSockets[i]
+														.getOutputStream()));
+									out.println(chat + ":endDelete");
+									out.flush();
+//								System.out.println(chat);
 							} catch (IOException e1) {
 								e1.printStackTrace();
 							}
 						}
 					}
+					System.out.println(chat);
 						// clears the current message TODO store the chat in
 						// text file later
 						chat = "";
