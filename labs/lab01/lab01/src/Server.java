@@ -54,7 +54,7 @@ public class Server implements Runnable {
 				clientSocketArray[i] = serverSocket.accept();
 				System.out.println("Server connected to client.");
 
-				Thread thr = new Thread(new textReader(clientSocketArray, i));
+				Thread thr = new Thread(new textReader(clientSocketArray, i, logBuffer));
 				thr.start();
 
 			} catch (IOException e) {
@@ -95,11 +95,13 @@ class textReader implements Runnable {
 	Boolean isAdmin = false;
 	BufferedWriter myWriter;
 	Boolean isLogRequest = false;
-
-	textReader(Socket[] clientSockets, int id) {
+	Boolean isDeleteRequest = false;
+	
+	textReader(Socket[] clientSockets, int id, BufferedWriter logWriter) {
 		this.id = id;
 		this.socket = clientSockets[id];
 		this.clientSockets = clientSockets;
+		this.myWriter = logWriter;
 	}
 
 	public char decodeChar(byte b) {
@@ -131,6 +133,7 @@ class textReader implements Runnable {
 				if (chat.endsWith(":endUsername")) {
 					username = chat.substring(0, chat.length() - 12);
 					if (username.equalsIgnoreCase("Admin")) {
+
 						isAdmin = true;
 					}
 				}
@@ -141,6 +144,8 @@ class textReader implements Runnable {
 			//begin checking for messages
 			while (true) {
 				isLogRequest = false;
+				isDeleteRequest = false;
+				
 				chat += decodeChar((byte) in.read());
 				// chat += (char) in.read();
 				if (chat.endsWith(":endMessage")) {
@@ -157,46 +162,109 @@ class textReader implements Runnable {
 						}
 
 						chatFileScanner.close();
+					} else if (chat.toLowerCase().contains("admin: deleteline")) {
+						isDeleteRequest = true;
+						boolean deletionMade = false;
+						
+						int lineToDelete = Integer.parseInt(chat.substring(17));
+						
+						File chatHistory = new File("chat.txt");
+						Scanner chatFileScanner = new Scanner(chatHistory);
+						
+						File newHistory = new File("temp.txt");
+						FileWriter newWriter = new FileWriter(newHistory);
+						BufferedWriter newBuffer = new BufferedWriter(newWriter);
+						
+						int i = 1;
+						while (chatFileScanner.hasNext()){
+							String currentLine = (chatFileScanner.nextLine() + "\n");
+							if (i != lineToDelete) {
+								newBuffer.write(currentLine);
+								newBuffer.flush();
+							} else {
+								deletionMade = true;
+							}
+							
+							i++;
+						}
+						
+						if (deletionMade) {
+							chat = ("Line " + lineToDelete + " deleted from log file.");
+						} else {
+							chat = ("Unable to delete line " + lineToDelete + ". Please verify that it is a valid line number.");
+						}
+
+						
+						chatHistory.delete();
+						newHistory.renameTo(chatHistory);
+						
+
+						newBuffer.close();
+						newWriter.close();
+						
+						chatFileScanner.close();
+												
 					} else {
+						
+						File historyToWrite = new File("chat.txt");
+						FileWriter localWriter = new FileWriter(historyToWrite, true);
+						BufferedWriter localBuffer = new BufferedWriter(localWriter);
+						
+						chat += "\n";
+						localBuffer.write(chat);
+						localBuffer.flush();
+						
+						localBuffer.close();
+						localWriter.close();
+					}
 
-						for (int i = 0; i < 100; i++) {
-							if (i != id && clientSockets[i] != null
-									&& !isLogRequest) {
-								PrintWriter out = null;
-								try {
-									out = new PrintWriter(
-											new BufferedOutputStream(
-													clientSockets[i]
-															.getOutputStream()));
-
+					for (int i = 0; i < 100; i++) {
+						if (i != id && clientSockets[i] != null
+								&& !isLogRequest && !isDeleteRequest) {
+							PrintWriter out = null;
+							try {
+								out = new PrintWriter(
+										new BufferedOutputStream(
+												clientSockets[i]
+														.getOutputStream()));
 									out.println(chat + ":endMessage");
-
 									out.flush();
-									System.out.println(chat);
-								} catch (IOException e1) {
-									e1.printStackTrace();
-								}
-							} else if (isLogRequest && clientSockets[i] != null) {
-								PrintWriter out = null;
-								try {
-									out = new PrintWriter(
-											new BufferedOutputStream(
-													clientSockets[i]
-															.getOutputStream()));
-
+//								System.out.println(chat);
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							}
+						} else if (isLogRequest && clientSockets[i] != null) {
+							PrintWriter out = null;
+							try {
+								out = new PrintWriter(
+										new BufferedOutputStream(
+												clientSockets[i]
+														.getOutputStream()));
 									out.println(chat + ":endLog");
-
 									out.flush();
-									System.out.println(chat);
-								} catch (IOException e1) {
-									e1.printStackTrace();
-								}
+//								System.out.println(chat);
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							}
+						} else if (isDeleteRequest && clientSockets[i] != null) {
+							PrintWriter out = null;
+							try {
+								out = new PrintWriter(
+										new BufferedOutputStream(
+												clientSockets[i]
+														.getOutputStream()));
+									out.println(chat + ":endDelete");
+									out.flush();
+//								System.out.println(chat);
+							} catch (IOException e1) {
+								e1.printStackTrace();
 							}
 						}
+					}
+					System.out.println(chat);
 						// clears the current message TODO store the chat in
 						// text file later
 						chat = "";
-					}
 				} else if (chat.endsWith(":beginImage")) {
 					chat = "";
 					System.out.println("Receiving image");

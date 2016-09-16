@@ -25,7 +25,8 @@ public class Client {
 
 				while (!(messageFromServer.endsWith(":endMessage"))
 						&& !(messageFromServer.endsWith(":endLog"))
-						&& !(messageFromServer.endsWith(":beginImage"))) {
+						&& !(messageFromServer.endsWith(":beginImage"))
+						&& !(messageFromServer.endsWith(":endDelete"))) {
 					messageFromServer += (char) streamIn.read();
 				}
 
@@ -72,6 +73,11 @@ public class Client {
 							System.out.println("Failed, image too large");
 							imageTransfer = false;
 						}
+					}
+				} else if (messageFromServer.endsWith(":endDelete")) {
+					if (name.equalsIgnoreCase("admin")) {
+						System.out.println(messageFromServer.substring(0,
+								messageFromServer.length() - 10));
 					}
 				}
 			} catch (IOException e) {
@@ -126,9 +132,13 @@ public class Client {
 							.println("Press '1' to send message, '2' for image.");
 				}
 
-				answer = scan.nextLine();
+				if (scan.hasNext()) {
+					answer = scan.nextLine();
+				} else {
+					answer = null;
+				}
 
-				if (isAdmin) {
+				if (isAdmin && answer != null) {
 					if (answer.equals("1")) {
 						System.out.print("Enter your message: ");
 
@@ -169,12 +179,26 @@ public class Client {
 							e.printStackTrace();
 						}
 					} else if (answer.equals("4")) {
-						// TODO implement deleting line
-					} else {
+						System.out.println("Enter a line number to delete:");
+						int lineNumber = 0;
+						if (scan.hasNext())	{
+							lineNumber = scan.nextInt();
+						}
+						
+						if (lineNumber <= 0) {
+							System.out.println("Invalid line number input. Please enter a positive integer.");
+						}
+						
+						try {
+							handleChat(("deleteLine" + lineNumber));
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					} else if (answer != null && !answer.isEmpty()){
 						System.out.println("Invalid input, try again.");
 					}
 
-				} else if (answer.equals("1")) {
+				} else if (answer.equals("1") && answer != null) {
 					System.out.print("Enter your message: ");
 
 					if (scan.hasNext()) {
@@ -185,7 +209,7 @@ public class Client {
 							e.printStackTrace();
 						}
 					}//sending image
-				} else if (answer.equals("2")) {
+				} else if (answer.equals("2") && answer != null) {
 					System.out
 							.print("Please enter a file path (Recommend 'linux.png'): ");
 					if (scan.hasNext()) {
