@@ -96,12 +96,23 @@ class textReader implements Runnable {
 	BufferedWriter myWriter;
 	Boolean isLogRequest = false;
 	Boolean isDeleteRequest = false;
+	File newHistory = new File("temp.txt");
+	FileWriter newWriter;
+	BufferedWriter newBuffer;
+	
 	
 	textReader(Socket[] clientSockets, int id, BufferedWriter logWriter) {
 		this.id = id;
 		this.socket = clientSockets[id];
 		this.clientSockets = clientSockets;
 		this.myWriter = logWriter;
+		
+		try {
+			newWriter = new FileWriter(newHistory);
+			newBuffer = new BufferedWriter(newWriter);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public char decodeChar(byte b) {
@@ -144,6 +155,7 @@ class textReader implements Runnable {
 			//begin checking for messages
 			while (true) {
 				isLogRequest = false;
+				isDeleteRequest = false;
 				
 				chat += decodeChar((byte) in.read());
 				// chat += (char) in.read();
@@ -169,9 +181,10 @@ class textReader implements Runnable {
 						File chatHistory = new File("chat.txt");
 						Scanner chatFileScanner = new Scanner(chatHistory);
 						
-						File newHistory = new File("temp.txt");
-						FileWriter newWriter = new FileWriter(newHistory);
-						BufferedWriter newBuffer = new BufferedWriter(newWriter);
+
+						newHistory = new File("temp.txt");
+						newWriter = new FileWriter(newHistory);
+						newBuffer = new BufferedWriter(newWriter);
 						
 						int i = 1;
 						while (chatFileScanner.hasNext()){
@@ -189,8 +202,12 @@ class textReader implements Runnable {
 						chatHistory.delete();
 						newHistory.renameTo(chatHistory);
 						
-						newBuffer.close();
-						newWriter.close();
+
+					//	newWriter.close();
+						
+						myWriter = newBuffer;
+
+
 						
 						chatFileScanner.close();
 												
