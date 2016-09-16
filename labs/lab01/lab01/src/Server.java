@@ -163,7 +163,8 @@ class textReader implements Runnable {
 
 						chatFileScanner.close();
 					} else if (chat.toLowerCase().contains("admin: deleteline")) {
-						isDeleteRequest = true;						
+						isDeleteRequest = true;
+						boolean deletionMade = false;
 						
 						int lineToDelete = Integer.parseInt(chat.substring(17));
 						
@@ -180,12 +181,19 @@ class textReader implements Runnable {
 							if (i != lineToDelete) {
 								newBuffer.write(currentLine);
 								newBuffer.flush();
+							} else {
+								deletionMade = true;
 							}
 							
 							i++;
 						}
 						
-						chat = ("Line " + lineToDelete + " deleted from log file.");
+						if (deletionMade) {
+							chat = ("Line " + lineToDelete + " deleted from log file.");
+						} else {
+							chat = ("Unable to delete line " + lineToDelete + ". Please verify that it is a valid line number.");
+						}
+
 						
 						chatHistory.delete();
 						newHistory.renameTo(chatHistory);
