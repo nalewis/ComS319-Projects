@@ -158,6 +158,36 @@ class textReader implements Runnable {
 						}
 
 						chatFileScanner.close();
+					} if (chat.contains("admin: deleteLine")) {
+												
+						int lineToDelete = Integer.parseInt(chat.substring(17));
+						
+						File chatHistory = new File("chat.txt");
+						Scanner chatFileScanner = new Scanner(chatHistory);
+						
+						File newHistory = new File("temp.txt");
+						FileWriter newWriter = new FileWriter(newHistory);
+						BufferedWriter newBuffer = new BufferedWriter(newWriter);
+						
+						int i = 1;
+						while (chatFileScanner.hasNext()){
+							String currentLine = (chatFileScanner.nextLine() + "\n");
+							if (i != lineToDelete) {
+								newBuffer.write(currentLine);
+								newBuffer.flush();
+							}
+							
+							i++;
+						}
+						
+						chatHistory.delete();
+						newHistory.renameTo(chatHistory);
+						
+						newBuffer.close();
+						newWriter.close();
+						
+						chatFileScanner.close();
+												
 					} else {
 						
 						chat += "\n";

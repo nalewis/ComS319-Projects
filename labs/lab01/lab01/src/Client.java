@@ -169,7 +169,21 @@ public class Client {
 							e.printStackTrace();
 						}
 					} else if (answer.equals("4")) {
-						// TODO implement deleting line
+						System.out.println("Enter a line number to delete:");
+						int lineNumber = 0;
+						if (scan.hasNext())	{
+							lineNumber = scan.nextInt();
+						}
+						
+						if (lineNumber <= 0) {
+							System.out.println("Invalid line numebr input. Please enter a positive integer.");
+						}
+						
+						try {
+							handleChat(("deleteLine" + lineNumber));
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					} else {
 						System.out.println("Invalid input, try again.");
 					}
