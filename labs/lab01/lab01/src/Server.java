@@ -64,23 +64,6 @@ public class Server implements Runnable {
 
 	}
 
-	public void stop() {
-		// TODO
-
-	}
-
-	private int findClient(int ID) {
-		// TODO Find Client
-
-		return -1;
-	}
-
-	public synchronized void remove(int ID) {
-		// TODO get the serverthread, remove it from the array and then
-		// terminate it
-
-	}
-
 	public static void main(String args[]) {
 		Server server = null;
 		server = new Server(1222);
@@ -269,19 +252,19 @@ class textReader implements Runnable {
 					chat = "";
 					System.out.println("Receiving image");
 					Boolean imageTransfer = true;
-					//max byte size of image is 30000
-					byte[] image = new byte[30030];
+					//max byte size of image is 100000
+					byte[] image = new byte[100009];
 					int i = 0;
 					while (imageTransfer) {
 						image[i] = (byte) in.read();
-						if (i > 29999) {
+						if (i > 99999) {
 							for (int j = i - 9; j <= i; j++) {
 								chat += (char) image[j];
 							}
 							if (chat.endsWith(":endImage")) {
 								System.out.println("Image received");
 								for (int k = 0; k < 100; k++) {
-									if (clientSockets[k] != null) {
+									if (clientSockets[k] != null && k != id) {
 										handleChat(image, clientSockets[k]);
 									}
 								}

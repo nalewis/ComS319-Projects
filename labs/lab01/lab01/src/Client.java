@@ -44,12 +44,12 @@ public class Client {
 					messageFromServer = "";
 					System.out.println("Receiving image");
 					Boolean imageTransfer = true;
-					//max image size is about 30000 bytes
-					byte[] image = new byte[30030];
+					//max image size is about 100000 bytes
+					byte[] image = new byte[100015];
 					int i = 0;
 					while (imageTransfer) {
 						image[i] = (byte) streamIn.read();
-						if (i > 29999) {
+						if (i > 99999) {
 							for (int j = i - 9; j <= i; j++) {
 								messageFromServer += (char) image[j];
 							}
@@ -64,7 +64,7 @@ public class Client {
 								messageFromServer = "";
 							}
 							if (i % 1000 == 0) {
-								System.out.println(i + "/30000 bytes received");
+								System.out.println(i + "/100000 bytes received");
 							}
 						}
 						if (i < image.length) {
@@ -126,7 +126,7 @@ public class Client {
 			while (true) {
 				if (isAdmin) {
 					System.out
-							.println("ADMIN OPTIONS: Press '1' to send message to all clients, press '2' to send an image, press '3' to list the images so far from chat.txt, press '4' to delete a message from chat.txt.");
+							.println("ADMIN OPTIONS: Press '1' to send message to all clients, press '2' to send an image, press '3' to list the messages so far from chat.txt, press '4' to delete a message from chat.txt.");
 				} else {
 					System.out
 							.println("Press '1' to send message, '2' for image.");
@@ -158,7 +158,7 @@ public class Client {
 							try {
 								File f = new File(message);
 								if (f.exists() && f.canRead()) {
-									byte[] image = new byte[30000];
+									byte[] image = new byte[100000];
 									FileInputStream fis = new FileInputStream(
 											message);
 									fis.read(image);
@@ -217,7 +217,7 @@ public class Client {
 						try {
 							File f = new File(message);
 							if (f.exists() && f.canRead()) {
-								byte[] image = new byte[30000];
+								byte[] image = new byte[100000];
 								FileInputStream fis = new FileInputStream(
 										message);
 								fis.read(image);
