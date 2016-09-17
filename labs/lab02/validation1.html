@@ -1,4 +1,50 @@
 <html>
-	<title>Validation Form</title>
 
+<head>
+	<title>Validation Form</title>
+</head>
+
+<body>
+
+<form id="form1">
+	<fieldset>
+		<legend>Validation Form</legend>
+
+		First Name:<br>
+		<input type="text" id="firstName">
+		<img src="correct.png" hidden="true" id="firstCorrect"><img src="wrong.png" hidden="true" id="firstWrong"><br>
+		Last Name:<br>
+		<input type="text" name="lastName">
+		<img src="correct.png" hidden="true" id="lastCorrect"><img src="wrong.png" hidden="true" id="lastWrong"><br>
+		Gender:<br>
+		<select>
+		<option disabled selected value>-- select an option --</option>
+			<option value="male">Male</option>
+			<option value="female">Female</option>
+		</select>
+		<img src="correct.png" hidden="true" id="genderCorrect"><img src="wrong.png" hidden="true" id="genderWrong"><br>
+
+		State:<br>
+		<select>
+			<option disabled selected value>-- select an option --</option>
+			<option value="california">California</option>
+			<option value="florida">Florida</option>
+			<option value="newYork">New York</option>
+			<option value="texas">Texas</option>
+			<option value="hawaii">Hawaii</option>
+			<option value="washington">Washington</option>
+			<option value="colorado">Colorado</option>
+			<option value="virginia">Virginia</option>
+			<option value="iowa">Iowa</option>
+			<option value="arizona">Arizona</option>
+		</select>
+		<img src="correct.png" hidden="true" id="stateCorrect"><img src="wrong.png" hidden="true" id="stateWrong">
+		<br><br>
+		<input type="submit" id="submit" value="Submit">
+	</fieldset>
+</form>
+
+<script src="./validation1.js"></script>
+
+</body>
 </html>
