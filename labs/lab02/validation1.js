@@ -7,12 +7,16 @@ var submitBtn = document.getElementById("submit");
 	 
      var i;
      var s = "";
+     var successfulValidation = true;
      for (i = 0; i < myForm.elements.length; i++) {
-       s += myForm.elements[i].name + "=" + myForm.elements[i].value+"\n"; 
+       if (myForm.elements[i].name) {
+           s += myForm.elements[i].name + "=" + myForm.elements[i].value+"\n"; 
+       }
 	   if (myForm.elements[i].name == 'firstName'){
 		   if (reg.test(myForm.elements[i].value)){
 			   document.getElementById("firstWrong").hidden = false;
 			   document.getElementById("firstCorrect").hidden = true;
+			   successfulValidation = false;
 		   } else {
 			   document.getElementById("firstWrong").hidden = true;
 			   document.getElementById("firstCorrect").hidden = false;
@@ -21,6 +25,7 @@ var submitBtn = document.getElementById("submit");
 		   if (reg.test(myForm.elements[i].value)){
 			   document.getElementById("lastWrong").hidden = false;
 			   document.getElementById("lastCorrect").hidden = true;
+			   successfulValidation = false;
 		   } else {
 			   document.getElementById("lastWrong").hidden = true;
 			   document.getElementById("lastCorrect").hidden = false;
@@ -29,6 +34,7 @@ var submitBtn = document.getElementById("submit");
 		   if (myForm.elements[i].value == ''){
 			   document.getElementById("genderWrong").hidden = false;
 			   document.getElementById("genderCorrect").hidden = true;
+			   successfulValidation = false;
 		   } else {
 			   document.getElementById("genderWrong").hidden = true;
 			   document.getElementById("genderCorrect").hidden = false;
@@ -37,11 +43,12 @@ var submitBtn = document.getElementById("submit");
 		   if (myForm.elements[i].value == ''){
 			   document.getElementById("stateWrong").hidden = false;
 			   document.getElementById("stateCorrect").hidden = true;
+			   successfulValidation = false;
 		   } else {
 			   document.getElementById("stateWrong").hidden = true;
 			   document.getElementById("stateCorrect").hidden = false;
 		   }
 	   }
      }
-     alert (s + "has been submitted!") ;
+     successfulValidation ? alert (s + "has been submitted!") : alert ("There are errors in the values you entered.\nPlease enter only letters and numbers, complete all fields, and try again.");
   }
