@@ -1,6 +1,7 @@
+
+function validate() {
 var submitBtn = document.getElementById("submit");
 var nextBtn = document.getElementById("nextPage");
-  submitBtn.onclick = function () {
      // show all elements on clicking submit!
      var myForm = document.getElementById("form1");
 	 
@@ -66,9 +67,8 @@ var nextBtn = document.getElementById("nextPage");
 	   nextBtn.hidden = true;
 	   alert ("There are errors in the values you entered.\nPlease enter only letters and numbers, complete all fields, and try again.");
      }
-  }
   
   nextPage.onclick = function () {
      window.location = "./validation2.html";
   }
-      
+} 
