@@ -14,7 +14,7 @@ var nextBtn = document.getElementById("nextPage");
            s += myForm.elements[i].name + "=" + myForm.elements[i].value+"\n"; 
        }
 	   if (myForm.elements[i].name == 'firstName'){
-		   if (reg.test(myForm.elements[i].value)){
+		   if (!(myForm.elements[i].value) || reg.test(myForm.elements[i].value)){
 			   document.getElementById("firstWrong").hidden = false;
 			   document.getElementById("firstCorrect").hidden = true;
 			   successfulValidation = false;
@@ -25,7 +25,7 @@ var nextBtn = document.getElementById("nextPage");
 			   document.cookie = ("firstName=" + myForm.elements[i].value);
 		   }
 	   } else if(myForm.elements[i].name == 'lastName'){
-		   if (reg.test(myForm.elements[i].value)){
+		   if (!(myForm.elements[i].value) || reg.test(myForm.elements[i].value)){
 			   document.getElementById("lastWrong").hidden = false;
 			   document.getElementById("lastCorrect").hidden = true;
 			   successfulValidation = false;
