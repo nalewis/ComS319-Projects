@@ -1,6 +1,7 @@
 
 function validate2() {
 	var myForm = document.getElementById("form2");
+	var nextBtn = document.getElementById("nextPage");
 	 
 	var reg = /[^A-Za-z0-9 ]/;
 	 
@@ -61,7 +62,7 @@ function validate2() {
 		document.cookie = ("lastName=; expires=Fri, 16 Sept 2016 00:00:00 UTC");
 		document.cookie = ("gender=; expires=Fri, 16 Sept 2016 00:00:00 UTC");
 		document.cookie = ("state=; expires=Fri, 16 Sept 2016 00:00:00 UTC");
-		window.location = "./validation2.html";
+		window.location = "./map.html";
 	}
 	
 	//testLocal();
