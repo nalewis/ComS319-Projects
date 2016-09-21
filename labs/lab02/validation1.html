@@ -2,6 +2,7 @@
 <meta charset="UTF-8"> 
 <head>
 	<title>Validation Form</title>
+    <script src="./validation1.js"></script>
 </head>
 
 <body>
@@ -40,11 +41,11 @@
 		</select>
 		<img src="correct.png" hidden="true" id="stateCorrect"><img src="wrong.png" hidden="true" id="stateWrong">
 		<br><br>
-		<input type="submit" id="submit" value="Submit">
+		<input type="button" id="submit" value="Submit" onclick="validate()">
+		<input type="button" id="nextPage" hidden="true" value="Next Page"> 
 	</fieldset>
 </form>
 
-<script src="./validation1.js"></script>
 
 </body>
 </html>
