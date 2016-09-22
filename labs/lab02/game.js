@@ -1,31 +1,84 @@
-var startBtn = document.getElementById("start");
-var stopBtn = document.getElementById("stop");
-var leftBtn = document.getElementById("left");
-var rightBtn = document.getElementById("right");
-var direction = 0; //0 = right, 1 = down, 2 = left, 3 = up
+//Directions are mapped to degrees on the unit circle
+//0 = right, 90 = up, 180 = left, 270 = down
+var direction = 0;
 
-startBtn.onclick = function () {
-	// getContext() method returns an object that provides methods
-	// and properties for drawing on the canvas
-	var context = document.getElementById("canvasId").getContext("2d");
-	context.beginPath();
-	context.strokeStyle = '#ff0000';
-	context.moveTo(0,300);
-	var i = 0;
-	var timer = setInterval(fucntion(){
-		
-	}, 1000);
-	/*while(true){
-		
-		context.moveTo(0, i);
-		context.lineTo(450, i);
-		context.lineWidth = 5;
+var currentX = 0;
+var currentY = 300;
+var currentDirection = 0;
 
-		context.stroke();
-	}*/
-	// set line color
+var canvasInitialized = false;
+var isRunning = false;
+var timer;
+
+function toggle() {
 	
+	var toggleBtn = document.getElementById("toggle");
+	if (!isRunning) {
+		
+		if (!canvasInitialized) {
+		
+			context = document.getElementById("canvasId").getContext("2d");
+			context.moveTo(0,300);
+			context.strokeStyle = '#ff0000';
+			context.stroke();
+	
+			canvasInitialized = true;
+		}
+
+		if (!timer) {
+			timer = setInterval(canvasTick, 75);
+		}
+		
+		isRunning = true;
+		toggleBtn.value = "Stop";
+	} else {
+		
+		clearInterval(timer);
+		timer = null;
+		isRunning = false;
+		toggleBtn.value = "Start";
+	}
 }
 
-stopBtn.onclick = clearInterval(timer);
-//look at other canvas methods!
+function stop() {
+}
+
+function canvasTick() {
+	
+	context.moveTo(currentX, currentY); 
+	var moveSize = 1;
+
+	if (currentDirection == 0) {
+	
+		currentX += moveSize;
+	} else if (currentDirection == 90) {
+		
+		currentY -= moveSize;
+	} else if (currentDirection == 180) {
+
+		currentX -= moveSize;
+	} else if (currentDirection == 270) {
+
+		currentY += moveSize;
+	}
+	context.lineTo(currentX, currentY);
+	context.stroke();
+}
+
+function leftTurn() {
+
+	if (currentDirection >= 270) {
+		currentDirection = 0;
+	} else {
+		currentDirection += 90;
+	}
+}
+
+function rightTurn() {
+
+	if (currentDirection <= 0) {
+		currentDirection = 270;
+	} else {
+		currentDirection -= 90;
+	}
+}
