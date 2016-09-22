@@ -3,8 +3,6 @@ function validate2() {
 	var myForm = document.getElementById("form2");
 	var nextBtn = document.getElementById("nextPage");
 	 
-	var reg = /[^A-Za-z0-9 ]/;
-	 
     var i;
     var s = "";
     var successfulValidation = true;
@@ -35,7 +33,6 @@ function validate2() {
 				localStorage.setItem("phone", myForm.elements[i].value);
 			}
 		} 
-		//TODO address validation needs work!
 		else if (myForm.elements[i].name == 'address'){
 			if (!(myForm.elements[i].value) || !validateAddress(myForm.elements[i].value)){
 				document.getElementById("addressWrong").hidden = false;
@@ -89,29 +86,7 @@ function validateEmail(email) {
     return re.test(email);
 }
 
-//pulled from stack overflow
 function validateAddress(address) {
-    /*if (typeof address !== "string"){
-		return false;
-	}
-
-    address = address.trim();
-    var returned = {};
-    var comma = address.indexOf(',');
-    returned.city = address.slice(0, comma);
-    var after = address.substring(comma + 2);
-    var space = after.lastIndexOf(' ');
-    returned.state = after.slice(0, space);
-    // Return the data.
-	alert (returned.city + ' ' + returned.state);*/
-	/*var reg = /^([^,]+),\s([A-Z]{2})| (qr(Alabama|Alaska|Arizona|Arkansas|California|Colorado|Connecticut
-	|Delaware|Florida|Georgia|Hawaii|Idaho|Illinois|Indiana|Iowa|Kansas|Kentucky|Louisiana|Maine
-	|Maryland|Massachusetts|Michigan|Minnesota|Mississippi|Missouri|Montana|Nebraska|Nevada
-	|New\sHampshire|New\sJersey|New\sMexico|New\sYork|North\sCarolina|North\sDakota|Ohio|Oklahoma
-	|Oregon|Pennsylvania|Rhode\sIsland|South\sCarolina|South\sDakota|Tennessee|Texas|Utah|Vermont
-	|Virginia|Washington|West\sVirginia|Wisconsin|Wyoming))$/;
-    
+	var reg = /(.+ )?[a-zA-Z]+, [A-Z]{2}/
 	return reg.test(address);
-	*/
-	return true;
 }
