@@ -4,6 +4,7 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script src="js/game.js"></script>
 	<script src="js/player.js"></script>
+	<script src="js/thing.js"></script>
 <!--	<script src="js/world.js"></script>
 	<script src="js/thing.js"></script>
 	
@@ -32,64 +33,74 @@
 <!--<audio autoplay loop>
 	<source src="uploads/crazyFrog.mp3" type="audio/mpeg">
 </audio>-->
-<div style="width: 100%;"><img src="uploads/tank.jpeg" id="player" style="position:relative; display:none;" width="50" height="50"/></div>
+<div style="width: 100%;"><img src="uploads/tank.jpg" id="player" style="position:relative; display:none;" width="50" height="50"/></div>
 </body>
 
 <script type="text/javascript">
 	$(document).ready(function(){
+		
+		
+		var WIDTH = $("#canvas").width();
+		var HEIGHT = $("#canvas").height();
+		
+		//position
+		var playerWidth = 50;
+		var playerHeight = 50;
+		var playerx = WIDTH / 4;
+		var playery = 300;
+		var game;
+		
+		var can = document.getElementById('canvas').getContext("2d");
+		
+		function init()
+		{
+			//initializes blank array of objects to be manipulated
+			game = new Game();
+			
+			game.add(new Player(document.getElementById('player'), playerx, playery, playerWidth, playerHeight));
+
+			setInterval(loop,1000);
+		}
+		
+		function loop()
+		{
+			//if (!end)
+			//{
+				//clear();
+				//paint();
+				//can.drawImage(document.getElementById('player'), 50, 50);
+				for (var i = game.objects.length - 1; i >= 0; i--)
+				{
+					//console.log(game.get(i).draw(can));
+					game.get(i).draw(can);
+					//world.get(i).update();
+				}
+				//enemySpawn();
+			//}
+			//timer();
+		}
+		
+		/*function paint()
+		{
+			can.drawImage(background, 0, 0, WIDTH, HEIGHT);
+			can.font = ("40px Verdana");
+			can.fillStyle = "Green";
+			can.fillText("Speed: ".concat(speedText), 5, HEIGHT);
+			can.fillText("Previous: ".concat(lastSpeed), 5, HEIGHT - 40);
+			can.fillText("Score: ".concat(score), 5, 40);
+			can.fillText("Time: ".concat(timeRemaining), 5, 80);
+			console.log()
+		}*/
+		
+		function clear()
+		{
+			can.clearRect(0, 0, WIDTH, HEIGHT);
+		}
+		
 		init();
 	});
 	
-	var WIDTH = $("#canvas").width();
-	var HEIGHT = $("#canvas").height();
 	
-	//position
-	var playerx = WIDTH / 4;
-	var playery = HEIGHT - playerHeight - 1;
-	
-	function init()
-	{
-		//initializes blank array of objects to be manipulated
-		var game = new Game();
-		
-		can = $('#canvas').getContext("2d");
-
-		world.add(new Player(playerx, playery, 50, 50));
-		//setInterval(loop, FPS);
-	}
-	
-	/*function loop()
-	{
-		if (!end)
-		{
-			clear();
-			paint();
-			for (var i = world.things.length - 1; i >= 0; i--)
-			{
-				world.get(i).draw(ctx);
-				world.get(i).update();
-			}
-			enemySpawn();
-		}
-		//timer();
-	}*/
-	
-	function paint()
-	{
-		ctx.drawImage(background, 0, 0, WIDTH, HEIGHT);
-		ctx.font = ("40px Verdana");
-		ctx.fillStyle = "Green";
-		ctx.fillText("Speed: ".concat(speedText), 5, HEIGHT);
-		ctx.fillText("Previous: ".concat(lastSpeed), 5, HEIGHT - 40);
-		ctx.fillText("Score: ".concat(score), 5, 40);
-		ctx.fillText("Time: ".concat(timeRemaining), 5, 80);
-		console.log()
-	}
-	
-	function clear()
-	{
-		ctx.clearRect(0, 0, WIDTH, HEIGHT);
-	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*
