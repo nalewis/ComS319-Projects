@@ -4,7 +4,5 @@
 .settings
 *.class
 lab_assignments
-*.jpg
-*.png
 *.txt
 *.mp4
