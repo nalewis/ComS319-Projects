@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="js/game.js"></script>
+	<script src="js/player.js"></script>
+<!--	<script src="js/world.js"></script>
+	<script src="js/thing.js"></script>
+	
+	<script src="js/enemy.js"></script>
+	<script src="js/bullet.js"></script>
+	<script src="js/input.js"></script>
+	<script src="js/target.js"></script>-->
+	<style>
+		body {
+			background-color: #ff94fc;
+		}
+	</style>
+</head>
+<body>
+<div id="canvasContainer">
+	<canvas id="canvas" width="1000" height="800" style="border:2px solid #000000;"></canvas>
+</div>
+<div>
+	<ul>
+		<li>Spacebar to shoot</li>
+		<li>Left and right arrows to move</li>
+		<li>Up and down arrows to turn turret</li>
+		<li>If the game isn't working just refresh and scream at it until it does, it prefers firefox</li>
+	</ul>
+</div>
+<!--<audio autoplay loop>
+	<source src="uploads/crazyFrog.mp3" type="audio/mpeg">
+</audio>-->
+<div style="width: 100%;"><img src="uploads/tank.jpeg" id="player" style="position:relative; display:none;" width="50" height="50"/></div>
+</body>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		init();
+	});
+	
+	var WIDTH = $("#canvas").width();
+	var HEIGHT = $("#canvas").height();
+	
+	//position
+	var playerx = WIDTH / 4;
+	var playery = HEIGHT - playerHeight - 1;
+	
+	function init()
+	{
+		//initializes blank array of objects to be manipulated
+		var game = new Game();
+		
+		can = $('#canvas').getContext("2d");
+
+		world.add(new Player(playerx, playery, 50, 50));
+		//setInterval(loop, FPS);
+	}
+	
+	/*function loop()
+	{
+		if (!end)
+		{
+			clear();
+			paint();
+			for (var i = world.things.length - 1; i >= 0; i--)
+			{
+				world.get(i).draw(ctx);
+				world.get(i).update();
+			}
+			enemySpawn();
+		}
+		//timer();
+	}*/
+	
+	function paint()
+	{
+		ctx.drawImage(background, 0, 0, WIDTH, HEIGHT);
+		ctx.font = ("40px Verdana");
+		ctx.fillStyle = "Green";
+		ctx.fillText("Speed: ".concat(speedText), 5, HEIGHT);
+		ctx.fillText("Previous: ".concat(lastSpeed), 5, HEIGHT - 40);
+		ctx.fillText("Score: ".concat(score), 5, 40);
+		ctx.fillText("Time: ".concat(timeRemaining), 5, 80);
+		console.log()
+	}
+	
+	function clear()
+	{
+		ctx.clearRect(0, 0, WIDTH, HEIGHT);
+	}
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/*
+	$(function ()
+	{
+		init();
+
+		$(document).keydown(function (evt)
+		{
+			key[evt.which] = true;
+		});
+
+		$(document).keyup(function (evt)
+		{
+			key[evt.which] = false;
+		});
+	});
+
+	var world = new World();
+	var x = 150;
+	var y = 150;
+	var dx = 5;
+	var dy = 5;
+	var RADIUS = 10;
+	var ctx;
+
+	//key booleans
+	var upPressed;
+	var downPressed;
+	var leftPressed;
+	var rightPressed;
+
+	//var player = document.getElementById("player");
+	var nuke = document.getElementById("nuke");
+	var background = document.getElementById("scary");
+	var enemyFinish = document.getElementById("enemyFinish");
+	var endScreen = document.getElementById("end");
+	var tgt = document.getElementById("target");
+	var tgtWidth = $("#target").width();
+	var tgtHeight = $("#target").height();
+
+	//constants
+	var playerWidth = $("#player").width();
+	var playerHeight = $("#player").height();
+
+	var gravity = 1;
+	var FPS = 1000 / 35;
+
+	//position
+	var playerx = WIDTH / 4;
+	var playery = HEIGHT - playerHeight - 1;
+
+	var score = 0;
+	var elapsed = 0;
+	var seconds = new Date().getSeconds();
+	var timeRemaining = 91;
+	var oldSeconds = 0;
+	var stuff;
+	var end = false;
+	var targetEntity;
+
+	function init()
+	{
+		ctx = $('#canvas')[0].getContext("2d");
+
+		world.add(new Player(playerx, playery, playerWidth, playerHeight));
+		stuff = setInterval(loop, FPS);
+	}
+
+	function paint()
+	{
+		var speedText = world.get(0).bulletSpeed;
+		var lastSpeed = world.get(0).lastSpeed;
+		//initialize paint stuff
+//		var grd = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT);
+//		grd.addColorStop(0, "DarkCyan");
+//		grd.addColorStop(1, "CornflowerBlue");
+//		ctx.fillStyle = grd;
+//		ctx.fillRect(0, 0, WIDTH, HEIGHT);
+		ctx.drawImage(background, 0, 0, WIDTH, HEIGHT);
+		ctx.font = ("40px Verdana");
+		ctx.fillStyle = "Green";
+		ctx.fillText("Speed: ".concat(speedText), 5, HEIGHT);
+		ctx.fillText("Previous: ".concat(lastSpeed), 5, HEIGHT - 40);
+		ctx.fillText("Score: ".concat(score), 5, 40);
+		ctx.fillText("Time: ".concat(timeRemaining), 5, 80);
+		console.log()
+	}
+
+	function circle(x, y, r)
+	{
+		ctx.beginPath();
+		ctx.arc(x, y, r, 0, Math.PI * 2, true);
+		ctx.closePath();
+		ctx.fill();
+	}
+
+	function getRandomInt(min, max)
+	{
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+
+	function rect(x, y, w, h)
+	{
+		ctx.beginPath();
+		ctx.rect(x, y, w, h);
+		ctx.closePath();
+		ctx.fill();
+	}
+
+
+
+	function timer()
+	{
+		var d = new Date();
+		seconds = d.getSeconds();
+		if (oldSeconds != seconds && timeRemaining > 0)
+		{
+			timeRemaining--;
+		}
+		oldSeconds = seconds;
+		if (timeRemaining <= 0)
+		{
+			endGame();
+		}
+	}
+
+	function endGame()
+	{
+		end = true;
+		if (score > localStorage.getItem("highScore"))
+		{
+			localStorage.setItem("highScore", score);
+		}
+		ctx.drawImage(endScreen, 0, 0, WIDTH, HEIGHT);
+//		ctx.fillStyle = "Black";
+//		ctx.fillRect(0, 0, WIDTH, HEIGHT);
+		ctx.fillStyle = "White";
+		ctx.font = "24pt Calibri";
+		ctx.fillText("Score: " + score, WIDTH / 3, HEIGHT - 100);
+		ctx.fillText("Highscore: " + localStorage.getItem("highScore"), WIDTH / 3, HEIGHT - 75);
+		ctx.fillText("Press R to Restart", WIDTH / 3, HEIGHT - 50);
+
+		if (key[KeyEvent.DOM_VK_R])
+		{
+			location.reload(true);
+		}
+	}
+
+	function enemySpawn()
+	{
+		elapsed++;
+		if (elapsed % 20 == 0)
+		{
+			var side = getRandomInt(0, 4);
+//			console.log(side);
+			if (side == 1 || side ==2)
+			{
+				targetEntity = new Target(tgt, WIDTH + 50, getRandomInt(50, HEIGHT / 2), tgtWidth, tgtHeight, getRandomInt(1, 4), false);
+				world.add(targetEntity);
+			}
+			else if (side == 0 || side == 3)
+			{
+				targetEntity = new Target(tgt, -50, getRandomInt(50, HEIGHT / 2), tgtWidth, tgtHeight, getRandomInt(1, 4), true);
+				world.add(targetEntity);
+			}
+			else
+			{
+				targetEntity = new Target(nuke, -50, getRandomInt(50, HEIGHT / 8), tgtWidth, tgtHeight, 10, true);
+				world.add(targetEntity);
+			}
+		}
+	}
+
+*/
+	
+</script>
+</html>
