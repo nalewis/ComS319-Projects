@@ -17,10 +17,7 @@ var Player = function (pic, x, y, width, height)
 
 	this.draw = function (can)
 	{
-		console.log("player field");
 		//this.drawImageRot(this.pic, this.x, this.y, this.width, this.height, this.deg);
-		//console.log(this.pic);
-		//console.log(this.x);
 		can.drawImage(this.pic, this.x, this.y);
 	};
 }

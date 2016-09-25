@@ -4,14 +4,7 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script src="js/game.js"></script>
 	<script src="js/player.js"></script>
-	<script src="js/thing.js"></script>
-<!--	<script src="js/world.js"></script>
-	<script src="js/thing.js"></script>
-	
-	<script src="js/enemy.js"></script>
-	<script src="js/bullet.js"></script>
 	<script src="js/input.js"></script>
-	<script src="js/target.js"></script>-->
 	<style>
 		body {
 			background-color: #ff94fc;
@@ -39,6 +32,16 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		
+		$(document).keydown(function (evt)
+		{
+			key[evt.which] = true;
+		});
+
+		$(document).keyup(function (evt)
+		{
+			key[evt.which] = false;
+			console.log("up!");
+		});
 		
 		var WIDTH = $("#canvas").width();
 		var HEIGHT = $("#canvas").height();
@@ -49,6 +52,7 @@
 		var playerx = WIDTH / 4;
 		var playery = 300;
 		var game;
+		const fps = 60;
 		
 		var can = document.getElementById('canvas').getContext("2d");
 		
@@ -59,21 +63,19 @@
 			
 			game.add(new Player(document.getElementById('player'), playerx, playery, playerWidth, playerHeight));
 
-			setInterval(loop,1000);
+			setInterval(loop,1000/fps);
 		}
 		
 		function loop()
 		{
 			//if (!end)
 			//{
-				//clear();
+				clear();
 				//paint();
-				//can.drawImage(document.getElementById('player'), 50, 50);
 				for (var i = game.objects.length - 1; i >= 0; i--)
 				{
-					//console.log(game.get(i).draw(can));
 					game.get(i).draw(can);
-					//world.get(i).update();
+					//game.get(i).update();
 				}
 				//enemySpawn();
 			//}
