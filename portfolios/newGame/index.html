@@ -34,6 +34,7 @@
 
 <script type="text/javascript">
 
+//Major variables declared outside of document ready function for global availability
 var WIDTH = $("#canvas").width();
 var HEIGHT = $("#canvas").height();
 
@@ -42,9 +43,12 @@ var playerWidth = document.getElementById('player').width;
 var playerHeight = document.getElementById('player').height;
 var playerx = WIDTH / 4;
 var playery = HEIGHT - (playerHeight - 5);
+
+//game variables
 var game = new Game();
 const fps = 60;
 
+//canvas
 var can = document.getElementById('canvas').getContext("2d");
 
 
@@ -65,20 +69,7 @@ var can = document.getElementById('canvas').getContext("2d");
 		{
 			key[evt.key] = false;
 		});
-		/*
-		var WIDTH = $("#canvas").width();
-		var HEIGHT = $("#canvas").height();
-		
-		//position
-		var playerWidth = 150;
-		var playerHeight = 85;
-		var playerx = WIDTH / 4;
-		var playery = HEIGHT - (playerHeight - 5);
-		var game;
-		const fps = 60;
-		
-		var can = document.getElementById('canvas').getContext("2d");
-		*/
+
 		function init()
 		{
 			//initializes blank array of objects to be manipulated
