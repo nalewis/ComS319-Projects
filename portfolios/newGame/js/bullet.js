@@ -1,6 +1,5 @@
 var Bullet = function (x, y, xSpeed, ySpeed, deg)
 {
-	Thing.call(this, document.getElementById("bullet"), x, y, deg);
 	this.width = $("#bullet").width();
 	this.height = $("#bullet").height();
 	this.pic = document.getElementById("bullet");
@@ -14,12 +13,12 @@ var Bullet = function (x, y, xSpeed, ySpeed, deg)
 	var time = 0;
 	var oldTime = 0;
 	this.type = "bullet";
+	const gravity = 1;
 
 
-	this.draw = function ()
+	this.draw = function (can)
 	{
-		this.drawImageRot(this.pic, this.x, this.y, this.width, this.height, rad);
-		//ctx.drawImage(this.pic, this.x, this.y);
+		this.drawImageRot(can, this.pic, this.x, this.y, this.width, this.height, rad);
 	};
 
 	this.update = function ()
@@ -41,24 +40,22 @@ var Bullet = function (x, y, xSpeed, ySpeed, deg)
 			this.die();
 		}
 
-		for(var i = 0; i < world.things.length; i++)
+		/*for(var i = 0; i < world.things.length; i++)
 		{
 			if(world.get(i) != this)
 			{
-				//if (this.hit(world.get(i))){
-				//	console.log("poop");
-				//}
+
 
 				if (this.hit(world.get(i)) && world.get(i).type == this.type)
 				{
 					this.die();
 				}
 			}
-		}
+		}*/
 	};
 
 	this.die = function(){
-		world.remove(this);
+		game.remove(this);
 	};
 
 	this.violatesSides = function (posx, posy, width, height)
@@ -66,30 +63,30 @@ var Bullet = function (x, y, xSpeed, ySpeed, deg)
 		return ((posx + width) >= WIDTH || posx <= 0 || (posy + height) >= HEIGHT);
 	};
 
-	this.drawImageRot = function (img, x, y, width, height, rad)
+	this.drawImageRot = function (can, img, x, y, width, height, rad)
 	{
 		//Convert degrees to radian
 		//var rad = deg * Math.PI / 180;
 
-		ctx.save();
-		//ctx.fillStyle = "green";
+		can.save();
+		//can.fillStyle = "green";
 
 		//Set the origin to the center of the image
-		ctx.translate(x + width / 2, y + height / 2);
+		can.translate(x + width / 2, y + height / 2);
 
 		//Rotate the canvas around the origin
-		ctx.rotate(rad);
+		can.rotate(rad);
 
 		//draw the image
-		ctx.drawImage(img,0,-2,width,height);
+		can.drawImage(img,0,-2,width,height);
 		//this.rect(0, 0, this.width, 10);
 
 		//reset the canvas
-		ctx.rotate(rad * ( -1 ));
-		ctx.translate((x + width / 2) * (-1), (y + height / 2) * (-1));
+		can.rotate(rad * ( -1 ));
+		can.translate((x + width / 2) * (-1), (y + height / 2) * (-1));
 
-		ctx.fill();
-		ctx.restore();
+		can.fill();
+		can.restore();
 	};
 
 };

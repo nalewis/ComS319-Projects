@@ -4,7 +4,8 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script src="js/game.js"></script>
 	<script src="js/player.js"></script>
-	<script src="js/input.js"></script>
+	<script src="js/input.js"></script><!-- unneeded -->
+	<script src="js/bullet.js"></script>
 	<style>
 		body {
 			background-color: #ff94fc;
@@ -26,22 +27,45 @@
 <!--<audio autoplay loop>
 	<source src="uploads/crazyFrog.mp3" type="audio/mpeg">
 </audio>-->
-<div style="width: 100%;"><img src="uploads/tank_small.png" id="player" style="position:relative; display:none;" width="50" height="50"/></div>
+<div style="width: 100%;"><img src="uploads/tank_small.png" id="player" style="position:relative; display:none;"/></div>
+<div style="width: 100%;"><img src="uploads/bullet.png" id="bullet" style="position:relative; display:none;"/></div>
+
 </body>
 
 <script type="text/javascript">
+
+var WIDTH = $("#canvas").width();
+var HEIGHT = $("#canvas").height();
+
+//position
+var playerWidth = document.getElementById('player').width;
+var playerHeight = document.getElementById('player').height;
+var playerx = WIDTH / 4;
+var playery = HEIGHT - (playerHeight - 5);
+var game = new Game();
+const fps = 60;
+
+var can = document.getElementById('canvas').getContext("2d");
+
+
+
+
+
+
+
 	$(document).ready(function(){
 		
 		$(document).keydown(function (evt)
 		{
-			key[evt.which] = true;
+			key[evt.key] = true;
+			//console.log(evt.key);
 		});
 
 		$(document).keyup(function (evt)
 		{
-			key[evt.which] = false;
+			key[evt.key] = false;
 		});
-		
+		/*
 		var WIDTH = $("#canvas").width();
 		var HEIGHT = $("#canvas").height();
 		
@@ -54,7 +78,7 @@
 		const fps = 60;
 		
 		var can = document.getElementById('canvas').getContext("2d");
-		
+		*/
 		function init()
 		{
 			//initializes blank array of objects to be manipulated
@@ -73,11 +97,11 @@
 				//paint();
 				for (var i = game.objects.length - 1; i >= 0; i--)
 				{
-//					game.get(i).draw(can);
-					game.get(i).tick(can);
+					game.get(i).draw(can);
+					//game.get(i).tick(can, key);
 //					console.log(game.get(i).x);
 //					console.log(game.get(i).y);
-					//game.get(i).update();
+					game.get(i).update();
 				}
 				//enemySpawn();
 			//}
