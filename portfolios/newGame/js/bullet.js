@@ -35,7 +35,7 @@ var Bullet = function (x, y, xSpeed, ySpeed, deg)
 
 		oldTime = time;
 
-		if (this.violatesSides(this.x, this.y, this.width, this.height))
+		if (this.checkBorders(this.x, this.y, this.width, this.height))
 		{
 			this.die();
 		}
@@ -58,7 +58,7 @@ var Bullet = function (x, y, xSpeed, ySpeed, deg)
 		game.remove(this);
 	};
 
-	this.violatesSides = function (posx, posy, width, height)
+	this.checkBorders = function (posx, posy, width, height)
 	{
 		return ((posx + width) >= WIDTH || posx <= 0 || (posy + height) >= HEIGHT);
 	};

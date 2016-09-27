@@ -11,14 +11,11 @@ var Player = function (pic, x, y, width, height)
 	const playerSpeed = 15;
 	const turnSpeed = 4;
 	
-	
-	var bulletSpeed = 35;
-	var lastCheck = false;
-	var maxSpeed = 50;
-	
-	this.lastSpeed = 10;
-	console.log("player created with x " + x + " and y " + y);
-	this.tickCycle = 0;
+	//bullet firing variables
+	var charging = false;
+	const defaultBulletSpeed = 15;
+	const maxBulletSpeed = 50;
+	var bulletSpeed = defaultBulletSpeed;
 
 	this.draw = function (can)
 	{
@@ -43,9 +40,15 @@ var Player = function (pic, x, y, width, height)
 				else if (key['ArrowUp'] && checkBorders('up')){
 			deg -= turnSpeed;
 		}
-		if (key[' ']){//fire
-			this.fire();
+		if (key[' '] && (bulletSpeed < maxBulletSpeed)){//fire
+			bulletSpeed++;
 		}
+		//logic to see if spacebar was just released
+		if(charging && charging != key[' ']){
+			this.fire();
+			bulletSpeed = defaultBulletSpeed;
+		}
+		charging = key[' '];
 	};
 	
 	this.fire = function(){
@@ -54,7 +57,7 @@ var Player = function (pic, x, y, width, height)
 		var ySpeed = bulletSpeed*Math.sin(rad);
 		
 		if(key['ArrowRight'] && deg >= -90){
-			xSpeed = (this.bulletSpeed + this.playerSpeed)*Math.cos(rad);
+			xSpeed = (bulletSpeed + playerSpeed)*Math.cos(rad);
 		}
 		else if(key['ArrowRight'] && deg < -90){
 			xSpeed = (bulletSpeed - playerSpeed)*Math.cos(rad);
@@ -71,23 +74,6 @@ var Player = function (pic, x, y, width, height)
 		var bullet = new Bullet(x + (width/2) + bulletx, y + (height/2) + bullety, xSpeed, ySpeed, deg);
 		game.add(bullet);
 	}
-
-	//The function that is called by the main loop function in the index page.
-	/*this.tick = function (can, key)
-	{
-		this.tickCycle++;
-		//Every 60th tick, check to see if the user is pressing a movement key, and move the tank if so.
-		//If this happened every tick, movement would be extremely fast and hard to control.
-		if ((this.tickCycle % 60) == 0)
-		{
-			checkForInput();
-			this.tickCycle = 0;
-		}
-
-		this.drawImageRot(can, deg);
-		can.drawImage(this.pic, x, y);
-		
-	}*/
 	
 	this.rect = function (can, x, y, w, h)
 	{
