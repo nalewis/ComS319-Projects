@@ -2,11 +2,11 @@ var Player = function (pic, x, y, width, height)
 {
 	//Thing.call(this, document.getElementById("player"), x, y, $("#player").width(), $("#player").height());
 	this.pic = pic;
-	this.width = width;
-	this.height = height;
-	this.x = x;
-	this.y = y;
-	this.deg = -90;
+	var width = width;
+	var height = height;
+	var x = x;
+	var y = y;
+	var deg = -90;
 	this.turnSpeed = 4;
 	this.bulletSpeed = 10;
 	var lastCheck = false;
@@ -21,13 +21,13 @@ var Player = function (pic, x, y, width, height)
 	{
 		//this.drawImageRot(this.pic, this.x, this.y, this.width, this.height, this.deg);
 		can.drawImage(this.pic, this.x, this.y);
+
 	};
 
 	//The function that is called by the main loop function in the index page.
 	this.tick = function (can)
 	{
 		this.tickCycle++;
-		
 		//Every 60th tick, check to see if the user is pressing a movement key, and move the tank if so.
 		//If this happened every tick, movement would be extremely fast and hard to control.
 		if ((this.tickCycle % 60) == 0)
@@ -35,8 +35,44 @@ var Player = function (pic, x, y, width, height)
 			checkForInput();
 			this.tickCycle = 0;
 		}
+		
+		this.drawImageRot(can, deg);
 		can.drawImage(this.pic, x, y);
+		
 	}
+	
+	this.rect = function (can, x, y, w, h)
+	{
+		can.beginPath();
+		can.rect(x, y, w, h);
+		can.closePath();
+		can.fill();
+	};
+	
+	this.drawImageRot = function (can, deg)
+	{
+		//Convert degrees to radian
+		var rad = deg * Math.PI / 180;
+		var gunHeight = 15;
+		can.save();
+		can.fillStyle = "green";
+		//console.log(deg);
+		//Set the origin to the center of the image
+		can.translate(x + (width / 2) , y + (height / 3) + gunHeight/2) ;
+
+		//Rotate the canvas around the origin
+		can.rotate(rad);
+
+		//draw the image
+		this.rect(can, 0, -3, width * .75, gunHeight);
+
+		//reset the canvas
+		can.rotate(rad * ( -1 ));
+		can.translate((x + (width / 2)) * (-1), (y + (height / 3) + gunHeight/2) * (-1));
+
+		can.fill();
+		can.restore();
+	};
 
 
 	//Checks to see if the user is currently pressing one of the arrow keys or the space bar and takes action if so.	
@@ -46,11 +82,17 @@ var Player = function (pic, x, y, width, height)
 			switch(event.key)
 			{
 				case "ArrowUp":
-					//TODO: Move turret counter clockwise			
+					if (checkBorders("up"))
+					{
+						deg = deg - 0.5;			
+					}
 					break;
-
+					
 				case "ArrowDown":
-					//TODO: Move turret clockwise
+					if (checkBorders("down"))
+					{
+						deg = deg + 0.5;			
+					}
 					break;
 
 				case "ArrowLeft":
@@ -87,16 +129,16 @@ var Player = function (pic, x, y, width, height)
 		}
 		else if (movement == "right")
 		{
-			width = ($("#canvas").width() - TANKWIDTH);
+			var width = ($("#canvas").width() - TANKWIDTH);
 			return (x < width);
 		}
 		else if (movement == "up")
 		{
-			//TODO: Check if the turret can be rotated counter clockwise
+			return (deg > -180);
 		}
 		else if (movement == "down")
 		{
-			//TODO: Check if the turret can be rotated clockwise
+			return (deg < 0);
 		}
 		else
 			return false;
