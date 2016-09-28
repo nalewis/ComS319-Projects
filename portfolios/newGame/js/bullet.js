@@ -37,19 +37,6 @@ var Bullet = function (x, y, xSpeed, ySpeed, deg)
 		{
 			this.die();
 		}
-
-		/*for(var i = 0; i < world.things.length; i++)
-		{
-			if(world.get(i) != this)
-			{
-
-
-				if (this.hit(world.get(i)) && world.get(i).type == this.type)
-				{
-					this.die();
-				}
-			}
-		}*/
 	};
 
 	this.die = function(){
@@ -64,7 +51,6 @@ var Bullet = function (x, y, xSpeed, ySpeed, deg)
 	this.drawImageRot = function (can, img, x, y, width, height, rad)
 	{
 		can.save();
-		//can.fillStyle = "green";
 
 		//Set the origin to the center of the image
 		can.translate(x + width / 2, y + height / 2);
@@ -74,7 +60,6 @@ var Bullet = function (x, y, xSpeed, ySpeed, deg)
 
 		//draw the image
 		can.drawImage(img,0,-2,width,height);
-		//this.rect(0, 0, this.width, 10);
 
 		//reset the canvas
 		can.rotate(rad * ( -1 ));
