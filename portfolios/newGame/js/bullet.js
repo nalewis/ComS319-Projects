@@ -23,8 +23,6 @@ var Bullet = function (x, y, xSpeed, ySpeed, deg)
 
 	this.update = function ()
 	{
-
-		//console.log(deg);
 		this.x += bXVel;
 		time++;
 		var dt = time - oldTime;
