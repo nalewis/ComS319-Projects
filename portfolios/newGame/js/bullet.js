@@ -31,7 +31,7 @@ var Bullet = function (x, y, xSpeed, ySpeed, deg)
 		oldBYVel = bYVel;
 		bYVel += gravity * dt;
 		this.y += (oldBYVel + bYVel) * 0.5 * dt;
-		rad = Math.atan(bYVel/bXVel);//IM A GENIUS
+		rad = Math.atan(bYVel/bXVel);
 
 		oldTime = time;
 
@@ -65,9 +65,6 @@ var Bullet = function (x, y, xSpeed, ySpeed, deg)
 
 	this.drawImageRot = function (can, img, x, y, width, height, rad)
 	{
-		//Convert degrees to radian
-		//var rad = deg * Math.PI / 180;
-
 		can.save();
 		//can.fillStyle = "green";
 

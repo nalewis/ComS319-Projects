@@ -24,7 +24,8 @@ var Player = function (pic, x, y, width, height)
 		can.drawImage(this.pic, x, y);
 	};
 	
-	//Checks to see if the user is currently pressing one of the arrow keys or the space bar and takes action if so.
+	//Checks to see if the user is currently pressing one of the arrow keys
+	//or the space bar and takes action if so.
 	this.update = function ()
 	{
 		if (key['ArrowRight'] && checkBorders('right'))
@@ -96,6 +97,7 @@ var Player = function (pic, x, y, width, height)
 		return lastBulletSpeed;
 	};
 	
+	//Draws the tanks turret with its current angle
 	this.drawImageRot = function (can, deg)
 	{
 		//Convert degrees to radian
