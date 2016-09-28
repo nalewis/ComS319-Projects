@@ -20,7 +20,6 @@
 		<li>Spacebar to shoot</li>
 		<li>Left and right arrows to move</li>
 		<li>Up and down arrows to turn turret</li>
-		<li>If the game isn't working just refresh and scream at it until it does, it prefers firefox</li>
 	</ul>
 </div>
 
@@ -40,8 +39,8 @@ var HEIGHT = $("#canvas").height();
 var key = [];
 
 //position
-var playerWidth = document.getElementById('player').width;
-var playerHeight = document.getElementById('player').height;
+var playerWidth = $('#player').width();
+var playerHeight = $('#player').height();
 var playerx = WIDTH / 4;
 var playery = HEIGHT - (playerHeight - 5);
 
@@ -87,7 +86,7 @@ var can = document.getElementById('canvas').getContext("2d");
 			if (!gameOver)
 			{
 				clear();
-				//paint();
+				paint();
 				for (var i = game.objects.length - 1; i >= 0; i--)
 				{
 					game.get(i).draw(can);
@@ -110,21 +109,21 @@ var can = document.getElementById('canvas').getContext("2d");
 				timeLeft--;
 				previousSecond = second;
 			}
-			console.log(timeLeft);
 		}
 
 		
-		/*function paint()
+		function paint()
 		{
-			can.drawImage(background, 0, 0, WIDTH, HEIGHT);
+			var lastSpeed = game.get(0).getLastBulletSpeed();
+			var bulletSpeed = game.get(0).getBulletSpeed();
+			//can.drawImage(background, 0, 0, WIDTH, HEIGHT);
 			can.font = ("40px Verdana");
 			can.fillStyle = "Green";
-			can.fillText("Speed: ".concat(speedText), 5, HEIGHT);
+			can.fillText("Speed: ".concat(bulletSpeed), 5, HEIGHT);
 			can.fillText("Previous: ".concat(lastSpeed), 5, HEIGHT - 40);
 			can.fillText("Score: ".concat(score), 5, 40);
-			can.fillText("Time: ".concat(timeRemaining), 5, 80);
-			console.log()
-		}*/
+			can.fillText("Time: ".concat(timeLeft), 5, 80);
+		}
 		
 		function clear()
 		{

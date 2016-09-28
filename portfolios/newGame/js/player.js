@@ -15,7 +15,8 @@ var Player = function (pic, x, y, width, height)
 	var charging = false;
 	const defaultBulletSpeed = 15;
 	const maxBulletSpeed = 50;
-	var bulletSpeed = defaultBulletSpeed;
+	bulletSpeed = defaultBulletSpeed;
+	lastBulletSpeed = defaultBulletSpeed;
 
 	this.draw = function (can)
 	{
@@ -26,7 +27,6 @@ var Player = function (pic, x, y, width, height)
 	//Checks to see if the user is currently pressing one of the arrow keys or the space bar and takes action if so.
 	this.update = function ()
 	{
-		//console.log(key);
 		if (key['ArrowRight'] && checkBorders('right'))
 		{
 			x += playerSpeed;
@@ -46,16 +46,19 @@ var Player = function (pic, x, y, width, height)
 		//logic to see if spacebar was just released
 		if(charging && charging != key[' ']){
 			this.fire();
+			lastBulletSpeed = bulletSpeed;
 			bulletSpeed = defaultBulletSpeed;
 		}
 		charging = key[' '];
 	};
 	
+	//performs math checks for initial velocity and angle for bullet fired
 	this.fire = function(){
 		var rad = deg * Math.PI / 180;
 		var xSpeed = bulletSpeed*Math.cos(rad);
 		var ySpeed = bulletSpeed*Math.sin(rad);
 		
+		//these if statements add the momentum of the moving tank to the bullet
 		if(key['ArrowRight'] && deg >= -90){
 			xSpeed = (bulletSpeed + playerSpeed)*Math.cos(rad);
 		}
@@ -83,6 +86,16 @@ var Player = function (pic, x, y, width, height)
 		can.fill();
 	};
 	
+	//getter for bullet display
+	this.getBulletSpeed = function(){
+		return bulletSpeed;
+	};
+	
+	//getter for bullet display
+	this.getLastBulletSpeed = function(){
+		return lastBulletSpeed;
+	};
+	
 	this.drawImageRot = function (can, deg)
 	{
 		//Convert degrees to radian
@@ -90,7 +103,7 @@ var Player = function (pic, x, y, width, height)
 		var gunHeight = 15;
 		can.save();
 		can.fillStyle = "green";
-		//console.log(deg);
+
 		//Set the origin to the center of the image
 		can.translate(x + (width / 2) , y + (height / 3) + gunHeight/2) ;
 
