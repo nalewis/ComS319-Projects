@@ -5,6 +5,7 @@
 	<script src="js/game.js"></script>
 	<script src="js/player.js"></script>
 	<script src="js/bullet.js"></script>
+	<script src="js/target.js"></script>
 	<style>
 		body {
 			background-color: Grey;
@@ -26,7 +27,7 @@
 <div style="width: 100%;"><img src="uploads/tank_small.png" id="player" style="position:relative; display:none;"/></div>
 <div style="width: 100%;"><img src="uploads/bullet.png" id="bullet" style="position:relative; display:none;"/></div>
 <div style="width: 100%;"><img src="uploads/bullet.png" id="bullet" style="position:relative; display:none;" width="50" height="50"/></div>
-
+<div style="width: 100%;"><img src="uploads/bullseye_small.png" id="target" style="position:relative; display:none;"/></div>
 </body>
 
 <script type="text/javascript">
@@ -77,6 +78,7 @@ var can = document.getElementById('canvas').getContext("2d");
 			
 			game.add(new Player(document.getElementById('player'), playerx, playery, playerWidth, playerHeight));
 
+			game.add(new Target(document.getElementById("target")));
 			//setInterval(gameTime, 1000)
 			setInterval(loop,1000/fps);
 		}
@@ -85,6 +87,11 @@ var can = document.getElementById('canvas').getContext("2d");
 		{
 			if (!gameOver)
 			{
+				if (Math.random() > 0.97)
+				{
+					game.add(new Target(document.getElementById("target")));
+				}
+
 				clear();
 				paint();
 				for (var i = game.objects.length - 1; i >= 0; i--)
