@@ -19,7 +19,7 @@ View : {
 	buttonBitFlip : {id: "buttonBitFlip", type: "button", value: '~', onclick:""},
 	
 	buttonPlus : {id: "buttonPlus", type: "button", value: '+', onclick:""},
-	buttonMod : {id: "buttonMod", type: "button", value: '%', onclick:""},
+	//buttonMod : {id: "buttonMod", type: "button", value: '%', onclick:""},
 	buttonLeft : {id: "buttonLeft", type: "button", value: '<<', onclick:""},
 	
 	buttonRight : {id: "buttonRight", type: "button", value: '>>', onclick:""},
@@ -49,7 +49,7 @@ Controller : {
 
 run : function() {
 	BinCalc.attachHandlers();
-	console.log(BinCalc.display());
+	//console.log(BinCalc.display());
 	return BinCalc.display();
 },
 
@@ -75,7 +75,7 @@ display : function() {
 	s += "</tr></td>";
 	s += "<tr><td>";
 	s += BinCalc.displayElement(BinCalc.View.buttonPlus);
-	s += BinCalc.displayElement(BinCalc.View.buttonMod);
+	//s += BinCalc.displayElement(BinCalc.View.buttonMod);
 	s += BinCalc.displayElement(BinCalc.View.buttonLeft);
 	s += "</tr></td>";
 	s += "<tr><td>";
@@ -107,7 +107,7 @@ attachHandlers : function() {
 	BinCalc.View.buttonBitFlip.onclick = "BinCalc.buttonBitFlipHandler()";
 	
 	BinCalc.View.buttonPlus.onclick = "BinCalc.buttonPlusHandler()";
-	BinCalc.View.buttonMod.onclick = "BinCalc.buttonModHandler()"; 
+	//BinCalc.View.buttonMod.onclick = "BinCalc.buttonModHandler()"; 
 	BinCalc.View.buttonLeft.onclick = "BinCalc.buttonLeftHandler()";
 	
 	BinCalc.View.buttonRight.onclick = "BinCalc.buttonRightHandler()"; 
@@ -143,9 +143,9 @@ buttonPlusHandler : function() {
 	document.getElementById('binTextRow').value += '+';
 },
 
-buttonModHandler : function() {
+/*buttonModHandler : function() {
 	document.getElementById('binTextRow').value += '%';
-},
+},*/
 
 buttonLeftHandler : function() {
 	document.getElementById('binTextRow').value += '<<';

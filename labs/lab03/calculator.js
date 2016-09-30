@@ -8,7 +8,12 @@ var Calc = {
 
 Model : {
 	memory : 0,
-	equation : ''
+	equation : '',
+	operator : '',
+	x : '',
+	y : '',
+	canRepeat : true,
+	isRepeat : false
 },
 
 
@@ -43,16 +48,17 @@ View : {
 },
 
 Controller : {
-/*	if(Calc.equation == undefined){
-		equation = document.getElementById(textRow).value
-		var operator = 
-		document.getElementById(textRow).value = '';
+	/*addOperation : function(operator) {
+		
+		Calc.Model.x = eval(document.getElementById('textRow').value);
+		
+		
 	}*/
 },
 
 run : function() {
   Calc.attachHandlers();
-  console.log(Calc.display());
+  //console.log(Calc.display());
   return Calc.display();
 },
 
@@ -150,7 +156,23 @@ button9Handler : function() {
 },
 
 buttonPlusHandler : function() {
-  document.getElementById('textRow').value += '+';
+	
+	if(Calc.Model.operator == ''){
+		Calc.Model.x = document.getElementById('textRow').value;
+		document.getElementById('textRow').value += '+';
+		Calc.Model.operator = '+';
+		Calc.Model.canRepeat = true;
+		console.log(Calc.Model.x);
+	} else {
+		canRepeat = false;
+		document.getElementById('textRow').value += '+';
+	}
+	/*if(operator != ''){
+		document.getElementById('textRow').value = eval(document.getElementById('textRow').value);
+	}
+	Calc.Model.x = document.getElementById('textRow').value;
+	Calc.operator = '+';
+  document.getElementById('textRow').value += '+';*/
 },
 
 button4Handler : function() {
@@ -194,7 +216,24 @@ buttonDotHandler : function() {
 },
 
 buttonEqualsHandler : function() {
-  document.getElementById('textRow').value = eval(document.getElementById('textRow').value);
+	console.log('x');
+	console.log(Calc.Model.x);
+	console.log('y');
+	console.log(Calc.Model.y);
+	console.log('canRepeat');
+	console.log(Calc.Model.canRepeat);
+	if(Calc.Model.canRepeat){
+		Calc.Model.y = document.getElementById('textRow').value.slice(Calc.Model.x.length);
+		console.log(Calc.Model.y);
+		document.getElementById('textRow').value = eval(document.getElementById('textRow').value);
+		canRepeat = false;
+		isRepeat = true;//??
+	} else if (Calc.Model.isRepeat){
+		document.getElementById('textRow').value = eval(document.getElementById('textRow').value + Calc.Model.y);
+	} else {
+		document.getElementById('textRow').value = eval(document.getElementById('textRow').value);
+	}
+  
 },
 
 buttonDivHandler : function() {
@@ -203,6 +242,10 @@ buttonDivHandler : function() {
 
 buttonCHandler : function() {
   document.getElementById('textRow').value = '';
+  Calc.Model.x = '';
+  Calc.Model.y = '';
+  Calc.Model.canRepeat = true;
+  Calc.Model.operator = '';
 },
 
 buttonMRHandler : function() {
