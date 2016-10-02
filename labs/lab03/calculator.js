@@ -48,12 +48,21 @@ View : {
 },
 
 Controller : {
-	/*addOperation : function(operator) {
-		
-		Calc.Model.x = eval(document.getElementById('textRow').value);
-		
-		
-	}*/
+	numAction : function (num){
+		Calc.Model.isRepeat = false;
+		document.getElementById('textRow').value += num;
+	},
+	
+	operatorFunc : function (op){
+		if(Calc.Model.operator == ''){
+			Calc.Model.x = document.getElementById('textRow').value;
+			Calc.Model.canRepeat = true;
+		} else {
+			Calc.Model.canRepeat = false;
+		}
+		Calc.Model.operator = op;
+		document.getElementById('textRow').value += op;
+	}
 },
 
 run : function() {
@@ -144,71 +153,55 @@ attachHandlers : function() {
 },
 
 button7Handler : function() {
-  document.getElementById('textRow').value += '7';
+	Calc.Controller.numAction('7');
 },
 
 button8Handler : function() {
-  document.getElementById('textRow').value += '8';
+	Calc.Controller.numAction('8');
 },
 
 button9Handler : function() {
-  document.getElementById('textRow').value += '9';
+	Calc.Controller.numAction('9');
 },
 
 buttonPlusHandler : function() {
-	
-	if(Calc.Model.operator == ''){
-		Calc.Model.x = document.getElementById('textRow').value;
-		document.getElementById('textRow').value += '+';
-		Calc.Model.operator = '+';
-		Calc.Model.canRepeat = true;
-		console.log(Calc.Model.x);
-	} else {
-		canRepeat = false;
-		document.getElementById('textRow').value += '+';
-	}
-	/*if(operator != ''){
-		document.getElementById('textRow').value = eval(document.getElementById('textRow').value);
-	}
-	Calc.Model.x = document.getElementById('textRow').value;
-	Calc.operator = '+';
-  document.getElementById('textRow').value += '+';*/
+	Calc.Controller.operatorFunc('+');
 },
 
 button4Handler : function() {
-  document.getElementById('textRow').value += '4';
+	Calc.Controller.numAction('4');
 },
 
 button5Handler : function() {
-  document.getElementById('textRow').value += '5';
+	Calc.Controller.numAction('5');
 },
 
 button6Handler : function() {
-  document.getElementById('textRow').value += '6';
+	Calc.Controller.numAction('6');
 },
 
 buttonMinusHandler : function() {
-  document.getElementById('textRow').value += '-';
+	Calc.Controller.operatorFunc('-');
 },
 
 button1Handler : function() {
-  document.getElementById('textRow').value += '1';
+	Calc.Controller.numAction('1');
 },
 
 button2Handler : function() {
-  document.getElementById('textRow').value += '2';
+	Calc.Controller.numAction('2');
 },
 
 button3Handler : function() {
-  document.getElementById('textRow').value += '3';
+	Calc.Controller.numAction('3');
 },
 
 buttonMultHandler : function() {
-  document.getElementById('textRow').value += '*';
+	Calc.Controller.operatorFunc('*');
 },
 
 button0Handler : function() {
-  document.getElementById('textRow').value += '0';
+	Calc.Controller.numAction('0');
 },
 
 buttonDotHandler : function() {
@@ -216,18 +209,13 @@ buttonDotHandler : function() {
 },
 
 buttonEqualsHandler : function() {
-	console.log('x');
-	console.log(Calc.Model.x);
-	console.log('y');
-	console.log(Calc.Model.y);
-	console.log('canRepeat');
-	console.log(Calc.Model.canRepeat);
+	Calc.Model.operator = '';
 	if(Calc.Model.canRepeat){
 		Calc.Model.y = document.getElementById('textRow').value.slice(Calc.Model.x.length);
 		console.log(Calc.Model.y);
 		document.getElementById('textRow').value = eval(document.getElementById('textRow').value);
-		canRepeat = false;
-		isRepeat = true;//??
+		Calc.Model.canRepeat = false;
+		Calc.Model.isRepeat = true;		
 	} else if (Calc.Model.isRepeat){
 		document.getElementById('textRow').value = eval(document.getElementById('textRow').value + Calc.Model.y);
 	} else {
@@ -237,7 +225,7 @@ buttonEqualsHandler : function() {
 },
 
 buttonDivHandler : function() {
-  document.getElementById('textRow').value += '/';
+	Calc.Controller.operatorFunc('/');
 },
 
 buttonCHandler : function() {
@@ -246,6 +234,7 @@ buttonCHandler : function() {
   Calc.Model.y = '';
   Calc.Model.canRepeat = true;
   Calc.Model.operator = '';
+  Calc.Model.isRepeat = false;
 },
 
 buttonMRHandler : function() {
