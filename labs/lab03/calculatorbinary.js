@@ -70,6 +70,37 @@ Controller : {
 			document.getElementById('binTextRow').value += operation;
 		}		
 	},
+	
+	calculate : function() {
+			
+		var splitInput = (document.getElementById('binTextRow').value).split(BinCalc.Model.operator);
+
+		if (BinCalc.Model.canRepeat && (splitInput.length == 1) && BinCalc.Model.operator)
+		{
+			var input = parseInt(splitInput[0], 2);
+
+			BinCalc.Model.x = eval( (input + " " + BinCalc.Model.operator + " " + BinCalc.Model.y) ); 
+			BinCalc.Model.memory = BinCalc.Model.x;
+
+			console.log("memory set to " + BinCalc.Model.memory);
+			document.getElementById('binTextRow').value = (BinCalc.Model.x).toString(2);
+			
+		}
+		else if (BinCalc.Model.operator && BinCalc.Model.x)
+		{
+			
+			BinCalc.Model.y = (document.getElementById('binTextRow').value).split(BinCalc.Model.operator)[1];
+			BinCalc.Model.y = parseInt(BinCalc.Model.y, 2);
+
+			BinCalc.Model.x = eval((BinCalc.Model.x + " " + BinCalc.Model.operator + " " + BinCalc.Model.y));
+			BinCalc.Model.memory = BinCalc.Model.x;	
+			console.log("memory set to " + BinCalc.Model.memory);
+			
+			document.getElementById('binTextRow').value = (BinCalc.Model.x).toString(2);
+	 
+			BinCalc.Model.canRepeat = true;
+		}
+	}
 },
 
 run : function() {
@@ -278,34 +309,7 @@ buttonMCHandler : function() {
 },
 
 buttonEqualsHandler : function() {
-
-	var splitInput = (document.getElementById('binTextRow').value).split(BinCalc.Model.operator);
-
-	if (BinCalc.Model.canRepeat && (splitInput.length == 1) && BinCalc.Model.operator)
-	{
-		var input = parseInt(splitInput[0], 2);
-
-		BinCalc.Model.x = eval( (input + " " + BinCalc.Model.operator + " " + BinCalc.Model.y) ); 
-		BinCalc.Model.memory = BinCalc.Model.x;
-
-		console.log("memory set to " + BinCalc.Model.memory);
-		document.getElementById('binTextRow').value = (BinCalc.Model.x).toString(2);
-		
-	}
-	else if (BinCalc.Model.operator && BinCalc.Model.x)
-	{
-		
-		BinCalc.Model.y = (document.getElementById('binTextRow').value).split(BinCalc.Model.operator)[1];
-		BinCalc.Model.y = parseInt(BinCalc.Model.y, 2);
-
-		BinCalc.Model.x = eval((BinCalc.Model.x + " " + BinCalc.Model.operator + " " + BinCalc.Model.y));
-		BinCalc.Model.memory = BinCalc.Model.x;	
-		console.log("memory set to " + BinCalc.Model.memory);
-		
-		document.getElementById('binTextRow').value = (BinCalc.Model.x).toString(2);
- 
-		BinCalc.Model.canRepeat = true;
-	}
+	BinCalc.Controller.calculate();
 },
 
 
