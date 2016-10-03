@@ -49,6 +49,27 @@ Controller : {
 		var operator = 
 		document.getElementById(binTextRow).value = '';
 	}*/
+
+	digitAction : function (digit) {
+		document.getElementById('binTextRow').value += digit;
+		BinCalc.Model.canRepeat = false;
+	},
+
+	operationAction : function (operation) {
+			
+		var input = document.getElementById('binTextRow').value;
+
+		if ((!BinCalc.Model.operator || BinCalc.Model.canRepeat) && (input.length > 0))
+		{
+			BinCalc.Model.canRepeat = false;
+
+			BinCalc.Model.operator = operation;
+			BinCalc.Model.x = input;
+			BinCalc.Model.x = parseInt(BinCalc.Model.x, 2);
+
+			document.getElementById('binTextRow').value += operation;
+		}		
+	},
 },
 
 run : function() {
@@ -135,13 +156,11 @@ attachHandlers : function() {
 },
 
 button1Handler : function() {
-	document.getElementById('binTextRow').value += '1';
-	BinCalc.Model.canRepeat = false;
+	BinCalc.Controller.digitAction("1");
 },
 
 button0Handler : function() {
-	document.getElementById('binTextRow').value += '0';
-	BinCalc.Model.canRepeat = false;
+	BinCalc.Controller.digitAction("0");
 },
 
 buttonBitFlipHandler : function() {
@@ -149,19 +168,9 @@ buttonBitFlipHandler : function() {
 },
 
 buttonPlusHandler : function() {
-	var input = document.getElementById('binTextRow').value;
-
-	if ((!BinCalc.Model.operator || BinCalc.Model.canRepeat) && (input.length > 0))
-	{
-		BinCalc.Model.canRepeat = false;
-
-		BinCalc.Model.operator = '+';
-		BinCalc.Model.x = input;
-		BinCalc.Model.x = parseInt(BinCalc.Model.x, 2);
-
-		document.getElementById('binTextRow').value += '+';
-	}		
+	BinCalc.Controller.operationAction("+");
 },
+
 
 buttonLeftHandler : function() {
 	document.getElementById('binTextRow').value += '<<';
@@ -172,19 +181,7 @@ buttonRightHandler : function() {
 },
 
 buttonMinusHandler : function() {
-	var input = document.getElementById('binTextRow').value;
-	
-
-	if ((!BinCalc.Model.operator || BinCalc.Model.canRepeat) && (input.length > 0))
-	{
-		BinCalc.Model.canRepeat = false;
-
-		BinCalc.Model.operator = '-';
-		BinCalc.Model.x = input;
-		BinCalc.Model.x = parseInt(BinCalc.Model.x, 2);
-
-		document.getElementById('binTextRow').value += '-';
-	}		
+	BinCalc.Controller.operationAction("-");
 },
 
 buttonAndHandler : function() {
@@ -196,34 +193,13 @@ buttonOrHandler : function() {
 },
 
 buttonMultHandler : function() {
-	var input = document.getElementById('binTextRow').value;
-
-	if ((!BinCalc.Model.operator || BinCalc.Model.canRepeat) && (input.length > 0))
-	{
-		BinCalc.Model.canRepeat = false;
-
-		BinCalc.Model.operator = '*';
-		BinCalc.Model.x = input;
-		BinCalc.Model.x = parseInt(BinCalc.Model.x, 2);
-
-		document.getElementById('binTextRow').value += '*';
-	}		
+	BinCalc.Controller.operationAction("*");
 },
 
 buttonDivHandler : function() {
-	var input = document.getElementById('binTextRow').value;
-
-	if ((!BinCalc.Model.operator || BinCalc.Model.canRepeat) && (input.length > 0))
-	{
-		BinCalc.Model.canRepeat = false;
-
-		BinCalc.Model.operator = '/';
-		BinCalc.Model.x = input;
-		BinCalc.Model.x = parseInt(BinCalc.Model.x, 2);
-
-		document.getElementById('binTextRow').value += '/';
-	}		
+	BinCalc.Controller.operationAction("/");
 },
+
 
 buttonMRHandler : function() {
 	document.getElementById('binTextRow').value = (BinCalc.Model.memory).toString(2);
