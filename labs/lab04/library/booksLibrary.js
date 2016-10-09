@@ -58,16 +58,21 @@ function Library() {
 
 		s += "<table border=2>";
 		s += "<tr>";
-		s += "<td>Art</td>";
-		s += "<td>Science</td>";
-		s += "<td>Sport</td>";
-		s += "<td>Literature</td>";
+		s += "<th>Art</th>";
+		s += "<th>Science</th>";
+		s += "<th>Sport</th>";
+		s += "<th>Literature</th>";
 		s += "</tr>";
 		for(j = 0; j < longest; j++){
 			s += "<tr>";
 			for(i = 0; i < this.shelves.length; i++){
 				s += "<td>";
 				if(this.shelves[i].books.length > j){
+					if(this.shelves[i].books[j].type == 'Reference'){
+						s += "R";
+					} else {
+						s += "B";
+					}
 					s += this.shelves[i].books[j].id;
 				}
 				s += "</td>";
@@ -82,16 +87,19 @@ function Library() {
 	}
 }
 
-var book1 = new Book(1, 'Reference');
-var book2 = new Book(2, 'Reference');
-var book3 = new Book(3, 'Reference');
-var book4 = new Book(4, 'Reference');
-var book5 = new Book(5, 'Reference');
+//initialize the objects for the library
+var bookArray = [];
+for(i = 0; i < 20; i++){
+	bookArray.push(new Book(i, ''));
+}
+for(i = 0; i < 5; i++){
+	bookArray.push(new Book(i, 'Reference'));
+}
+
 var artShelf = new Shelf('Art');
 var sciShelf = new Shelf('Science');
 var sportShelf = new Shelf('Sport');
 var litShelf = new Shelf('Literature');
-var bookArray = [book1, book2, book3, book4, book5];
 var shelfArray = [artShelf, sciShelf, sportShelf, litShelf];
 var library = new Library();
 
