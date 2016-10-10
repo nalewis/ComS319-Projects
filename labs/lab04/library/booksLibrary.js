@@ -82,9 +82,37 @@ $(document).ready( function(){
 			}
 			//s += "</table>";
 	
-			
 			console.log(s);
 			return s;
+		}
+		
+		this.addListeners = function(){
+			//current code to attach a handler for users clicking on table cells
+			var tds = document.getElementsByTagName("td");
+			for(var i = 0; i < tds.length; i++){
+				tds[i].addEventListener("click", 
+					function(){
+						//debug for seeing attributes of 'this';
+						for(var key in this) {
+							console.log(key + ': ' + this[key]);
+						}
+						var id = this.innerText.substring(1);
+						
+						console.log(id);
+						for(i = 0; i < library.shelves.length; i++){
+							for(k = 0; k < library.shelves[i].books.length; k++){
+								if(library.shelves[i].books[k].id == id){
+									if(library.shelves[i].books[k].presence && library.shelves[i].books[k].type != "Reference"){
+										//TODO add borrowed by logic
+										library.shelves[i].books[k].presence = 0;
+										console.log(library.shelves[i].books[k]);
+										this.style.backgroundColor = "red";
+									}
+								}
+							}
+						}
+					}, false)
+			}
 		}
 	}
 
@@ -109,16 +137,7 @@ $(document).ready( function(){
 	console.log(JSON.stringify(library));
 	
 	document.getElementById("table").innerHTML = library.display();
-	
-	//current code to attach a handler for users clicking on table cells
-	var tds = document.getElementsByTagName("td");
-	for(var i = 0; i < tds.length; i++){
-		tds[i].addEventListener("click", 
-			function(cell){
-				console.log(this);
-				this.style.backgroundColor = "red";
-			}, false)
-	}
+	library.addListeners();
 	
 	
 });
