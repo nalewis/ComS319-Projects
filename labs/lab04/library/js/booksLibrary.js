@@ -9,34 +9,6 @@ function User(name, role) {
 	this.name = name;
 	this.role = role;
 	this.borrowedBooks = [];
-	this.login = function(){
-		if(($("#username").val() == 'admin') && ($("#password").val() == 'admin'))
-		{
-			document.cookie = ("role=admin");
-			$('#libraryDiv').show(500);
-			$('#loginDiv').show(100);
-			$("#failure").hide(500);
-			var user = new User($("#username").val(), getCookie("role"));
-			//window.location = "./index.html?User="+user;
-		}
-		else if (($("#username").val().substring(0,1).toLowerCase()) == "u")
-		{
-			document.cookie = ("role=undergraduate");
-			$("#failure").hide(500);
-	
-			var user = new User($("#username").val(), getCookie("role"));
-			//window.location = "./index.html?User="+user;
-		}
-		else
-		{
-			document.cookie = ("role=; expires=Thu, 01 Jan 2015 00:00:00 UTC");
-			$("#failure").show(500);
-		} 
-	}
-	this.logout = function(){
-		document.cookie = ("role=; expires=Thu, 01 Jan 2015 00:00:00 UTC");
-		window.location = "./login.html";
-	}
 }
 
 //use push method to add items to array
@@ -46,35 +18,48 @@ function Shelf(type) {
 }
 
 function Library() {
-	this.shelves;
-	this.initialize = function(shelves, books){
-		this.shelves = shelves;
-		for(i = 0; i < books.length; i++){
-			if(books[i].id % 4 == 0){
+	this.shelves = [];
+	this.books = [];
+	this.user;
+	
+	this.initialize = function(){
+		//initialize books
+		for(i = 0; i < 20; i++){
+			this.books.push(new Book(i, ''));
+		}
+		for(i = 0; i < 5; i++){
+			this.books.push(new Book(i, 'Reference'));
+		}
+		
+		//initialize shelves
+		this.shelves = [new Shelf('Art'), new Shelf('Science'), new Shelf('Sport'), new Shelf('Literature')];
+		
+		for(i = 0; i < this.books.length; i++){
+			if(this.books[i].id % 4 == 0){
 				for(j = 0; j < this.shelves.length; j++){
 					if(this.shelves[j].type == 'Art'){
-						this.shelves[j].books.push(books[i]);
+						this.shelves[j].books.push(this.books[i]);
 					}
 				}
 			}
-			if(books[i].id % 4 == 1){
+			if(this.books[i].id % 4 == 1){
 				for(j = 0; j < this.shelves.length; j++){
 					if(this.shelves[j].type == 'Science'){
-						this.shelves[j].books.push(books[i]);
+						this.shelves[j].books.push(this.books[i]);
 					}
 				}
 			}
-			if(books[i].id % 4 == 2){
+			if(this.books[i].id % 4 == 2){
 				for(j = 0; j < this.shelves.length; j++){
 					if(this.shelves[j].type == 'Sport'){
-						this.shelves[j].books.push(books[i]);
+						this.shelves[j].books.push(this.books[i]);
 					}
 				}
 			}
-			if(books[i].id % 4 == 3){
+			if(this.books[i].id % 4 == 3){
 				for(j = 0; j < this.shelves.length; j++){
 					if(this.shelves[j].type == 'Literature'){
-						this.shelves[j].books.push(books[i]);
+						this.shelves[j].books.push(this.books[i]);
 					}
 				}
 			}		
@@ -147,31 +132,61 @@ function Library() {
 				}, false)
 		}
 	}
+	
+	this.verifyInput = function(){
+		
+		if(($("#username").val() == 'admin') && ($("#password").val() == 'admin'))
+		{
+			document.cookie = ("role=admin");
+			$('#libraryDiv').show(100);
+			$('#loginDiv').hide(100);
+			$("#failure").hide(500);
+			var user = new User($("#username").val(), 'admin');
+			//window.location = "./index.html?User="+user;
+		}
+		else if (($("#username").val().substring(0,1).toLowerCase()) == "u")
+		{
+			document.cookie = ("role=undergraduate");
+			$('#libraryDiv').show(100);
+			$('#loginDiv').hide(100);
+			$("#failure").hide(500);
+	
+			var user = new User($("#username").val(), 'undergraduate');
+		}
+		else
+		{
+			document.cookie = ("role=; expires=Thu, 01 Jan 2015 00:00:00 UTC");
+			$("#failure").show(500);
+		} 
+	}
+	this.logout = function(){
+		document.cookie = ("role=; expires=Thu, 01 Jan 2015 00:00:00 UTC");
+		$('#libraryDiv').hide(100);
+		$('#loginDiv').show(100);
+		this.user = '';
+	}
 }
 
 
 $(document).ready( function(){
-	//initialize the objects for the library
-	var bookArray = [];
-	for(i = 0; i < 20; i++){
-		bookArray.push(new Book(i, ''));
-	}
-	for(i = 0; i < 5; i++){
-		bookArray.push(new Book(i, 'Reference'));
-	}
-	
-	var artShelf = new Shelf('Art');
-	var sciShelf = new Shelf('Science');
-	var sportShelf = new Shelf('Sport');
-	var litShelf = new Shelf('Literature');
-	var shelfArray = [artShelf, sciShelf, sportShelf, litShelf];
 	var library = new Library();
-	
-	library.initialize(shelfArray, bookArray);
+	library.initialize();
 	console.log(JSON.stringify(library));
 	
 	document.getElementById("table").innerHTML = library.display();
 	library.addListeners();
+	
+	var logButton = document.getElementById("logButton");
+	logButton.addEventListener("click", function(){
+		library.verifyInput();
+	}, false);
+	
+	var logoutButton = document.getElementById("logoutButton");
+	logoutButton.addEventListener("click", function(){
+		library.logout();
+	}, false);
+	
+
 	
 	
 });
