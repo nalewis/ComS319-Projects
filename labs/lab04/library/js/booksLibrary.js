@@ -104,7 +104,7 @@ function Library() {
 		return s;
 	}
 	
-	this.addListeners = function(){
+	this.addListeners = function(library){
 		//current code to attach a handler for users clicking on table cells
 		var tds = document.getElementsByTagName("td");
 		for(var i = 0; i < tds.length; i++){
@@ -116,14 +116,17 @@ function Library() {
 					}*/
 					var id = this.innerText.substring(1);
 					
-					console.log(id);
+					//console.log(library);
 					for(i = 0; i < library.shelves.length; i++){
 						for(k = 0; k < library.shelves[i].books.length; k++){
 							if(library.shelves[i].books[k].id == id){
 								if(library.shelves[i].books[k].presence && library.shelves[i].books[k].type != "Reference"){
 									//TODO add borrowed by logic
+									library.shelves[i].books[k].borrowedBy = library.user.name;
+									library.user.borrowedBooks.push(library.shelves[i].books[k]);
 									library.shelves[i].books[k].presence = 0;
 									console.log(library.shelves[i].books[k]);
+									console.log(library.user);
 									this.style.backgroundColor = "red";
 								}
 							}
@@ -141,7 +144,7 @@ function Library() {
 			$('#libraryDiv').show(100);
 			$('#loginDiv').hide(100);
 			$("#failure").hide(500);
-			var user = new User($("#username").val(), 'admin');
+			this.user = new User($("#username").val(), 'admin');
 			//window.location = "./index.html?User="+user;
 		}
 		else if (($("#username").val().substring(0,1).toLowerCase()) == "u")
@@ -151,7 +154,7 @@ function Library() {
 			$('#loginDiv').hide(100);
 			$("#failure").hide(500);
 	
-			var user = new User($("#username").val(), 'undergraduate');
+			this.user = new User($("#username").val(), 'undergraduate');
 		}
 		else
 		{
@@ -171,10 +174,10 @@ function Library() {
 $(document).ready( function(){
 	var library = new Library();
 	library.initialize();
-	console.log(JSON.stringify(library));
+	//console.log(JSON.stringify(library));
 	
 	document.getElementById("table").innerHTML = library.display();
-	library.addListeners();
+	library.addListeners(library);
 	
 	var logButton = document.getElementById("logButton");
 	logButton.addEventListener("click", function(){
