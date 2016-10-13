@@ -11,7 +11,6 @@ function User(name, role) {
 	this.borrowedBooks = [];
 }
 
-//use push method to add items to array
 function Shelf(type) {
 	this.type = type;
 	this.books = [];
@@ -66,6 +65,7 @@ function Library() {
 		}
 	}
 	
+	//create the string to be inserted into the DOM
 	this.display = function(){
 		var s = "";
 		var longest = 0;
@@ -75,7 +75,6 @@ function Library() {
 			}
 		}
 
-		//s += "<table id=\"table\" border=2>";
 		s += "<tr>";
 		s += "<th>Art</th>";
 		s += "<th>Science</th>";
@@ -98,36 +97,60 @@ function Library() {
 			}
 			s += "</tr>"
 		}
-		//s += "</table>";
 
-		console.log(s);
+		//console.log(s);
 		return s;
 	}
 	
+	//adds the function that decides the outcome of a user clicking on a table cell
 	this.addListeners = function(library){
-		//current code to attach a handler for users clicking on table cells
 		var tds = document.getElementsByTagName("td");
 		for(var i = 0; i < tds.length; i++){
 			tds[i].addEventListener("click", 
 				function(){
-					//debug for seeing attributes of 'this';
-					/*for(var key in this) {
-						console.log(key + ': ' + this[key]);
-					}*/
 					var id = this.innerText.substring(1);
+					var type = '';
+					if(this.innerText.charAt(0) == 'R'){
+						type = 'Reference';
+					}
 					
-					//console.log(library);
 					for(i = 0; i < library.shelves.length; i++){
 						for(k = 0; k < library.shelves[i].books.length; k++){
-							if(library.shelves[i].books[k].id == id){
-								if(library.shelves[i].books[k].presence && library.shelves[i].books[k].type != "Reference"){
-									//TODO add borrowed by logic
-									library.shelves[i].books[k].borrowedBy = library.user.name;
-									library.user.borrowedBooks.push(library.shelves[i].books[k]);
-									library.shelves[i].books[k].presence = 0;
-									console.log(library.shelves[i].books[k]);
-									console.log(library.user);
-									this.style.backgroundColor = "red";
+							//match the correct book object
+							if(library.shelves[i].books[k].id == id && type == library.shelves[i].books[k].type){
+								//check that the book isn't of reference type
+								if(library.shelves[i].books[k].type != "Reference"){
+									//check that the book is on the shelf
+									if(library.shelves[i].books[k].presence){
+										//check that the user doesn't already have 2 books checked out
+										if(library.user.borrowedBooks.length < 2){
+											library.shelves[i].books[k].borrowedBy = library.user.name;
+											library.user.borrowedBooks.push(library.shelves[i].books[k]);
+											library.shelves[i].books[k].presence = 0;
+											//console.log(library.shelves[i].books[k]);
+											//console.log(library.user);
+											this.style.backgroundColor = "red";
+										} else {
+											alert("You may not check out more than two books at a time.");
+										}
+									} else {//otherwise, check if this is a undergrad returning, or if they need to be notified that the book is gone
+										if(library.shelves[i].books[k].borrowedBy == library.user.name){
+											library.shelves[i].books[k].borrowedBy = '';
+											for(m = 0; m < library.user.borrowedBooks.length; m++){
+												if(library.user.borrowedBooks[m].id == id){
+													library.user.borrowedBooks.splice(m,1);
+												}
+											}
+											library.shelves[i].books[k].presence = 1;
+											//console.log(library.shelves[i].books[k]);
+											//console.log(library.user);
+											this.style.backgroundColor = "white";
+										} else {
+											alert("Book " + library.shelves[i].books[k].id + " has already been checked out by " + library.shelves[i].books[k].borrowedBy);
+										}
+									}
+								} else {
+									alert("Reference books may not be checked out.");
 								}
 							}
 						}
@@ -136,6 +159,7 @@ function Library() {
 		}
 	}
 	
+	//check the login information and display the library if correct
 	this.verifyInput = function(){
 		
 		if(($("#username").val() == 'admin') && ($("#password").val() == 'admin'))
@@ -144,8 +168,8 @@ function Library() {
 			$('#libraryDiv').show(100);
 			$('#loginDiv').hide(100);
 			$("#failure").hide(500);
+			
 			this.user = new User($("#username").val(), 'admin');
-			//window.location = "./index.html?User="+user;
 		}
 		else if (($("#username").val().substring(0,1).toLowerCase()) == "u")
 		{
@@ -174,7 +198,6 @@ function Library() {
 $(document).ready( function(){
 	var library = new Library();
 	library.initialize();
-	//console.log(JSON.stringify(library));
 	
 	document.getElementById("table").innerHTML = library.display();
 	library.addListeners(library);
@@ -188,8 +211,4 @@ $(document).ready( function(){
 	logoutButton.addEventListener("click", function(){
 		library.logout();
 	}, false);
-	
-
-	
-	
 });
