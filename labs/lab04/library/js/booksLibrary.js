@@ -118,39 +118,56 @@ function Library() {
 						for(k = 0; k < library.shelves[i].books.length; k++){
 							//match the correct book object
 							if(library.shelves[i].books[k].id == id && type == library.shelves[i].books[k].type){
-								//check that the book isn't of reference type
-								if(library.shelves[i].books[k].type != "Reference"){
-									//check that the book is on the shelf
+								//if librarian, display book info, else do undergrad actions
+								if(library.user.name == 'admin'){
 									if(library.shelves[i].books[k].presence){
-										//check that the user doesn't already have 2 books checked out
-										if(library.user.borrowedBooks.length < 2){
-											library.shelves[i].books[k].borrowedBy = library.user.name;
-											library.user.borrowedBooks.push(library.shelves[i].books[k]);
-											library.shelves[i].books[k].presence = 0;
-											//console.log(library.shelves[i].books[k]);
-											//console.log(library.user);
-											this.style.backgroundColor = "red";
+										if(type == ""){
+											alert("Book ID: " + library.shelves[i].books[k].id + " Type: Book is present on the " + library.shelves[i].type + " shelf.");
 										} else {
-											alert("You may not check out more than two books at a time.");
+											alert("Book ID: " + library.shelves[i].books[k].id + " Type: " + type + " is present on the " + library.shelves[i].type + " shelf.");
 										}
-									} else {//otherwise, check if this is a undergrad returning, or if they need to be notified that the book is gone
-										if(library.shelves[i].books[k].borrowedBy == library.user.name){
-											library.shelves[i].books[k].borrowedBy = '';
-											for(m = 0; m < library.user.borrowedBooks.length; m++){
-												if(library.user.borrowedBooks[m].id == id){
-													library.user.borrowedBooks.splice(m,1);
-												}
-											}
-											library.shelves[i].books[k].presence = 1;
-											//console.log(library.shelves[i].books[k]);
-											//console.log(library.user);
-											this.style.backgroundColor = "white";
+									} else {
+										if(type == ""){
+											alert("Book ID: " + library.shelves[i].books[k].id + " Type: Book is checked out from the " + library.shelves[i].type + " shelf by " + library.shelves[i].books[k].borrowedBy + ".");
 										} else {
-											alert("Book " + library.shelves[i].books[k].id + " has already been checked out by " + library.shelves[i].books[k].borrowedBy);
+											alert("Book ID: " + library.shelves[i].books[k].id + " Type: " + type + " is checked out from the " + library.shelves[i].type + " shelf by " + library.shelves[i].books[k].borrowedBy + ".");
 										}
 									}
 								} else {
-									alert("Reference books may not be checked out.");
+									//check that the book isn't of reference type
+									if(library.shelves[i].books[k].type != "Reference"){
+										//check that the book is on the shelf
+										if(library.shelves[i].books[k].presence){
+											//check that the user doesn't already have 2 books checked out
+											if(library.user.borrowedBooks.length < 2){
+												library.shelves[i].books[k].borrowedBy = library.user.name;
+												library.user.borrowedBooks.push(library.shelves[i].books[k]);
+												library.shelves[i].books[k].presence = 0;
+												//console.log(library.shelves[i].books[k]);
+												//console.log(library.user);
+												this.style.backgroundColor = "red";
+											} else {
+												alert("You may not check out more than two books at a time.");
+											}
+										} else {//otherwise, check if this is a undergrad returning, or if they need to be notified that the book is gone
+											if(library.shelves[i].books[k].borrowedBy == library.user.name){
+												library.shelves[i].books[k].borrowedBy = '';
+												for(m = 0; m < library.user.borrowedBooks.length; m++){
+													if(library.user.borrowedBooks[m].id == id){
+														library.user.borrowedBooks.splice(m,1);
+													}
+												}
+												library.shelves[i].books[k].presence = 1;
+												//console.log(library.shelves[i].books[k]);
+												//console.log(library.user);
+												this.style.backgroundColor = "white";
+											} else {
+												alert("Book " + library.shelves[i].books[k].id + " has already been checked out by " + library.shelves[i].books[k].borrowedBy);
+											}
+										}
+									} else {
+										alert("Reference books may not be checked out.");
+									}
 								}
 							}
 						}
