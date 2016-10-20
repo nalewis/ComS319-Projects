@@ -1,0 +1,48 @@
+<HTML>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+</head>	
+
+<body>
+<h1>Login Page</h1>
+	<form>
+		Username:<br>
+		<input type="text" name="username" id="username">	
+		<br>
+		<br>
+
+		Password:<br>
+		<input type="password" name="password" id="password">
+		
+		<br>
+		<br>					
+
+		<input type="button" value="Submit" id="login" onclick="checkLogin()">
+	</form>
+	
+	<div id="errorMsg" style="display: none">Invalid credentials, please try again.</div>
+	
+</body>
+
+<script>
+//ajax
+	function checkLogin() {
+		var name = $("#username").val();
+		var pass = $("#password").val();
+		if (name.length == 0 || pass.length == 0) { 
+			return;
+		} else {
+			//ajax post call taken from mitra's example
+			$.post("checkLogin.php", {name: $("#username").val(), pass: $("#password").val()}, 
+				function(data){
+					if(data == "True"){
+						window.location.href = "viewPosts.php";
+					} else {
+						$("#errorMsg").show();
+					}
+				});
+		}
+	}
+</script>
+</HTML>
