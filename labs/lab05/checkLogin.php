@@ -12,7 +12,10 @@ foreach($users as $user){
 }
 header('Content-type: application/json');
 if($login_succeed){
+	//store the logged in users data in the session variable
 	session_start();
+	//TODO bring the public and private key along?
+	//or maybe just search the users file with user and pass in order to find it later...
 	$_SESSION["user"] = $_REQUEST["name"];
 	$_SESSION["pass"] = $_REQUEST["pass"];
 	echo json_encode("True");
@@ -20,10 +23,4 @@ if($login_succeed){
 	echo json_encode("False");
 }
 
-//EXAMPLE TAKEN FROM DISCUSSION BOARD
-//$data1 = "True"; $data2 = "False";
-//header('Content-type: application/json');
-//if ( login_succeed) echo json_encode( $data1 );
-// prints zero-based JS array: ["a","b","c"]
-// accessed like: result[1] (returns "b") else echo json_encode( $data2 );
 ?>

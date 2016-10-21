@@ -1,6 +1,5 @@
 <?php 
 session_start();
-//var_dump($_SESSION);
 
 function updateDisplay(){
 	if(file_exists("posts.txt")){
@@ -11,8 +10,6 @@ function updateDisplay(){
 			$table = "<table border=\'2\'><tr><th>Title</th><th>Description</th><th>Time Posted</th></tr>";
 			foreach($posts as $post){
 				$table .= "<tr><td>";
-				//$table .= $post["poster"];
-				//$table .= "</td><td>";
 				$table .= $post["title"];
 				$table .= "</td><td>";
 				$table .= $post["description"];
@@ -47,10 +44,12 @@ function updateDisplay(){
 </div>
 </body>
 <script>
+	//show form when add post button is clicked
 	$('#postBut').click(function(){
 			$('#postForm').show();
 	});
 
+	//send ajax request when enter is pressed in the add post textbox
 	$("#postText").keyup(function(event){
 		if(event.keyCode == 13){	
 			if ($('postText').val() === "") { 
