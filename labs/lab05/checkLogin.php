@@ -12,6 +12,9 @@ foreach($users as $user){
 }
 header('Content-type: application/json');
 if($login_succeed){
+	session_start();
+	$_SESSION["user"] = $_REQUEST["name"];
+	$_SESSION["pass"] = $_REQUEST["pass"];
 	echo json_encode("True");
 } else {
 	echo json_encode("False");
