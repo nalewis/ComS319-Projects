@@ -49,7 +49,6 @@ function updateDisplay(){
 
 <div id="adminForm" style="display: none">
 	<button id="delete" type="button">Delete</button>
-	Edit: <input id="adminText" type="text">
 </div>
 </body>
 <script>
@@ -58,11 +57,31 @@ function updateDisplay(){
 	var rowTitle;
 	var rowDescription;
 	var rowTimePosted;
+	//admin can't post
+	$(function(){
+		if(user == "admin"){
+			$('#postBut').hide();
+		}	
+	});
 
 	//show form when add post button is clicked
 	$('#postBut').click(function(){
-		$('#postForm').show();
-		$('#editForm').hide();
+		if(user != "admin"){
+			$('#postForm').show();
+			$('#editForm').hide();
+		}
+	});
+	
+	//if admin, delete the selected row
+	$('#delete').click(function(){
+		$.post("updatePosts.php", {type: "adminDelete", title: rowTitle, description: rowDescription, timePosted: rowTimePosted}, 
+					function(data){
+						console.log(data);
+						$('#editForm').hide();
+						$('#postForm').hide();
+						$('#adminForm').hide();
+						location.reload();
+					});
 	});
 	
 	$('tr').click(function(){
@@ -70,8 +89,6 @@ function updateDisplay(){
 		rowTitle = $(this).children()[0].innerHTML;
 		rowDescription = $(this).children()[1].innerHTML;
 		rowTimePosted = $(this).children()[2].innerHTML;
-		//console.log($(this).children()[0].innerHTML);
-		//console.log($('#username')[0].innerHTML);
 		if(user == 'admin'){
 			$('#adminForm').show();
 		} else if(user == rowTitle){
