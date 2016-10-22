@@ -32,7 +32,7 @@ function updateDisplay(){
 </head>
 <body>
 <h1>Posts</h1>
-<h2>User: <?= $_SESSION["user"] ?></h2>
+<h2 id="username"><?= $_SESSION["user"] ?></h2>
 <?= updateDisplay(); ?>
 
 <button type="button" onclick="window.location.href = 'logout.php'">Logout</button>
@@ -42,22 +42,73 @@ function updateDisplay(){
 <div id="postForm" style="display: none">
 	Post: <input id="postText" type="text">
 </div>
+
+<div id="editForm" style="display: none">
+	Post: <input id="editText" type="text">
+</div>
+
+<div id="adminForm" style="display: none">
+	<button id="delete" type="button">Delete</button>
+	Edit: <input id="adminText" type="text">
+</div>
 </body>
 <script>
+
+	var user = $('#username')[0].innerHTML;
+	var rowTitle;
+	var rowDescription;
+	var rowTimePosted;
+
 	//show form when add post button is clicked
 	$('#postBut').click(function(){
-			$('#postForm').show();
+		$('#postForm').show();
+		$('#editForm').hide();
+	});
+	
+	$('tr').click(function(){
+		//to be used in editing or deleting messages
+		rowTitle = $(this).children()[0].innerHTML;
+		rowDescription = $(this).children()[1].innerHTML;
+		rowTimePosted = $(this).children()[2].innerHTML;
+		//console.log($(this).children()[0].innerHTML);
+		//console.log($('#username')[0].innerHTML);
+		if(user == 'admin'){
+			$('#adminForm').show();
+		} else if(user == rowTitle){
+			$('#editForm').show();
+			$('#editText').val(rowDescription);
+		} else {
+			return;
+		}
+	});
+	
+	//send ajax request when enter is pressed in the edit post textbox
+	$("#editText").keyup(function(event){
+		if(event.keyCode == 13){	
+			if ($('#editText').val() === "") { 
+				return;
+			} else {
+				$.post("updatePosts.php", {type: "editPost", text: $("#editText").val(), user: user, oldDesc: rowDescription, oldTime: rowTimePosted}, 
+					function(data){
+						console.log(data);
+						$('#editForm').hide();
+						$('#postForm').hide();
+						location.reload();
+					});
+			}
+		}
 	});
 
 	//send ajax request when enter is pressed in the add post textbox
 	$("#postText").keyup(function(event){
 		if(event.keyCode == 13){	
-			if ($('postText').val() === "") { 
+			if ($('#postText').val() === "") { 
 				return;
 			} else {
-				$.post("updatePosts.php", {text: $("#postText").val()}, 
+				$.post("updatePosts.php", {type: "newPost", text: $("#postText").val()}, 
 					function(){
 						$('#postForm').hide();
+						$('#editForm').hide();
 						location.reload();
 					});
 			}
