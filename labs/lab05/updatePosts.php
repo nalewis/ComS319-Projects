@@ -66,5 +66,30 @@ if($_REQUEST["type"] == "newPost"){
 	file_put_contents("posts.txt", $posts);	
 }
 
+function updateDisplay(){
+	if(file_exists("posts.txt")){
+		$posts = json_decode(file_get_contents('posts.txt'), true);
+		if(is_null($posts)){
+			echo 'No posts here!';
+		} else {
+			$table = "<table border=\'2\'><tr><th>Title</th><th>Description</th><th>Time Posted</th></tr>";
+			foreach($posts as $post){
+				$table .= "<tr><td>";
+				$table .= $post["title"];
+				$table .= "</td><td>";
+				$table .= $post["description"];
+				$table .= "</td><td>";
+				$table .= $post["timePosted"];
+				$table .= "</td></tr>";
+			}
+			$table .= "</table>";
+			echo $table;
+		}
+	} else {
+		echo 'No posts here!<br>';
+	}
+}
+
+updateDisplay();
 //doesn't send any success or failure message to viewPosts
 ?>

@@ -33,7 +33,9 @@ function updateDisplay(){
 <body>
 <h1>Posts</h1>
 <h2 id="username"><?= $_SESSION["user"] ?></h2>
-<?= updateDisplay(); ?>
+<div id="posts">
+	<?= updateDisplay(); ?>
+</div>
 
 <button type="button" onclick="window.location.href = 'logout.php'">Logout</button>
 <button type="button" id="postBut">Make a Post</button>
@@ -44,7 +46,7 @@ function updateDisplay(){
 </div>
 
 <div id="editForm" style="display: none">
-	Post: <input id="editText" type="text">
+	Edit: <input id="editText" type="text">
 </div>
 
 <div id="adminForm" style="display: none">
@@ -80,24 +82,29 @@ function updateDisplay(){
 						$('#editForm').hide();
 						$('#postForm').hide();
 						$('#adminForm').hide();
-						location.reload();
+						$('#posts').html(data);
+						$('tr').click(function(){rowClick(this)});
 					});
 	});
 	
-	$('tr').click(function(){
+	$('tr').click(function(){rowClick(this)});
+	
+	function rowClick(row){
 		//to be used in editing or deleting messages
-		rowTitle = $(this).children()[0].innerHTML;
-		rowDescription = $(this).children()[1].innerHTML;
-		rowTimePosted = $(this).children()[2].innerHTML;
+		rowTitle = $(row).children()[0].innerHTML;
+		rowDescription = $(row).children()[1].innerHTML;
+		rowTimePosted = $(row).children()[2].innerHTML;
+		console.log('hi');
 		if(user == 'admin'){
 			$('#adminForm').show();
 		} else if(user == rowTitle){
 			$('#editForm').show();
+			$('#postForm').hide();
 			$('#editText').val(rowDescription);
 		} else {
 			return;
 		}
-	});
+	}
 	
 	//send ajax request when enter is pressed in the edit post textbox
 	$("#editText").keyup(function(event){
@@ -110,7 +117,8 @@ function updateDisplay(){
 						console.log(data);
 						$('#editForm').hide();
 						$('#postForm').hide();
-						location.reload();
+						$('#posts').html(data);
+						$('tr').click(function(){rowClick(this)});
 					});
 			}
 		}
@@ -123,10 +131,12 @@ function updateDisplay(){
 				return;
 			} else {
 				$.post("updatePosts.php", {type: "newPost", text: $("#postText").val()}, 
-					function(){
+					function(data){
 						$('#postForm').hide();
 						$('#editForm').hide();
-						location.reload();
+						$('#posts').html(data);
+						$('#postText').val('');
+						$('tr').click(function(){rowClick(this)});
 					});
 			}
 		}
