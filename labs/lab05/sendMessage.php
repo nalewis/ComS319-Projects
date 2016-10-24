@@ -21,18 +21,6 @@ function rsa_encrypt($string, $public_key)
     return $cipher->encrypt($string);
 }
 
-//Function for decrypting with RSA 
-function rsa_decrypt($string, $private_key)
-{
-    //Create an instance of the RSA cypher and load the key into it
-    $cipher = new Crypt_RSA();
-    $cipher->loadKey($private_key);
-    //Set the encryption mode
-    $cipher->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
-    //Return the decrypted version
-    return $cipher->decrypt($string);
-}
-//var_dump($_POST);
 $sender = $_REQUEST["sender"];
 $recipient = $_REQUEST["recipient"];
 $message = $_REQUEST["message"];
@@ -99,12 +87,6 @@ if(file_put_contents('messages.txt', $toStore, FILE_APPEND)){
 		'error' => 'Unable to save message in file.',
 	];
 }
-var_dump($encryptedMessage);
-$encodeMsg = base64_encode($encryptedMessage);
-$unencodeEncryptedMsg = base64_decode($encodeMsg);
-
-var_dump("priv is :" . $private);
-var_dump(rsa_decrypt($unencodeEncryptedMsg, $private));
 
 echo json_encode($return);
 
