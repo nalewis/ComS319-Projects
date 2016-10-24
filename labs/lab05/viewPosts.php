@@ -55,8 +55,10 @@ function updateDisplay(){
 	<button id="delete" type="button">Delete</button>
 </div>
 
-<h1>Messages</h1>
-<h2>Your Inbox</h2>
+<div id="messageHeader">
+	<h1>Messages</h1>
+	<h2>Your Inbox</h2>
+</div>
 
 <div id="messages">
 	
@@ -88,10 +90,14 @@ function updateDisplay(){
 	var rowTitle;
 	var rowDescription;
 	var rowTimePosted;
-	//admin can't post
+	
+	//admin can't post or see messages
 	$(function(){
 		if(user == "admin"){
 			$('#postBut').hide();
+			$('#createMessage').hide();
+			$('#messages').hide();
+			$('#messageHeader').hide();
 		}	
 	});
 	
