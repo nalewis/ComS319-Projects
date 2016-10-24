@@ -37,7 +37,7 @@ function updateInbox(){
 				$messageRows .= "</td></tr>";
 			}
 			
-			$output = "<table border=\'2\'><tr><th>Sender</th><th>Reciever</th><th>Message</th></tr>" . $messageRows . "</table>";
+			$output = "<table border=\'2\'><tr><th>Sender</th><th>Reciever</th><th>Body</th></tr>" . $messageRows . "</table>";
 			echo($output);
 			
 		}else{
