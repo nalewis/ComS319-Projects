@@ -25,6 +25,8 @@ function updateDisplay(){
 	}
 }
 
+
+
 ?>
 <html>
 <head>
@@ -52,6 +54,35 @@ function updateDisplay(){
 <div id="adminForm" style="display: none">
 	<button id="delete" type="button">Delete</button>
 </div>
+
+<div id="messageHeader">
+	<h1>Messages</h1>
+	<h2>Your Inbox</h2>
+</div>
+
+<div id="messages">
+	
+</div>
+<br>
+<button type="button" id="createMessage">Send Message</button>
+<div id="successMessage" style="color: #006600; display: none">
+	Message sent successfully!
+</div>
+<div id="errorMessage" style="color: #ff0000; display: none">
+	<span id="error"></span>
+</div>
+
+<div id="messageForm" style="display: none">
+	Reciever: <input id="messageRecipient" type="text">
+	<br>
+	User: <?= $_SESSION["user"] ?>
+	<br>
+	Body: <input id="message" type="text">
+	<br>
+	<button type="button" id="sendMessage">Send Message</button>
+</div>
+
+
 </body>
 <script>
 
@@ -59,11 +90,22 @@ function updateDisplay(){
 	var rowTitle;
 	var rowDescription;
 	var rowTimePosted;
-	//admin can't post
+	
+	//admin can't post or see messages
 	$(function(){
 		if(user == "admin"){
 			$('#postBut').hide();
+			$('#createMessage').hide();
+			$('#messages').hide();
+			$('#messageHeader').hide();
 		}	
+	});
+	
+	//Load the user's message inbox on page load
+	$(function(){
+		$.post("inbox.php", {} , function(data){
+			$('#messages').html(data);
+		});
 	});
 
 	//show form when add post button is clicked
@@ -78,7 +120,6 @@ function updateDisplay(){
 	$('#delete').click(function(){
 		$.post("updatePosts.php", {type: "adminDelete", title: rowTitle, description: rowDescription, timePosted: rowTimePosted}, 
 					function(data){
-						console.log(data);
 						$('#editForm').hide();
 						$('#postForm').hide();
 						$('#adminForm').hide();
@@ -138,6 +179,62 @@ function updateDisplay(){
 						$('#postText').val('');
 						$('tr').click(function(){rowClick(this)});
 					});
+			}
+		}
+	});
+
+	//Show the send message menu when create message button clicked
+	$("#createMessage").click(function(){
+		
+		$("#messageRecipient").val("");
+		$("#message").val("");
+		$("#messageForm").show();
+		$("#successMessage").hide(150);
+		$("#errorMessage").hide(150);
+	});
+
+	//Send the message when the send message button clicked
+	$("#sendMessage").click(function(){
+		if ($('#message').val() !== ""){
+			$.post("sendMessage.php", {sender: "<?= $_SESSION['user'] ?>", recipient: $("#messageRecipient").val(), message: $("#message").val()}, function(data, textStatus){
+				$feedback = $.parseJSON(data);
+				
+				if($feedback.success){
+					$('#messageForm').hide(500);
+					$('#successMessage').show(500);
+					$('#errorMessage').hide(250);
+					$.post("inbox.php", {} , function(data){
+						$('#messages').html(data);
+					});
+				}else{
+					$('#error').text($feedback.error);
+					$('#errorMessage').show(250);
+				}
+				
+			});
+		}
+	});
+	
+	//send ajax request when enter is pressed in the edit post textbox
+	$("#message").keyup(function(event){
+		if(event.keyCode == 13){	
+			if ($('#message').val() !== ""){
+				$.post("sendMessage.php", {sender: "<?= $_SESSION['user'] ?>", recipient: $("#messageRecipient").val(), message: $("#message").val()}, function(data, textStatus){
+					$feedback = $.parseJSON(data);
+				
+					if($feedback.success){
+						$('#messageForm').hide(500);
+						$('#successMessage').show(500);
+						$('#errorMessage').hide(250);
+						$.post("inbox.php", {} , function(data){
+							$('#messages').html(data);
+						});
+					}else{
+						$('#error').text($feedback.error);
+						$('#errorMessage').show(250);
+					}
+				
+				});
 			}
 		}
 	});
