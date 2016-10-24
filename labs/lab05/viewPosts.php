@@ -64,7 +64,7 @@ function updateDisplay(){
 	
 </div>
 <br>
-<button type="button" id="createMessage">Create a Message</button>
+<button type="button" id="createMessage">Send Message</button>
 <div id="successMessage" style="color: #006600; display: none">
 	Message sent successfully!
 </div>
@@ -212,6 +212,30 @@ function updateDisplay(){
 				}
 				
 			});
+		}
+	});
+	
+	//send ajax request when enter is pressed in the edit post textbox
+	$("#message").keyup(function(event){
+		if(event.keyCode == 13){	
+			if ($('#message').val() !== ""){
+				$.post("sendMessage.php", {sender: "<?= $_SESSION['user'] ?>", recipient: $("#messageRecipient").val(), message: $("#message").val()}, function(data, textStatus){
+					$feedback = $.parseJSON(data);
+				
+					if($feedback.success){
+						$('#messageForm').hide(500);
+						$('#successMessage').show(500);
+						$('#errorMessage').hide(250);
+						$.post("inbox.php", {} , function(data){
+							$('#messages').html(data);
+						});
+					}else{
+						$('#error').text($feedback.error);
+						$('#errorMessage').show(250);
+					}
+				
+				});
+			}
 		}
 	});
 </script>
