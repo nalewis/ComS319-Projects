@@ -1,0 +1,145 @@
+<HTML>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<body>
+<h1>Signup Page</h1>
+	<form action="signup.php" method="POST">
+		Username:<br>
+		<input type="text" name="username" id="username"><div style="display: none; color: red;" id="usernameError"> Invalid username</div>
+		<br>
+		<br>
+
+		Password:<br>
+		<input type="password" name="password" id="password"><div style="display: none; color: red;" id="passwordError"> Passwords don't match</div>
+		<br>
+		<br>
+		
+		Confirm Password:<br>
+		<input type="password" name="confirmPassword" id="confirmPassword">
+		<br>
+		<br>
+		
+		Email:<br>
+		<input type="text" name="email" id="email"><div style="display: none; color: red;" id="emailError"> Invalid email</div>
+		<br>
+		<br>
+		
+		Phone:<br>
+		<input type="text" name="phone" id="phone"><div style="display: none; color: red;" id="phoneError"> Invalid phone number</div>
+		<br>
+		<br>
+		
+		Librarian:<br>
+		<input type="checkbox" name="librarian" id="librarian" value="True">Yes<br>
+		<br>
+		<br>
+		
+		First Name:<br>
+		<input type="text" name="first" id="first"><div style="display: none; color: red;" id="firstError"> Invalid name</div>
+		<br>
+		<br>
+		
+		Last Name:<br>
+		<input type="text" name="last" id="last"><div style="display: none; color: red;" id="lastError"> Invalid name</div>
+		<br>
+		<br>					
+
+		<input type="button" value="Signup" id="signup">
+	</form>
+	
+</body>
+
+<script>
+
+$('#signup').click(function(){
+	console.log(validate());
+	
+	if(validate()){
+		$.post("signup.php", {username: $("#username").val(), pass: $("#password").val(), phone: $('#phone').val(), email: $('#email').val(), librarian: $('#librarian').val(), first: $('#first').val(), last: $('#last').val()}, 
+				function(data){
+					console.log(data);
+					/*if(data == "True"){
+						window.location.href = "viewPosts.php";
+					} else {
+						$("#errorMsg").show();
+					}*/
+				});
+	}
+});
+
+function validate(){
+	var fail = false;
+
+	if(!validatePhone($('#phone').val())){
+		$('#phoneError').show();
+		fail = true;
+	} else {
+		$('#phoneError').hide();
+	}
+	
+	if(!validateEmail($('#email').val())){
+		$('#emailError').show();
+		fail = true;
+	} else {
+		$('#emailError').hide();
+	}
+	
+	if(!($('#password').val() == $('#confirmPassword').val() && $('#password').val() != '' && $('#confirmPassword').val() != '')){
+		$('#passwordError').show();
+		fail = true;
+	} else {
+		$('#passwordError').hide();
+	}
+	
+	if(!lettersAndNumbers($('#username').val())){
+		$('#usernameError').show();
+		fail = true;
+	} else {
+		$('#usernameError').hide();
+	}
+	
+	if(!lettersOnly($('#first').val())){
+		$('#firstError').show();
+		fail = true;
+	} else {
+		$('#firstError').hide();
+	}
+	
+	if(!lettersOnly($('#last').val())){
+		$('#lastError').show();
+		fail = true;
+	} else {
+		$('#lastError').hide();
+	}
+	
+	if(fail){
+		return false;
+	} else {
+		return true;
+	}
+}
+
+function lettersAndNumbers(str){
+	var re = /^\w+$/;
+	return re.test(str);
+}
+
+function lettersOnly(str){
+	var re = /^[a-zA-Z]+$/;
+	return re.test(str);
+}
+
+//pulled from stack overflow
+function validatePhone(phone){
+	var phoneno = /\b\d{3}[-]?\d{3}[-]?\d{4}\b/;
+	return phoneno.test(phone);
+}
+
+//pulled from stack overflow
+function validateEmail(email) {
+    var re = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+    return re.test(email);
+}
+</script>
+</HTML>
