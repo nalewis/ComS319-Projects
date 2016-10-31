@@ -1,6 +1,5 @@
 <?php
 
-//var_dump($_REQUEST);
 mysqlstuff();
 
 function mysqlstuff(){
@@ -16,12 +15,14 @@ function mysqlstuff(){
 	if ($conn->connect_error) { 
 		die("Connection failed: " . $conn->connect_error); 
 	} else { 
-	echo "Connected successfully<br>"; 
-	} 
-	/*
-	echo $mysqli->host_info . "<br>"; 
+		echo "Connected successfully<br>"; 
+	}
 	
-	$sql = "INSERT INTO userDetails (userID, userDetails) VALUES ('abc', 'john@example.com')";
+	$phone = str_replace('-', '', $_REQUEST["phone"]);
+	$sql = "INSERT INTO users (userName, Password, Email, Phone, Librarian, FirstName, LastName)
+ VALUES ('" . $_REQUEST["username"] . "', '" . md5($_REQUEST["pass"]) . "', '" . $_REQUEST["email"]
+ . "', '" . $phone . "', '" . $_REQUEST["librarian"] . "', '" . $_REQUEST["first"]
+ . "', '" . $_REQUEST["last"] . "')";
 	
 	if ($conn->query($sql) === TRUE) { 
 		echo "New record created successfully<br>"; 
@@ -29,7 +30,8 @@ function mysqlstuff(){
 		echo "Error: " . $sql . "<br>" . $conn->error; 
 	} 
 	
-	$sql = "SELECT * FROM userDetails"; 
+	/*
+	$sql = "SELECT * FROM users"; 
 	
 	$result = $conn->query($sql); 
 	
@@ -40,8 +42,8 @@ function mysqlstuff(){
 		} 
 	} else { 
 		echo "0 results"; 
-	} 
-	*/
+	} */
+	
 	$conn->close();
 }
 

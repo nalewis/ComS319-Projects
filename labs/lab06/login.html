@@ -1,0 +1,42 @@
+<HTML>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<body>
+<h1>Login Page</h1>
+	<form>
+		Username:<br>
+		<input type="text" name="username" id="username">
+		<br>
+		<br>
+
+		Password:<br>
+		<input type="password" name="password" id="password">
+		<br>			
+		<br>
+
+		<input type="button" value="Login" id="login">
+		<br>
+		<div id="error" style="display: none; color: red;">Invalid credentials, please try again</div>
+	</form>
+	
+</body>
+
+<script>
+
+$('#login').click(function(){
+	if($("#username").val() != '' && $("#password").val() != ''){
+		$.post("login.php", {username: $("#username").val(), pass: $("#password").val()}, 
+				function(data){
+					console.log(data);
+					if(data != "Invalid"){
+						window.location.href = "library.html";
+					} else {
+						$("#error").show();
+					}
+				});
+	}
+});
+
+</script>
+</HTML>

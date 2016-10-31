@@ -4,7 +4,7 @@
 </head>
 <body>
 <h1>Signup Page</h1>
-	<form action="signup.php" method="POST">
+	<form>
 		Username:<br>
 		<input type="text" name="username" id="username"><div style="display: none; color: red;" id="usernameError"> Invalid username</div>
 		<br>
@@ -31,7 +31,7 @@
 		<br>
 		
 		Librarian:<br>
-		<input type="checkbox" name="librarian" id="librarian" value="True">Yes<br>
+		<input type="checkbox" name="librarian" id="librarian">Yes<br>
 		<br>
 		<br>
 		
@@ -53,17 +53,18 @@
 <script>
 
 $('#signup').click(function(){
-	console.log(validate());
 	
 	if(validate()){
-		$.post("signup.php", {username: $("#username").val(), pass: $("#password").val(), phone: $('#phone').val(), email: $('#email').val(), librarian: $('#librarian').val(), first: $('#first').val(), last: $('#last').val()}, 
+		var library;
+		if(document.getElementById("librarian").checked){
+			library = 1;
+		} else {
+			library = 0;
+		}
+		console.log(library);
+		$.post("signup.php", {username: $("#username").val(), pass: $("#password").val(), phone: $('#phone').val(), email: $('#email').val(), librarian: library, first: $('#first').val(), last: $('#last').val()}, 
 				function(data){
-					console.log(data);
-					/*if(data == "True"){
-						window.location.href = "viewPosts.php";
-					} else {
-						$("#errorMsg").show();
-					}*/
+					window.location.href = "login.html";
 				});
 	}
 });
