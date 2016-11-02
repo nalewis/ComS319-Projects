@@ -1,7 +1,20 @@
 <?php
 	session_start();
 	include("classes.php");
-	echo "hello";
+	
+function updateDisplay(){
+	
+	//var_dump(getShelves());
+	$shelves = getShelves();
+	var_dump($shelves[1]->display());
+	$table = "<table border=\'2\'><tr>";
+	foreach($shelves as $shelf){
+		$table .= $shelf->display();
+	}
+	$table .= "</tr></table>";
+	echo $table;
+
+}
 ?>
 
 <HTML>
@@ -11,6 +24,11 @@
 <body>
 <?php var_dump($_SESSION); ?>
 
-Hello World!
+<div id="posts">
+	<?= updateDisplay(); ?>
+</div>
+
+<button type="button" onclick="window.location.href = 'logout.php'">Logout</button>
+
 </body>
 </HTML>
