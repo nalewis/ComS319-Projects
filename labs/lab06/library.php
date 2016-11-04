@@ -6,12 +6,41 @@ function updateDisplay(){
 	
 	//var_dump(getShelves());
 	$shelves = getShelves();
-	var_dump($shelves[1]->display());
+	$books = getBooks();
+	//var_dump($books);
+	//var_dump($shelves[1]->display());
 	$table = "<table border=\'2\'><tr>";
 	foreach($shelves as $shelf){
 		$table .= $shelf->display();
 	}
-	$table .= "</tr></table>";
+	$table .= "</tr>";
+	$i = 0;
+	while($i < 20){
+		$table .= "<tr>";
+		if(array_key_exists($i, $books["Art"])){
+			$table .= $books["Art"][$i]->display();
+		} else {
+			$table .= "<td></td>";
+		}
+		if(array_key_exists($i, $books["Science"])){
+			$table .= $books["Science"][$i]->display();
+		} else {
+			$table .= "<td></td>";
+		}
+		if(array_key_exists($i, $books["Sport"])){
+			$table .= $books["Sport"][$i]->display();
+		} else {
+			$table .= "<td></td>";
+		}
+		if(array_key_exists($i, $books["Literature"])){
+			$table .= $books["Literature"][$i]->display();
+		} else {
+			$table .= "<td></td>";
+		}
+		$table .= "</tr>";
+		$i++;
+	}
+	$table .= "</table>";
 	echo $table;
 
 }
