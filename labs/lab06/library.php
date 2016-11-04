@@ -48,11 +48,13 @@
 		<h4>Borrow a Book</h4>
 			Book ID:<input type = "text" id = "borrowbookid">
 			<button id = "borrowSubmit">Borrow Book</button>
+			<div id="borrowStatusMessage"></div>
 	</div>
 	<div id = "returnForm">
 		<h4>Return a book</h4>
 			Book ID:<input type = "text" id = "returnbookid">
 			<button id = "returnSubmit">Return Book</button>
+			<div id="returnStatusMessage"></div>
 	</div>
 
 </div>
@@ -105,10 +107,12 @@
 							function(json){
 								var data = JSON.parse(json);
 								//TODO popup message?
+								$("#borrowStatusMessage").text("Successfully borrowed book.");
 								console.log(json["success"]);
 								$("#borrowbookid").val("");
 							});
 					} else {
+						$("#borrowStatusMessage").text("Unable to borrow specified book.");
 						console.log("fail");
 					}
 				});
@@ -132,14 +136,19 @@
 									$.post("functions.php", {action: "return", id: id}, 
 										function(json){
 											var data = JSON.parse(json);
+
+									$("#returnStatusMessage").text("Book successfully returned.");
 											console.log(data["success"]);
 											$("#returnbookid").val("");
 										
 										});
+								} else {
+									$("#returnStatusMessage").text("Unable to return the specified book");
 								}
 							});
 					} else {
 						console.log("fail");
+						$("#returnStatusMessage").text("Unable to return the specified book");
 					//	return false;
 					}
 				});
