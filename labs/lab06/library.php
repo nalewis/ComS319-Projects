@@ -40,8 +40,23 @@
 	</div>
 
 </div>
-<?php } ?>
+<?php } else { ?>
+<div id="options">
+	<h3>Student options:</h3>
+	<div id = "borrowForm">
+		<h4>Borrow a Book</h4>
+			Book ID:<input type = "text" id = "borrowbookid">
+			<button id = "borrowSubmit">Borrow Book</button>
+	</div>
+	<div id = "returnForm">
+		<h4>Return a book</h4>
+			Book ID:<input type = "text" id = "returnbookid">
+			<button id = "returnSubmit">Return Book</button>
+	</div>
 
+</div>
+
+<?php } ?>
 <div id="posts">
 	<table id="table" border=2></table>
 </div>
@@ -62,6 +77,23 @@
 </HTML>
 
 <script>
+
+function checkAvailable(id){
+	if($.isNumeric(id)){
+		var answer = '';
+			$.post("functions.php", {action: "checkAvailable", id: id}, 
+						function(data){
+							//TODO Can't return this so you need to call the next function directly
+							if(data == "true"){
+								console.log("success");
+								//return true;
+							} else {
+								console.log("fail");
+								//return false;
+							}
+						});
+		}
+}
 	$('#addBook').click(function(){
 		if($.isNumeric($("#bookId").val()) && $("#bookId").val() != "" && $("#author").val() != "" && $("#title").val() != ""){
 			$.post("functions.php", {action: "addBook", bookId: $("#bookId").val(), author: $("#author").val(), title: $('#title').val(), shelf: $('#shelves').val()}, 
@@ -75,6 +107,15 @@
 		}
 	});
 	
+	$("#borrowSubmit").click(function(){
+		if(checkAvailable($("#borrowbookid").val())){
+			console.log("success");
+		} else {
+			console.log("hi");
+		}
+		
+	});
+	
 	$("#deleteSubmit").click( function(){
 		$.post("library.php", {type: "deleteBook", id: $("#bookid").val()},
 			function(){
@@ -83,31 +124,29 @@
 	});
 	
 	$("#historySubmit").click( function(){
-		addListeners();
-		/*$.post("library.php", {type: "history", title: $("#targetUsername").val()},
+		$.post("library.php", {type: "history", title: $("#targetUsername").val()},
 			function(){
 				//success function here
-			});*/
+			});
 	});
 	
 	function addListeners(){
 		$("td").off();
-		//console.log($("td"));
 		var tds = $("td");
-		//console.log(tds);
 		for(var i = 0; i < tds.length; i++){
 			tds[i].addEventListener("click", 
 				function(){
 					var id = this.innerText.substring(0);
-					$.post("functions.php", {action: "getBook", id: id}, 
-					function(json){
-						var data = JSON.parse(json);
-						console.log($("#infoId"));
-						$("#infoId").text(data["id"]);
-						$("#infoTitle").text(data["title"]);
-						$("#infoAuthor").text(data["author"]);
-						$("#infoAvailable").text(data["availability"]);
-					});
+					if(id != ""){
+						$.post("functions.php", {action: "getBook", id: id}, 
+						function(json){
+							var data = JSON.parse(json);
+							$("#infoId").text(data["id"]);
+							$("#infoTitle").text(data["title"]);
+							$("#infoAuthor").text(data["author"]);
+							$("#infoAvailable").text(data["availability"]);
+						});
+					}
 				}, false);
 		}
 	}

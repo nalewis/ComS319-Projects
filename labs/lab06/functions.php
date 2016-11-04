@@ -16,6 +16,15 @@ if($_REQUEST["action"] == "getBook"){
 	 echo json_encode($response);
 }
 
+if($_REQUEST["action"] == "checkAvailable"){
+	 $response = getBook($_REQUEST["id"]);
+	 if($response["availability"] == 1){
+		 echo "true";
+	 } else {
+		 echo "false";
+	 }
+}
+
 function updateDisplay(){
 	
 	//var_dump(getShelves());
