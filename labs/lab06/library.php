@@ -10,7 +10,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </head>
 <body>
-<?php var_dump($_SESSION); ?>
+<?php //var_dump($_SESSION); ?>
 
 <?php if($_SESSION["userInfo"]["Librarian"] == '1'){ ?>
 <div id="options">
@@ -45,6 +45,15 @@
 <div id="posts">
 	<table id="table" border=2></table>
 </div>
+<br><br>
+
+<div id"bookInfo">
+	<h4>Book Info</h4>
+	Book Id: <span id="infoId"></span><br>
+	Title: <span id="infoTitle"></span><br>
+	Author: <span id="infoAuthor"></span><br>
+	Available: <span id="infoAvailable"></span>
+</div>
 
 <br><br>
 <button type="button" onclick="window.location.href = 'logout.php'">Logout</button>
@@ -61,6 +70,7 @@
 						$("#bookId").val("");
 						$("#author").val("");
 						$("#title").val("");
+						addListeners();
 					});
 		}
 	});
@@ -73,18 +83,31 @@
 	});
 	
 	$("#historySubmit").click( function(){
-		$.post("library.php", {type: "history", title: $("#targetUsername").val()},
+		addListeners();
+		/*$.post("library.php", {type: "history", title: $("#targetUsername").val()},
 			function(){
 				//success function here
-			});
+			});*/
 	});
 	
-	function addListener(){
-		var tds = document.getElementsByTagName("td");
+	function addListeners(){
+		$("td").off();
+		//console.log($("td"));
+		var tds = $("td");
+		//console.log(tds);
 		for(var i = 0; i < tds.length; i++){
 			tds[i].addEventListener("click", 
 				function(){
 					var id = this.innerText.substring(0);
+					$.post("functions.php", {action: "getBook", id: id}, 
+					function(json){
+						var data = JSON.parse(json);
+						console.log($("#infoId"));
+						$("#infoId").text(data["id"]);
+						$("#infoTitle").text(data["title"]);
+						$("#infoAuthor").text(data["author"]);
+						$("#infoAvailable").text(data["availability"]);
+					});
 				}, false);
 		}
 	}
@@ -95,6 +118,8 @@
 				document.getElementById("table").innerHTML = data;
 			});
 	}
+	
+	$("#table").one("click", function(){addListeners()});
 	
 $(function() {
     update();

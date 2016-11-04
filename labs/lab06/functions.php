@@ -11,6 +11,11 @@ if($_REQUEST["action"] == "display"){
 	 return updateDisplay();
 }
 
+if($_REQUEST["action"] == "getBook"){
+	 $response = getBook($_REQUEST["id"]);
+	 echo json_encode($response);
+}
+
 function updateDisplay(){
 	
 	//var_dump(getShelves());
@@ -155,6 +160,35 @@ function getBooks(){
 		}
 		$conn->close();
 		return $returnArray;
+	} else {
+		$conn->close();
+		//echo "0 results"; 
+	}
+}
+
+function getBook($id){
+	$username = "dbu319t38"; 
+	$password = "!U8refRA"; 
+	$dbServer = "mysql.cs.iastate.edu";  
+	$dbName   = "db319t38"; 
+	
+	// Create connection 
+	$conn = new mysqli($dbServer, $username, $password, $dbName);
+	
+	// Check connection 
+	if ($conn->connect_error) { 
+		die("Connection failed: " . $conn->connect_error); 
+	}
+
+	$sql = "SELECT * FROM books WHERE BookId = " . $id;
+
+	$result = $conn->query($sql); 
+	if ($result->num_rows > 0) { 
+		// output data of each row 
+		while($row = $result->fetch_assoc()) {
+			$conn->close();
+			return ["id" => $row["BookId"], "title" => $row["BookTitle"], "author" => $row["Author"], "availability" => $row["Availability"]];
+		}
 	} else {
 		$conn->close();
 		//echo "0 results"; 
