@@ -27,8 +27,40 @@ function updateDisplay(){
 <div id="posts">
 	<?= updateDisplay(); ?>
 </div>
+<br><br>
 
+<?php if($_SESSION["userInfo"]["Librarian"] == '1'){
+	echo "Book Id: <input type=\"text\" id=\"bookId\"><br>";
+	echo "Author: <input type=\"text\" id=\"author\"><br>";
+	echo "Title: <input type=\"text\" id=\"title\"><br>";
+	echo "Shelf: <select id=\"shelves\">
+			<option value=\"0\">Art</option>
+			<option value=\"1\">Science</option>
+			<option value=\"2\">Sport</option>
+			<option value=\"3\">Literature</option>
+		</select><br>";
+	echo "<button id=\"addBook\" type=\"button\">Add Book</button>";
+} ?>
+
+<br><br>
 <button type="button" onclick="window.location.href = 'logout.php'">Logout</button>
 
 </body>
+<script>
+$(
+
+
+
+);
+
+$('#addBook').click(function(){
+	if($("#bookId").val != "" && $("#author").val != "" && $("#title").val != ""){
+		$.post("functions.php", {action: "addBook", bookId: $("#bookId").val(), author: $("#author").val(), title: $('#title').val(), shelf: $('#shelves').val()}, 
+				function(data){
+					console.log(data);
+					//window.location.href = "login.html";
+				});
+	}
+});
+</script>
 </HTML>
