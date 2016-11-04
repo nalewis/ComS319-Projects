@@ -95,18 +95,21 @@
 		var id = $("#borrowbookid").val();
 		if($.isNumeric(id)){
 			$.post("functions.php", {action: "checkAvailable", id: id}, 
-				function(data){
-					//TODO Can't return this so you need to call the next function directly
-					if(data == "true"){
-						console.log("success");
+				function(json){
+					var data = JSON.parse(json);
+					console.log(data);
+					console.log(data["success"]);
+					if(data["success"] == true){
+						//console.log("success");
 						$.post("functions.php", {action: "borrow", id: id}, 
-							function(data){
-								console.log("double success!");
-							
+							function(json){
+								var data = JSON.parse(json);
+								//TODO popup message?
+								console.log(json["success"]);
+								$("#borrowbookid").val("");
 							});
 					} else {
 						console.log("fail");
-					//	return false;
 					}
 				});
 		}		
@@ -115,15 +118,25 @@
 	$("#returnSubmit").click(function(){
 		var id = $("#returnbookid").val();
 		if($.isNumeric(id)){
+			//Check if book is already checked out
 			$.post("functions.php", {action: "checkAvailable", id: id}, 
-				function(data){
-					//TODO Can't return this so you need to call the next function directly
-					if(data == "false"){
-						console.log("success");
-						$.post("functions.php", {action: "return", id: id}, 
-							function(data){
-								console.log("double success!");
-							
+				function(json){
+					var data = JSON.parse(json);
+					if(data["success"] != true){
+						//Check if the current user is the borrower of the book
+						$.post("functions.php", {action: "isBorrower", id: id}, 
+							function(json){
+								var data = JSON.parse(json);
+								//Return the book
+								if(data["success"] == true){
+									$.post("functions.php", {action: "return", id: id}, 
+										function(json){
+											var data = JSON.parse(json);
+											console.log(data["success"]);
+											$("#returnbookid").val("");
+										
+										});
+								}
 							});
 					} else {
 						console.log("fail");

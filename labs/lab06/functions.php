@@ -4,6 +4,8 @@ include("classes.php");
 
 session_start();
 
+date_default_timezone_set('America/Chicago');
+
 if($_REQUEST["action"] == "addBook"){
 	$user = new Student();
 	$user->addBook($_REQUEST["bookId"], $_REQUEST["title"], $_REQUEST["author"], $_REQUEST["shelf"]);
@@ -21,9 +23,9 @@ if($_REQUEST["action"] == "getBook"){
 if($_REQUEST["action"] == "checkAvailable"){
 	 $response = getBook($_REQUEST["id"]);
 	 if($response["availability"] == 1){
-		 echo "true";
+		 echo json_encode(["success" => true]);
 	 } else {
-		 echo "false";
+		 echo json_encode(["success" => false]);
 	 }
 }
 
@@ -34,6 +36,11 @@ if($_REQUEST["action"] == "borrow"){
 
 if($_REQUEST["action"] == "return"){
 	 $response = returnBook($_REQUEST["id"]);
+	 echo json_encode($response);
+}
+
+if($_REQUEST["action"] == "isBorrower"){
+	 $response = isBorrower($_REQUEST["id"]);
 	 echo json_encode($response);
 }
 
@@ -58,12 +65,8 @@ if(($_REQUEST["action"] == "history")){
 }
 
 function updateDisplay(){
-	
-	//var_dump(getShelves());
 	$shelves = getShelves();
 	$books = getBooks();
-	//var_dump($books);
-	//var_dump($shelves[1]->display());
 	$table = "<tr>";
 	foreach($shelves as $shelf){
 		$table .= $shelf->display();
@@ -296,6 +299,41 @@ function getHistory($username)
 	} 
 }
 
+function isBorrower($id)
+{
+	$username = "dbu319t38"; 
+	$password = "!U8refRA"; 
+	$dbServer = "mysql.cs.iastate.edu";  
+	$dbName   = "db319t38"; 
+	
+	// Create connection 
+	$conn = new mysqli($dbServer, $username, $password, $dbName);
+	
+	// Check connection 
+	if ($conn->connect_error) { 
+		die("Connection failed: " . $conn->connect_error); 
+	}
+
+	$sql = "SELECT * from loanHistory WHERE UserName = '" . $_SESSION["userInfo"]["userName"] . "' AND BookId = '" . $id . "'";
+
+	$result = $conn->query($sql);
+
+	if ($result->num_rows > 0)
+	{
+		while($row = $result->fetch_assoc()) {
+			if(is_null($row["ReturnedDate"])){
+				$conn->close();
+				return ["success" => true];
+			}
+		}
+		$conn->close();
+		return ["success" => false];
+	} else {
+		$conn->close();
+		return ["success" => false];
+	} 
+}
+
 function borrowBook($id){
 	$username = "dbu319t38"; 
 	$password = "!U8refRA"; 
@@ -312,10 +350,13 @@ function borrowBook($id){
 
 	$sql = "UPDATE books SET Availability = '0' WHERE BookId = " . $id;
 
+	$conn->query($sql);
+	
+	$sql = "Insert INTO loanHistory (UserName, BookId, DueDate) VALUES ('" . $_SESSION["userInfo"]["userName"] . "', '" . $id . "', '" . date('Y-m-d', strtotime("+30 days")) . "')";
 	if ($conn->query($sql) === TRUE) {
-		return "Success";
+		return ["success" => true];
 	} else {
-		return "Fail";
+		return ["success" => false];
 	}
 }
 
@@ -335,10 +376,13 @@ function returnBook($id){
 
 	$sql = "UPDATE books SET Availability = '1' WHERE BookId = " . $id;
 
+	$conn->query($sql);
+
+	$sql = "UPDATE loanHistory SET ReturnedDate = '" . date('Y-m-d') . "' WHERE BookId = '" . $id . "'";
 	if ($conn->query($sql) === TRUE) {
-		return "Success";
+		return ["success" => true];
 	} else {
-		return "Fail";
+		return ["success" => false];
 	}
 }
 ?>
