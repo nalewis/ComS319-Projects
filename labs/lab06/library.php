@@ -1,51 +1,8 @@
 <?php
 	session_start();
-	include("classes.php");
+	//include("classes.php");
+	//include("functions.php");
 	
-function updateDisplay(){
-	
-	//var_dump(getShelves());
-	$shelves = getShelves();
-	$books = getBooks();
-	//var_dump($books);
-	//var_dump($shelves[1]->display());
-	$table = "<table border=\'2\'><tr>";
-	foreach($shelves as $shelf){
-		$table .= $shelf->display();
-	}
-	$table .= "</tr>";
-	if(!is_null($books)){
-		$i = 0;
-		while($i < 20){
-			$table .= "<tr>";
-			if(array_key_exists($i, $books["Art"])){
-				$table .= $books["Art"][$i]->display();
-			} else {
-				$table .= "<td></td>";
-			}
-			if(array_key_exists($i, $books["Science"])){
-				$table .= $books["Science"][$i]->display();
-			} else {
-				$table .= "<td></td>";
-			}
-			if(array_key_exists($i, $books["Sport"])){
-				$table .= $books["Sport"][$i]->display();
-			} else {
-				$table .= "<td></td>";
-			}
-			if(array_key_exists($i, $books["Literature"])){
-				$table .= $books["Literature"][$i]->display();
-			} else {
-				$table .= "<td></td>";
-			}
-			$table .= "</tr>";
-			$i++;
-		}
-	}
-	$table .= "</table>";
-	echo $table;
-
-}
 ?>
 
 <HTML>
@@ -86,8 +43,7 @@ function updateDisplay(){
 <?php } ?>
 
 <div id="posts">
-	<h4>Shelves</h4>
-	<?= updateDisplay(); ?>
+	<table id="table" border=2></table>
 </div>
 
 <br><br>
@@ -98,23 +54,49 @@ function updateDisplay(){
 
 <script>
 	$('#addBook').click(function(){
-		if($("#bookId").val != "" && $("#author").val != "" && $("#title").val != ""){
+		if($.isNumeric($("#bookId").val()) && $("#bookId").val() != "" && $("#author").val() != "" && $("#title").val() != ""){
 			$.post("functions.php", {action: "addBook", bookId: $("#bookId").val(), author: $("#author").val(), title: $('#title').val(), shelf: $('#shelves').val()}, 
 					function(data){
-						console.log(data);
+						update();
+						$("#bookId").val("");
+						$("#author").val("");
+						$("#title").val("");
 					});
 		}
 	});
+	
 	$("#deleteSubmit").click( function(){
 		$.post("library.php", {type: "deleteBook", id: $("#bookid").val()},
 			function(){
 				//success function here
 			});
 	});
+	
 	$("#historySubmit").click( function(){
 		$.post("library.php", {type: "history", title: $("#targetUsername").val()},
 			function(){
 				//success function here
 			});
 	});
+	
+	function addListener(){
+		var tds = document.getElementsByTagName("td");
+		for(var i = 0; i < tds.length; i++){
+			tds[i].addEventListener("click", 
+				function(){
+					var id = this.innerText.substring(0);
+				}, false);
+		}
+	}
+	
+	function update(){
+		$.post("functions.php", {action: "display"},
+			function(data){
+				document.getElementById("table").innerHTML = data;
+			});
+	}
+	
+$(function() {
+    update();
+});
 </script>
