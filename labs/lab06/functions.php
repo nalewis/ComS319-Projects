@@ -37,6 +37,16 @@ if(($_REQUEST["action"] == "deleteBook")){
 	}
 }
 
+if(($_REQUEST["action"] == "history")){
+	if ($_SESSION["userInfo"]["Librarian"] == 1){
+		$response = getHistory($_REQUEST["username"]);
+		echo json_encode($response);
+	}else{
+		$response = ["success" => false, "message" => "Invalid credentials. Only librarians may view user history."];
+		echo json_encode($response);
+	}
+}
+
 function updateDisplay(){
 	
 	//var_dump(getShelves());
@@ -217,7 +227,6 @@ function getBook($id){
 }
 
 function deleteBook($idToDelete){
-	var_dump($_SESSION);
 	$username = "dbu319t38"; 
 	$password = "!U8refRA"; 
 	$dbServer = "mysql.cs.iastate.edu";  
@@ -244,5 +253,36 @@ function deleteBook($idToDelete){
 	}else{
 		return ["success" => false, "message" => "Unable to delete specified book."];
 	}
+}
+
+function getHistory($username)
+{
+	$username = "dbu319t38"; 
+	$password = "!U8refRA"; 
+	$dbServer = "mysql.cs.iastate.edu";  
+	$dbName   = "db319t38"; 
+	
+	// Create connection 
+	$conn = new mysqli($dbServer, $username, $password, $dbName);
+	
+	// Check connection 
+	if ($conn->connect_error) { 
+		die("Connection failed: " . $conn->connect_error); 
+	}
+
+	$sql = "SELECT * from loanHistory WHERE UserName = " . $username;	
+
+	$result = $conn->query($sql);
+
+	if ($result->num_rows > 0)
+	{
+		while($row = $result->fetch_assoc()) {
+			$conn->close();
+			return ["success" => true, "username" => $row["UserName"], "bookid" => $row["BookId"], "duedate" => $row["DueDate"], "returneddate" => $row["ReturnedDate"]];
+		}
+	} else {
+		$conn->close();
+		return ["success" => false, "message" => "No history returned for specified user."];
+	} 
 }
 ?>

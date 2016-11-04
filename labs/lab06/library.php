@@ -87,10 +87,10 @@ function checkAvailable(id){
 							//TODO Can't return this so you need to call the next function directly
 							if(data == "true"){
 								console.log("success");
-								//return true;
+							//	return true;
 							} else {
 								console.log("fail");
-								//return false;
+							//	return false;
 							}
 						});
 		}
@@ -109,10 +109,12 @@ function checkAvailable(id){
 	});
 	
 	$("#borrowSubmit").click(function(){
+		$isAvailable = checkAvailable($("#borrowbookid").val());
+		console.log($isAvailable);
 		if(checkAvailable($("#borrowbookid").val())){
-			console.log("success");
+			console.log("success~~");
 		} else {
-			console.log("hi");
+			console.log("hi~~");
 		}
 		
 	});
@@ -136,8 +138,8 @@ function checkAvailable(id){
 	});
 	
 	$("#historySubmit").click( function(){
-		$.post("library.php", {type: "history", title: $("#targetUsername").val()},
-			function(){
+		$.post("functions.php", {action: "history", username: $("#targetUsername").val()},
+			function(data){
 				//success function here
 			});
 	});
