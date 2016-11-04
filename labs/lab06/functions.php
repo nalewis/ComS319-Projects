@@ -2,6 +2,8 @@
 
 include("classes.php");
 
+session_start();
+
 if($_REQUEST["action"] == "addBook"){
 	$user = new Student();
 	$user->addBook($_REQUEST["bookId"], $_REQUEST["title"], $_REQUEST["author"], $_REQUEST["shelf"]);
@@ -23,6 +25,16 @@ if($_REQUEST["action"] == "checkAvailable"){
 	 } else {
 		 echo "false";
 	 }
+}
+
+if(($_REQUEST["action"] == "deleteBook")){
+	if ($_SESSION["userInfo"]["Librarian"] == 1){
+		$response = deleteBook($_REQUEST["id"]);
+		echo json_encode($response);
+	}else{
+		$response = ["success" => false, "message" => "Invalid credentials. Only librarians may delete books."];
+		echo json_encode($response);
+	}
 }
 
 function updateDisplay(){
@@ -201,6 +213,36 @@ function getBook($id){
 	} else {
 		$conn->close();
 		//echo "0 results"; 
+	}
+}
+
+function deleteBook($idToDelete){
+	var_dump($_SESSION);
+	$username = "dbu319t38"; 
+	$password = "!U8refRA"; 
+	$dbServer = "mysql.cs.iastate.edu";  
+	$dbName   = "db319t38"; 
+	
+	// Create connection 
+	$conn = new mysqli($dbServer, $username, $password, $dbName);
+	
+	// Check connection 
+	if ($conn->connect_error) { 
+		die("Connection failed: " . $conn->connect_error); 
+	}
+
+	$sql = "DELETE FROM books WHERE BookId = " . $idToDelete;
+	$result = $conn->query($sql);
+	$rowsDeleted = $conn->affected_rows;
+
+	$conn->close();
+
+	if ($result && ($rowsDeleted > 0)){
+		return ["success" => true];
+	}else if ($result && ($rowsDeleted == 0)){
+		return ["success" => false, "message" => "Unable to locate book with specified id."];
+	}else{
+		return ["success" => false, "message" => "Unable to delete specified book."];
 	}
 }
 ?>

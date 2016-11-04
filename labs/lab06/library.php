@@ -30,8 +30,9 @@
 	</div>
 	<div id = "deleteForm">
 		<h4>Delete a Book</h4>
-			Book ID:<input type = "text" id = "bookid">
-			<button id = "deleteSubmit">Delete Book</button>
+		Book ID:<input type = "text" id = "bookid">
+		<button id = "deleteSubmit">Delete Book</button>
+		<div id="deleteStatusMessage"></div>
 	</div>
 	<div id = "historyForm">
 		<h4>View Borrow History</h4>
@@ -117,10 +118,21 @@ function checkAvailable(id){
 	});
 	
 	$("#deleteSubmit").click( function(){
-		$.post("library.php", {type: "deleteBook", id: $("#bookid").val()},
-			function(){
-				//success function here
+		if ($("#bookid").val() != "")
+		{
+			$.post("functions.php", {action: "deleteBook", id: $("#bookid").val()},
+			function(data){
+				$dataJson = $.parseJSON(data);
+
+				if ($dataJson.success)
+				{
+					$("#deleteStatusMessage").text("Book " + $("#bookid").val() + " deleted.");
+				} else {
+					
+					$("#deleteStatusMessage").text($dataJson.message);
+				}
 			});
+		}
 	});
 	
 	$("#historySubmit").click( function(){
