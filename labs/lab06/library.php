@@ -78,23 +78,6 @@
 </HTML>
 
 <script>
-
-function checkAvailable(id){
-	if($.isNumeric(id)){
-		var answer = '';
-			$.post("functions.php", {action: "checkAvailable", id: id}, 
-						function(data){
-							//TODO Can't return this so you need to call the next function directly
-							if(data == "true"){
-								console.log("success");
-							//	return true;
-							} else {
-								console.log("fail");
-							//	return false;
-							}
-						});
-		}
-}
 	$('#addBook').click(function(){
 		if($.isNumeric($("#bookId").val()) && $("#bookId").val() != "" && $("#author").val() != "" && $("#title").val() != ""){
 			$.post("functions.php", {action: "addBook", bookId: $("#bookId").val(), author: $("#author").val(), title: $('#title').val(), shelf: $('#shelves').val()}, 
@@ -109,14 +92,45 @@ function checkAvailable(id){
 	});
 	
 	$("#borrowSubmit").click(function(){
-		$isAvailable = checkAvailable($("#borrowbookid").val());
-		console.log($isAvailable);
-		if(checkAvailable($("#borrowbookid").val())){
-			console.log("success~~");
-		} else {
-			console.log("hi~~");
-		}
-		
+		var id = $("#borrowbookid").val();
+		if($.isNumeric(id)){
+			$.post("functions.php", {action: "checkAvailable", id: id}, 
+				function(data){
+					//TODO Can't return this so you need to call the next function directly
+					if(data == "true"){
+						console.log("success");
+						$.post("functions.php", {action: "borrow", id: id}, 
+							function(data){
+								console.log("double success!");
+							
+							});
+					} else {
+						console.log("fail");
+					//	return false;
+					}
+				});
+		}		
+	});
+	
+	$("#returnSubmit").click(function(){
+		var id = $("#returnbookid").val();
+		if($.isNumeric(id)){
+			$.post("functions.php", {action: "checkAvailable", id: id}, 
+				function(data){
+					//TODO Can't return this so you need to call the next function directly
+					if(data == "false"){
+						console.log("success");
+						$.post("functions.php", {action: "return", id: id}, 
+							function(data){
+								console.log("double success!");
+							
+							});
+					} else {
+						console.log("fail");
+					//	return false;
+					}
+				});
+		}		
 	});
 	
 	$("#deleteSubmit").click( function(){

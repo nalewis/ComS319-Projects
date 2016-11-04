@@ -27,6 +27,16 @@ if($_REQUEST["action"] == "checkAvailable"){
 	 }
 }
 
+if($_REQUEST["action"] == "borrow"){
+	 $response = borrowBook($_REQUEST["id"]);
+	 echo json_encode($response);
+}
+
+if($_REQUEST["action"] == "return"){
+	 $response = returnBook($_REQUEST["id"]);
+	 echo json_encode($response);
+}
+
 if(($_REQUEST["action"] == "deleteBook")){
 	if ($_SESSION["userInfo"]["Librarian"] == 1){
 		$response = deleteBook($_REQUEST["id"]);
@@ -284,5 +294,51 @@ function getHistory($username)
 		$conn->close();
 		return ["success" => false, "message" => "No history returned for specified user."];
 	} 
+}
+
+function borrowBook($id){
+	$username = "dbu319t38"; 
+	$password = "!U8refRA"; 
+	$dbServer = "mysql.cs.iastate.edu";  
+	$dbName   = "db319t38"; 
+	
+	// Create connection 
+	$conn = new mysqli($dbServer, $username, $password, $dbName);
+	
+	// Check connection 
+	if ($conn->connect_error) { 
+		die("Connection failed: " . $conn->connect_error); 
+	}
+
+	$sql = "UPDATE books SET Availability = '0' WHERE BookId = " . $id;
+
+	if ($conn->query($sql) === TRUE) {
+		return "Success";
+	} else {
+		return "Fail";
+	}
+}
+
+function returnBook($id){
+	$username = "dbu319t38"; 
+	$password = "!U8refRA"; 
+	$dbServer = "mysql.cs.iastate.edu";  
+	$dbName   = "db319t38"; 
+	
+	// Create connection 
+	$conn = new mysqli($dbServer, $username, $password, $dbName);
+	
+	// Check connection 
+	if ($conn->connect_error) { 
+		die("Connection failed: " . $conn->connect_error); 
+	}
+
+	$sql = "UPDATE books SET Availability = '1' WHERE BookId = " . $id;
+
+	if ($conn->query($sql) === TRUE) {
+		return "Success";
+	} else {
+		return "Fail";
+	}
 }
 ?>
