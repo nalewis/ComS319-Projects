@@ -104,7 +104,7 @@ function getBooks(){
 		return $returnArray;
 	} else {
 		$conn->close();
-		echo "0 results"; 
+		//echo "0 results"; 
 	}
 }
 
