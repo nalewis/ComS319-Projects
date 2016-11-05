@@ -4,7 +4,8 @@ class student{
 	public $isLibrarian;
 	public $username;
 	public $firstName;
-	
+
+	//Returns the information associated with a book with the specified id.	
 	function getBook($id){
 		$username = "dbu319t38"; 
 		$password = "!U8refRA"; 
@@ -33,7 +34,8 @@ class student{
 			//echo "0 results"; 
 		}
 	}
-	
+
+	//Attempts to delete a book with the given id from the database.	
 	function deleteBook($idToDelete){
 		$username = "dbu319t38"; 
 		$password = "!U8refRA"; 
@@ -52,6 +54,10 @@ class student{
 		$result = $conn->query($sql);
 		$rowsDeleted = $conn->affected_rows;
 	
+		$historySql = "DELETE FROM loanHistory WHERE BookId = " . $idToDelete;
+		$historyResult = $conn->query($historySql);
+		$historyRowsDeleted = $conn->affected_rows;
+		
 		$conn->close();
 	
 		if ($result && ($rowsDeleted > 0)){
@@ -62,9 +68,9 @@ class student{
 			return ["success" => false, "message" => "Unable to delete specified book."];
 		}
 	}
-	
+
+	//Attempts to add a book with the given id, title, and author to the given shelf.	
 	function addBook($id, $title, $author, $shelf){
-		//TODO check if shelf full
 		$username = "dbu319t38"; 
 		$password = "!U8refRA"; 
 		$dbServer = "mysql.cs.iastate.edu";  
@@ -78,30 +84,43 @@ class student{
 			die("Connection failed: " . $conn->connect_error); 
 		}
 		
-		//add to books
-		$sql = "INSERT INTO books (BookId, BookTitle, Author) VALUES ('" . $id . "', '" . $title . "', '" . $author . "')";
-		var_dump($id);
-		$result = $conn->query($sql);
-		
-		if ($conn->query($sql) === TRUE) { 
-			echo "New record created successfully<br>"; 
-		} else { 
-			echo "Error: " . $sql . "<br>" . $conn->error; 
-		}
-		
-		//add to book locations
-		$sql = "INSERT INTO bookLocations (BookID, ShelfID) VALUES ('" . $id . "', '" . $shelf . "')";
-		$result = $conn->query($sql);
-		
-		if ($conn->query($sql) === TRUE) { 
-			echo "New record created successfully<br>"; 
-		} else { 
-			echo "Error: " . $sql . "<br>" . $conn->error; 
-		}
-		
-		$conn->close();
-	}
+		//Check to see if the shelf is full
+		$shelfFullSql = "SELECT ShelfID, count(*) FROM " . $dbName . ".bookLocations WHERE ShelfId = " . $shelf . " group by ShelfID";	
+		$shelfFullResult = $conn->query($shelfFullSql);
+		$shelfFullValue = $shelfFullResult->fetch_assoc();
+
+		if ( ($shelfFullResult->num_rows != 1) || ($shelfFullValue["count(*)"] >= 20) ){
+			echo "Error: Selected shelf is full";
+		} else {
+
+
 	
+			//add to books
+			$sql = "INSERT INTO books (BookId, BookTitle, Author) VALUES ('" . $id . "', '" . $title . "', '" . $author . "')";
+			var_dump($id);
+			$result = $conn->query($sql);
+			
+			if ($conn->query($sql) === TRUE) { 
+				echo "New record created successfully<br>"; 
+			} else { 
+				echo "Error: " . $sql . "<br>" . $conn->error; 
+			}
+			
+			//add to book locations
+			$sql = "INSERT INTO bookLocations (BookID, ShelfID) VALUES ('" . $id . "', '" . $shelf . "')";
+			$result = $conn->query($sql);
+			
+			if ($conn->query($sql) === TRUE) { 
+				echo "New record created successfully<br>"; 
+			} else { 
+				echo "Error: " . $sql . "<br>" . $conn->error; 
+			}
+				
+			$conn->close();
+		}
+	}
+
+	//Returns any history for the given username, if any history exists in the database.	
 	function getHistory($targetUsername)
 	{
 		$username = "dbu319t38"; 
@@ -120,7 +139,8 @@ class student{
 		$sql = "SELECT * from " . $dbName . ".loanHistory WHERE UserName = \"" . $targetUsername . "\" ORDER BY ReturnedDate ASC";	
 
 		$result = $conn->query($sql);
-		
+	
+		//If there is history for this user, create a table of the user's history. Otherwise, return an error.	
 		if ($result->num_rows > 0)
 		{
 			
@@ -139,7 +159,8 @@ class student{
 			return ["success" => false, "message" => "No history returned for specified user."];
 		} 
 	}
-	
+
+	//Checks if the logged in user is the borrower of the book with the given id.	
 	function isBorrower($id)
 	{
 		$username = "dbu319t38"; 
@@ -174,7 +195,8 @@ class student{
 			return ["success" => false];
 		} 
 	}
-	
+
+	//Attempts to borrow the book with the given id for the logged in user.	
 	function borrowBook($id){
 		$username = "dbu319t38"; 
 		$password = "!U8refRA"; 
@@ -200,7 +222,8 @@ class student{
 			return ["success" => false];
 		}
 	}
-	
+
+	//Attempts to return the book with the given id back to the shelf.	
 	function returnBook($id){
 		$username = "dbu319t38"; 
 		$password = "!U8refRA"; 
@@ -250,6 +273,7 @@ class book{
 
 class library{
 
+	//Returns a table representing the current state of the shelves.
 	function updateDisplay(){
 		$shelves = self::getShelves();
 		$books = self::getBooks();
@@ -289,7 +313,8 @@ class library{
 		//$table .= "</table>";
 		return $table;
 	}
-	
+
+	//Returns information contained in the shelves database table.	
 	function getShelves(){
 		$username = "dbu319t38"; 
 		$password = "!U8refRA"; 

@@ -1,8 +1,5 @@
 <?php
 	session_start();
-	//include("classes.php");
-	//include("functions.php");
-	
 ?>
 
 <HTML>
@@ -10,8 +7,10 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </head>
 <body>
-<?php //var_dump($_SESSION); ?>
 
+	<div style="float:right">
+		<?= "Logged in as " . $_SESSION["userInfo"]["userName"] ?>
+	</div>
 <?php if($_SESSION["userInfo"]["Librarian"] == '1'){ ?>
 <div id="options">
 	<h2>Librarian options:</h2>
@@ -38,7 +37,7 @@
 		<h3>View Borrow History</h3>
 			<b>Username:</b> <input type = "text" id = "targetUsername">
 			<button id = "historySubmit">View Borrow History</button>
-			<div id="historyView"> <table id="historyTable"></table></div>
+			<div id="historyView"></div>
 			<br>	
 	</div>
 	<br>
@@ -83,6 +82,7 @@
 </HTML>
 
 <script>
+	//Attempt to add the book to the database when the "Add Book" button is pressed.
 	$('#addBook').click(function(){
 		if($.isNumeric($("#bookId").val()) && $("#bookId").val() != "" && $("#author").val() != "" && $("#title").val() != ""){
 			$.post("functions.php", {action: "addBook", bookId: $("#bookId").val(), author: $("#author").val(), title: $('#title').val(), shelf: $('#shelves').val()}, 
@@ -97,6 +97,7 @@
 		}
 	});
 	
+	//When the "Borrow Book" button is pressed, attempt to borrow the book with the entered id.
 	$("#borrowSubmit").click(function(){
 		var id = $("#borrowbookid").val();
 		clearMessages();
@@ -117,7 +118,8 @@
 				});
 		}		
 	});
-	
+
+	//When the "Return book" buttion is pressed, attempt to return the book with the entered id.	
 	$("#returnSubmit").click(function(){
 		var id = $("#returnbookid").val();
 		clearMessages();
@@ -151,6 +153,7 @@
 		}		
 	});
 	
+	//When the "Delete Book" button is pressed, remove the book from the database.
 	$("#deleteSubmit").click( function(){
 		clearMessages();
 		if ($("#deletebookid").val() != "")
@@ -170,21 +173,24 @@
 			});
 		}
 	});
-	
+
+	//When the "View Borrow History" button is pressed, get the entered user's history from the database.	
 	$("#historySubmit").click( function(){
-		$.post("functions.php", {action: "history", username: $("#targetUsername").val()},
-			function(data){
-				parsedResponse = $.parseJSON(data);
-				//success function here
-				if (parsedResponse.success){
-					console.log("foo");
-					$("#historyView").html((parsedResponse.historyTable));
-				} else {
-					$("#historyView").text(parsedResponse.message);
-				}
-			});
+		if ($("#targetUsername").val() != "")
+		{
+			$.post("functions.php", {action: "history", username: $("#targetUsername").val()},
+				function(data){
+					parsedResponse = $.parseJSON(data);
+					if (parsedResponse.success){
+						$("#historyView").html((parsedResponse.historyTable));
+					} else {
+						$("#historyView").text(parsedResponse.message);
+					}
+				});
+		}
 	});
 	
+	//Adds event listeners to support clicking on a book id to view the book information.
 	function addListeners(){
 		$("td").off();
 		var tds = $("td");
@@ -199,13 +205,14 @@
 							$("#infoId").text(data["id"]);
 							$("#infoTitle").text(data["title"]);
 							$("#infoAuthor").text(data["author"]);
-							$("#infoAvailable").text(data["availability"]);
+							$("#infoAvailable").text( ((data["availability"] == "1") ? "Yes" : "No") );
 						});
 					}
 				}, false);
 		}
 	}
-	
+
+	//Hides the status messages and refreshes the shelves table.	
 	function update(){
 		$.post("functions.php", {action: "display"},
 			function(data){
@@ -213,7 +220,8 @@
 				document.getElementById("table").innerHTML = data;
 			});
 	}
-	
+
+	//Resets all of the status messages.	
 	function clearMessages(){
 		$("#deleteStatusMessage").empty();
 		$("#borrowStatusMessage").empty();
