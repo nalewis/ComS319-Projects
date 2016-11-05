@@ -102,7 +102,7 @@ class student{
 		$conn->close();
 	}
 	
-	function getHistory($username)
+	function getHistory($targetUsername)
 	{
 		$username = "dbu319t38"; 
 		$password = "!U8refRA"; 
@@ -117,16 +117,23 @@ class student{
 			die("Connection failed: " . $conn->connect_error); 
 		}
 	
-		$sql = "SELECT * from loanHistory WHERE UserName = " . $username;	
-	
+		$sql = "SELECT * from " . $dbName . ".loanHistory WHERE UserName = \"" . $targetUsername . "\" ORDER BY ReturnedDate ASC";	
+
 		$result = $conn->query($sql);
-	
+		
 		if ($result->num_rows > 0)
 		{
-			while($row = $result->fetch_assoc()) {
-				$conn->close();
-				return ["success" => true, "username" => $row["UserName"], "bookid" => $row["BookId"], "duedate" => $row["DueDate"], "returneddate" => $row["ReturnedDate"]];
+			
+			$historyTable = "<table border=2 ><tr><th>Book ID</th><th>Due Date</th><th>Returned Date</th></tr>";
+			
+			while ($row = $result->fetch_assoc())
+			{
+				$historyTable .= ( "<tr><td>" . $row["BookId"] . "</td><td>" . $row["DueDate"] . "</td><td>" . ($row["ReturnedDate"] ? $row["ReturnedDate"] : "Not yet returned") . "</td></tr>");
 			}
+			$historyTable .= "</table>";
+
+			$conn->close();
+			return ["success" => true, "historyTable" => $historyTable];
 		} else {
 			$conn->close();
 			return ["success" => false, "message" => "No history returned for specified user."];

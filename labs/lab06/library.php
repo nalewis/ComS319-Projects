@@ -36,8 +36,10 @@
 	</div>
 	<div id = "historyForm">
 		<h4>View Borrow History</h4>
-			Username:<input type = "text" id = "targetUsername">
-			<button id = "historySubmit">View Borrow History</button>
+		Username:<input type = "text" id = "targetUsername">
+		<button id = "historySubmit">View Borrow History</button>
+		<div id="historyView"> <table id="historyTable"></table></div>
+		<br>	
 	</div>
 
 </div>
@@ -178,7 +180,14 @@
 	$("#historySubmit").click( function(){
 		$.post("functions.php", {action: "history", username: $("#targetUsername").val()},
 			function(data){
+				parsedResponse = $.parseJSON(data);
 				//success function here
+				if (parsedResponse.success){
+					console.log("foo");
+					$("#historyView").html((parsedResponse.historyTable));
+				} else {
+					$("#historyView").text(parsedResponse.message);
+				}
 			});
 	});
 	
