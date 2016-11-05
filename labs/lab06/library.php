@@ -17,10 +17,10 @@
 	<h3>Librarian options:</h3>
 	<div id = "addForm">
 		<h4>Add a Book</h4>
-			Book Id: <input type="text" id="bookId"><br>
-			Author: <input type="text" id="author"><br>
-			Title: <input type="text" id="title"><br>
-			Shelf: <select id="shelves">
+			<b>Book Id:</b> <input type="text" id="bookId"><br>
+			<b>Author:</b> <input type="text" id="author"><br>
+			<b>Title:</b> <input type="text" id="title"><br>
+			<b>Shelf:</b> <select id="shelves">
 				<option value="0">Art</option>
 				<option value="1">Science</option>
 				<option value="2">Sport</option>
@@ -30,7 +30,7 @@
 	</div>
 	<div id = "deleteForm">
 		<h4>Delete a Book</h4>
-		Book ID:<input type = "text" id = "bookid">
+		Book ID:<input type = "text" id = "deletebookid">
 		<button id = "deleteSubmit">Delete Book</button>
 		<div id="deleteStatusMessage"></div>
 	</div>
@@ -54,7 +54,7 @@
 			Book ID:<input type = "text" id = "returnbookid">
 			<button id = "returnSubmit">Return Book</button>
 	</div>
-
+	<br>
 </div>
 
 <?php } ?>
@@ -65,10 +65,10 @@
 
 <div id"bookInfo">
 	<h4>Book Info</h4>
-	Book Id: <span id="infoId"></span><br>
-	Title: <span id="infoTitle"></span><br>
-	Author: <span id="infoAuthor"></span><br>
-	Available: <span id="infoAvailable"></span>
+	<b>Book Id:</b> <span id="infoId"></span><br>
+	<b>Title:</b> <span id="infoTitle"></span><br>
+	<b>Author:</b> <span id="infoAuthor"></span><br>
+	<b>Available:</b> <span id="infoAvailable"></span>
 </div>
 
 <br><br>
@@ -147,7 +147,7 @@
 	});
 	
 	$("#deleteSubmit").click( function(){
-		if ($("#bookid").val() != "")
+		if ($("#deletebookid").val() != "")
 		{
 			$.post("functions.php", {action: "deleteBook", id: $("#bookid").val()},
 			function(data){
@@ -155,7 +155,9 @@
 
 				if ($dataJson.success)
 				{
+					$("#deletebookid").val("");
 					$("#deleteStatusMessage").text("Book " + $("#bookid").val() + " deleted.");
+					update();
 				} else {
 					
 					$("#deleteStatusMessage").text($dataJson.message);
