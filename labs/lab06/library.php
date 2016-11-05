@@ -218,6 +218,7 @@
 			function(data){
 				clearMessages();
 				document.getElementById("table").innerHTML = data;
+				addListeners();
 			});
 	}
 
