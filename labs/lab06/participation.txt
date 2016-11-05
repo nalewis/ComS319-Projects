@@ -1,0 +1,2 @@
+Nick worked on: Database setup, class creation, login/logout pages, librarian form, jquery events, adding/deleting books, borrowing/returning books.
+Evan worked on: Librarian form, jquery events, history viewing, borrowing/returning books, adding/deleting books
