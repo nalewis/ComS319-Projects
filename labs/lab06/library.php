@@ -14,9 +14,9 @@
 
 <?php if($_SESSION["userInfo"]["Librarian"] == '1'){ ?>
 <div id="options">
-	<h3>Librarian options:</h3>
+	<h2>Librarian options:</h2>
 	<div id = "addForm">
-		<h4>Add a Book</h4>
+		<h3>Add a Book</h3>
 			<b>Book Id:</b> <input type="text" id="bookId"><br>
 			<b>Author:</b> <input type="text" id="author"><br>
 			<b>Title:</b> <input type="text" id="title"><br>
@@ -29,32 +29,33 @@
 		<button id="addBook" type="button">Add Book</button>
 	</div>
 	<div id = "deleteForm">
-		<h4>Delete a Book</h4>
-		Book ID:<input type = "text" id = "deletebookid">
+		<h3>Delete a Book</h3>
+		<b>Book ID:</b> <input type = "text" id = "deletebookid">
 		<button id = "deleteSubmit">Delete Book</button>
 		<div id="deleteStatusMessage"></div>
 	</div>
 	<div id = "historyForm">
-		<h4>View Borrow History</h4>
-		Username:<input type = "text" id = "targetUsername">
-		<button id = "historySubmit">View Borrow History</button>
-		<div id="historyView"> <table id="historyTable"></table></div>
-		<br>	
+		<h3>View Borrow History</h3>
+			<b>Username:</b> <input type = "text" id = "targetUsername">
+			<button id = "historySubmit">View Borrow History</button>
+			<div id="historyView"> <table id="historyTable"></table></div>
+			<br>	
 	</div>
+	<br>
 
 </div>
 <?php } else { ?>
 <div id="options">
-	<h3>Student options:</h3>
+	<h2>Student options:</h2>
 	<div id = "borrowForm">
-		<h4>Borrow a Book</h4>
-			Book ID:<input type = "text" id = "borrowbookid">
+		<h3>Borrow a Book</h3>
+			<b>Book ID:</b> <input type = "text" id = "borrowbookid">
 			<button id = "borrowSubmit">Borrow Book</button>
 			<div id="borrowStatusMessage"></div>
 	</div>
 	<div id = "returnForm">
-		<h4>Return a book</h4>
-			Book ID:<input type = "text" id = "returnbookid">
+		<h3>Return a book</h3>
+			<b>Book ID:</b> <input type = "text" id = "returnbookid">
 			<button id = "returnSubmit">Return Book</button>
 			<div id="returnStatusMessage"></div>
 	</div>
@@ -68,7 +69,7 @@
 <br><br>
 
 <div id"bookInfo">
-	<h4>Book Info</h4>
+	<h3>Book Info</h3>
 	<b>Book Id:</b> <span id="infoId"></span><br>
 	<b>Title:</b> <span id="infoTitle"></span><br>
 	<b>Author:</b> <span id="infoAuthor"></span><br>
@@ -87,6 +88,7 @@
 			$.post("functions.php", {action: "addBook", bookId: $("#bookId").val(), author: $("#author").val(), title: $('#title').val(), shelf: $('#shelves').val()}, 
 					function(data){
 						update();
+						clearMessages();
 						$("#bookId").val("");
 						$("#author").val("");
 						$("#title").val("");
@@ -97,25 +99,20 @@
 	
 	$("#borrowSubmit").click(function(){
 		var id = $("#borrowbookid").val();
+		clearMessages();
 		if($.isNumeric(id)){
 			$.post("functions.php", {action: "checkAvailable", id: id}, 
 				function(json){
 					var data = JSON.parse(json);
-					console.log(data);
-					console.log(data["success"]);
 					if(data["success"] == true){
-						//console.log("success");
 						$.post("functions.php", {action: "borrow", id: id}, 
 							function(json){
 								var data = JSON.parse(json);
-								//TODO popup message?
 								$("#borrowStatusMessage").text("Successfully borrowed book.");
-								console.log(json["success"]);
 								$("#borrowbookid").val("");
 							});
 					} else {
 						$("#borrowStatusMessage").text("Unable to borrow specified book.");
-						console.log("fail");
 					}
 				});
 		}		
@@ -123,6 +120,7 @@
 	
 	$("#returnSubmit").click(function(){
 		var id = $("#returnbookid").val();
+		clearMessages();
 		if($.isNumeric(id)){
 			//Check if book is already checked out
 			$.post("functions.php", {action: "checkAvailable", id: id}, 
@@ -138,9 +136,7 @@
 									$.post("functions.php", {action: "return", id: id}, 
 										function(json){
 											var data = JSON.parse(json);
-
-									$("#returnStatusMessage").text("Book successfully returned.");
-											console.log(data["success"]);
+											$("#returnStatusMessage").text("Book successfully returned.");
 											$("#returnbookid").val("");
 										
 										});
@@ -149,28 +145,26 @@
 								}
 							});
 					} else {
-						console.log("fail");
 						$("#returnStatusMessage").text("Unable to return the specified book");
-					//	return false;
 					}
 				});
 		}		
 	});
 	
 	$("#deleteSubmit").click( function(){
+		clearMessages();
 		if ($("#deletebookid").val() != "")
 		{
-			$.post("functions.php", {action: "deleteBook", id: $("#bookid").val()},
+			$.post("functions.php", {action: "deleteBook", id: $("#deletebookid").val()},
 			function(data){
+				console.log(data);
 				$dataJson = $.parseJSON(data);
-
 				if ($dataJson.success)
 				{
-					$("#deletebookid").val("");
-					$("#deleteStatusMessage").text("Book " + $("#bookid").val() + " deleted.");
 					update();
+					$("#deletebookid").val("");
+					$("#deleteStatusMessage").text("Book " + $("#deletebookid").val() + " deleted.");
 				} else {
-					
 					$("#deleteStatusMessage").text($dataJson.message);
 				}
 			});
@@ -215,8 +209,15 @@
 	function update(){
 		$.post("functions.php", {action: "display"},
 			function(data){
+				clearMessages();
 				document.getElementById("table").innerHTML = data;
 			});
+	}
+	
+	function clearMessages(){
+		$("#deleteStatusMessage").empty();
+		$("#borrowStatusMessage").empty();
+		$("#returnStatusMessage").empty();
 	}
 	
 	$("#table").one("click", function(){addListeners()});
