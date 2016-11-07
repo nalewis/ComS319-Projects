@@ -1,0 +1,160 @@
+<meta charset="UTF-8"> 
+<html>
+<head>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="js/game.js"></script>
+	<script src="js/player.js"></script>
+	<script src="js/bullet.js"></script>
+	<script src="js/target.js"></script>
+	<style>
+		body {
+			background-color: Grey;
+		}
+	</style>
+</head>
+<body>
+<div id="canvasContainer">
+	<canvas id="canvas" width="1000" height="800" style="border:2px solid #000000;"></canvas>
+</div>
+<div>
+	<ul>
+		<li>Spacebar to shoot</li>
+		<li>Left and right arrows to move</li>
+		<li>Up and down arrows to turn turret</li>
+	</ul>
+</div>
+
+<div style="width: 100%;"><img src="uploads/tank_small.png" id="player" style="position:relative; display:none;" width="150" height="80"/></div>
+<div style="width: 100%;"><img src="uploads/bullet.png" id="bullet" style="position:relative; display:none;"/></div>
+<div style="width: 100%;"><img src="uploads/bullseye_small.png" id="target" style="position:relative; display:none;"/></div>
+</body>
+
+<script type="text/javascript">
+
+//Major variables declared outside of document ready function for global availability
+var WIDTH = $("#canvas").width();
+var HEIGHT = $("#canvas").height();
+
+//array for which keys are pressed
+var key = [];
+
+//position
+var playerWidth = $('#player').width();
+var playerHeight = $('#player').height();
+var playerx = WIDTH / 4;
+var playery = HEIGHT - (playerHeight - 5);
+
+//game variables
+var game = new Game();
+const fps = 60;
+const gameLength = 30;
+var timeLeft = gameLength;
+var previousSecond = 0;
+var gameOver = false;
+var score = 0;
+var highScore = 0;
+
+//canvas
+var can = document.getElementById('canvas').getContext("2d");
+
+	$(document).ready(function(){
+		
+		$(document).keydown(function (evt)
+		{
+			key[evt.key] = true;
+		});
+
+		$(document).keyup(function (evt)
+		{
+			key[evt.key] = false;
+		});
+
+		function init()
+		{
+			//initializes blank array of objects to be manipulated
+			game = new Game();
+			
+			game.add(new Player(document.getElementById('player'), playerx, playery, playerWidth, playerHeight));
+
+			game.add(new Target(document.getElementById("target")));
+			setInterval(loop,1000/fps);
+		}
+		
+		function loop()
+		{
+			if (!gameOver)
+			{
+				if (Math.random() > 0.97)
+				{
+					game.add(new Target(document.getElementById("target")));
+				}
+
+				clear();
+				paint();
+				for (var i = game.objects.length - 1; i >= 0; i--)
+				{
+					game.get(i).draw(can);
+					game.get(i).update();
+				}
+				gameTime();
+			}
+			else {
+				endGame();
+			}
+		}
+		
+		function gameTime(){
+			var date = new Date();
+			var second = date.getSeconds();
+			if(timeLeft <= 0){
+				gameOver = true;
+			}
+			else if(second != previousSecond){
+				timeLeft--;
+				previousSecond = second;
+			}
+		}
+
+		
+		function paint()
+		{
+			var lastSpeed = game.get(0).getLastBulletSpeed();
+			var bulletSpeed = game.get(0).getBulletSpeed();
+			can.font = ("40px Verdana");
+			can.fillStyle = "Green";
+			can.fillText("Speed: ".concat(bulletSpeed), 5, HEIGHT);
+			can.fillText("Previous: ".concat(lastSpeed), 5, HEIGHT - 40);
+			can.fillText("Score: ".concat(score), 5, 40);
+			can.fillText("Time: ".concat(timeLeft), 5, 80);
+		}
+		
+		function clear()
+		{
+			can.clearRect(0, 0, WIDTH, HEIGHT);
+		}
+		
+		function endGame()
+	{
+		if (score > localStorage.getItem("highScore"))
+		{
+			localStorage.setItem("highScore", score);
+		}
+		can.fillStyle = "Black";
+		can.fillRect(0, 0, WIDTH, HEIGHT);
+		can.fillStyle = "White";
+		can.font = "24pt Calibri";
+		can.fillText("Score: " + score, WIDTH / 3, HEIGHT - 100);
+		can.fillText("Highscore: " + localStorage.getItem("highScore"), WIDTH / 3, HEIGHT - 75);
+		can.fillText("Press R to Restart", WIDTH / 3, HEIGHT - 50);
+
+		if (key['r'])
+		{
+			location.reload(true);
+		}
+	}
+		
+		init();
+	});
+	
+</script>
+</html>
