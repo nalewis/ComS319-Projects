@@ -11,7 +11,7 @@
 		<br>
 
 		Password:<br>
-		<input type="password" name="password" id="password"><div style="display: none; color: red;" id="passwordError"> Passwords don't match</div>
+		<input type="password" name="password" id="password"><div style="display: none; color: red;" id="passwordError"> Invalid Password</div>
 		<br>
 		<br>				
 
@@ -25,14 +25,7 @@
 $('#signup').click(function(){
 	
 	if(validate()){
-		var library;
-		if(document.getElementById("librarian").checked){
-			library = 1;
-		} else {
-			library = 0;
-		}
-		console.log(library);
-		$.post("signup.php", {username: $("#username").val(), pass: $("#password").val(), phone: $('#phone').val(), email: $('#email').val(), librarian: library, first: $('#first').val(), last: $('#last').val()}, 
+		$.post("signup.php", {username: $("#username").val(), pass: $("#password").val()}, 
 				function(data){
 					window.location.href = "login.html";
 				});
@@ -42,7 +35,7 @@ $('#signup').click(function(){
 function validate(){
 	var fail = false;
 	
-	if($('#password').val() != ''){
+	if($('#password').val() == ''){
 		$('#passwordError').show();
 		fail = true;
 	} else {

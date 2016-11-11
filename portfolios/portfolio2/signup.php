@@ -18,7 +18,6 @@ function mysqlstuff(){
 		echo "Connected successfully<br>"; 
 	}
 	
-	$phone = str_replace('-', '', $_REQUEST["phone"]);
 	$sql = "INSERT INTO users (userName, Password) VALUES ('" . $_REQUEST["username"] . "', '" . md5($_REQUEST["pass"]) . "')";
 	
 	if ($conn->query($sql) === TRUE) { 

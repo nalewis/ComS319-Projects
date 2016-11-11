@@ -6,67 +6,181 @@ session_start();
 
 date_default_timezone_set('America/Chicago');
 
-if($_REQUEST["action"] == "addBook"){
-	$user = new Student();
-	$user->addBook($_REQUEST["bookId"], $_REQUEST["title"], $_REQUEST["author"], $_REQUEST["shelf"]);
+if($_REQUEST["action"] == "newItem"){
+	echo json_encode(addItem($_REQUEST["name"], $_REQUEST["quantity"], $_REQUEST["value"]));
+}
+
+if($_REQUEST["action"] == "editItem"){
+	echo json_encode(editItem($_REQUEST["id"], $_REQUEST["name"], $_REQUEST["quantity"], $_REQUEST["value"]));
+}
+
+if($_REQUEST["action"] == "deleteItem"){
+	echo json_encode(deleteItem($_REQUEST["id"]));
 }
 
 if($_REQUEST["action"] == "display"){
-	$library = new library();
-	echo $library->updateDisplay();
+	echo updateDisplay();
 }
 
-if($_REQUEST["action"] == "getBook"){
-	$user = new Student();
-	echo json_encode($user->getBook($_REQUEST["id"]));
-}
-
-if($_REQUEST["action"] == "checkAvailable"){
-	$user = new student();
-	$response = $user->getBook($_REQUEST["id"]);
-	if($response["availability"] == 1){
-		echo json_encode(["success" => true]);
+function getItems(){
+	$username = "dbu319t38"; 
+	$password = "!U8refRA"; 
+	$dbServer = "mysql.cs.iastate.edu";  
+	$dbName   = "db319t38"; 
+	
+	// Create connection 
+	$conn = new mysqli($dbServer, $username, $password, $dbName);
+	
+	// Check connection 
+	if ($conn->connect_error) { 
+		die("Connection failed: " . $conn->connect_error); 
+	}
+	
+	$sql = "SELECT * FROM inventory";
+	
+	$result = $conn->query($sql); 
+	
+	$returnArray = [];
+	
+	if ($result->num_rows > 0) { 
+		// output data of each row 
+		while($row = $result->fetch_assoc()) {
+			array_push($returnArray, ["Id" => $row["Id"], "Name" => $row["Name"], "Quantity" => $row["Quantity"], "Value" => $row["Value"], "Updated" => $row["Updated"]]);
+		}
+		$conn->close();
+		return $returnArray;
 	} else {
-		echo json_encode(["success" => false]);
+		$conn->close();
 	}
 }
 
-if($_REQUEST["action"] == "borrow"){
-	$user = new Student();
-	echo json_encode($user->borrowBook($_REQUEST["id"]));
+//TODO
+//Returns the information associated with a book with the specified id.	
+function getItem($id){
+	$username = "dbu319t38"; 
+	$password = "!U8refRA"; 
+	$dbServer = "mysql.cs.iastate.edu";  
+	$dbName   = "db319t38"; 
+	
+	// Create connection 
+	$conn = new mysqli($dbServer, $username, $password, $dbName);
+	
+	// Check connection 
+	if ($conn->connect_error) { 
+		die("Connection failed: " . $conn->connect_error); 
+	}
+
+	$sql = "SELECT * FROM books WHERE BookId = " . $id;
+
+	$result = $conn->query($sql); 
+	if ($result->num_rows > 0) { 
+		// output data of each row 
+		while($row = $result->fetch_assoc()) {
+			$conn->close();
+			return ["id" => $row["BookId"], "title" => $row["BookTitle"], "author" => $row["Author"], "availability" => $row["Availability"]];
+		}
+	} else {
+		$conn->close();
+		//echo "0 results"; 
+	}
 }
 
-if($_REQUEST["action"] == "return"){
-	$user = new Student();
-	echo json_encode($user->returnBook($_REQUEST["id"]));
-}
+//Attempts to delete an item with the given id from the database.	
+function deleteItem($idToDelete){
+	$username = "dbu319t38"; 
+	$password = "!U8refRA"; 
+	$dbServer = "mysql.cs.iastate.edu";  
+	$dbName   = "db319t38"; 
+	
+	// Create connection 
+	$conn = new mysqli($dbServer, $username, $password, $dbName);
+	
+	// Check connection 
+	if ($conn->connect_error) { 
+		die("Connection failed: " . $conn->connect_error); 
+	}
 
-if($_REQUEST["action"] == "isBorrower"){
-	$user = new Student();
-	echo json_encode($user->isBorrower($_REQUEST["id"]));
-}
+	$sql = "DELETE FROM inventory WHERE Id = " . $idToDelete;
+	$result = $conn->query($sql);
+	$rowsDeleted = $conn->affected_rows;
+	
+	$conn->close();
 
-if(($_REQUEST["action"] == "deleteBook")){
-	if ($_SESSION["userInfo"]["Librarian"] == 1){
-		$user = new student();
-		$response = $user->deleteBook($_REQUEST["id"]);
-		echo json_encode($response);
+	if ($result && ($rowsDeleted > 0)){
+		return ["success" => true];
+	}else if ($result && ($rowsDeleted == 0)){
+		return ["success" => false, "message" => "Unable to locate item with specified id."];
 	}else{
-		$response = ["success" => false, "message" => "Invalid credentials. Only librarians may delete books."];
-		echo json_encode($response);
+		return ["success" => false, "message" => "Unable to delete specified item."];
 	}
 }
 
-if(($_REQUEST["action"] == "history")){
-	if ($_SESSION["userInfo"]["Librarian"] == 1){
-		$user = new student();
-		$response = $user->getHistory($_REQUEST["username"]);
-		//$response = getHistory($_REQUEST["username"]);
-		echo json_encode($response);
-	}else{
-		$response = ["success" => false, "message" => "Invalid credentials. Only librarians may view user history."];
-		echo json_encode($response);
+function editItem($id, $name, $quantity, $value){
+	$username = "dbu319t38"; 
+	$password = "!U8refRA"; 
+	$dbServer = "mysql.cs.iastate.edu";  
+	$dbName   = "db319t38"; 
+	
+	// Create connection 
+	$conn = new mysqli($dbServer, $username, $password, $dbName);
+	
+	// Check connection 
+	if ($conn->connect_error) { 
+		die("Connection failed: " . $conn->connect_error); 
 	}
+
+	$sql = "UPDATE inventory SET Name = '" . $name . "', Quantity = '" . $quantity . "', Value = '" . $value . "', Updated = '" . date('Y-m-d') . "' WHERE Id = " . $id;
+
+	$conn->query($sql);
+
+	if ($conn->query($sql) === TRUE) {
+		return ["success" => true];
+	} else {
+		return ["success" => false];
+	}
+}
+
+//Attempts to add an item with the given name, quantity, and value to the database.	
+function addItem($name, $quantity, $value){
+	$username = "dbu319t38"; 
+	$password = "!U8refRA"; 
+	$dbServer = "mysql.cs.iastate.edu";  
+	$dbName   = "db319t38"; 
+	
+	// Create connection 
+	$conn = new mysqli($dbServer, $username, $password, $dbName);
+	
+	// Check connection 
+	if ($conn->connect_error) { 
+		die("Connection failed: " . $conn->connect_error); 
+	}
+	
+	//add to inventory
+	$sql = "INSERT INTO inventory (Name, Quantity, Value, Updated) VALUES ('" . $name . "', '" . $quantity . "', '" . $value . "', '" . date('Y-m-d') . "')";
+	
+	if ($conn->query($sql) === TRUE) { 
+		return ["success" => true];
+	} else { 
+		return ["success" => false, "message" => "Error: " . $sql . "<br>" . $conn->error]; 
+	}
+		
+	$conn->close();
+}
+
+function updateDisplay(){
+	$items = getItems();
+	$table = "";
+	if(!is_null($items)){
+		//$table .= "<tbody>";
+		foreach($items as $item){
+			$table .= "<tr>";
+			$table .= "<td>" . $item["Id"] . "</td><td>" . $item["Name"] . "</td><td>" . $item["Quantity"] . "</td><td>" . $item["Value"] . "</td><td>" . $item["Updated"] . "</td>";
+			$table .= "</tr>";
+		}
+		//$table .= "</tbody>";
+	}
+	
+	return $table;
 }
 
 

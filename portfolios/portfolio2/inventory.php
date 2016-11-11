@@ -5,76 +5,64 @@
 <HTML>
 <head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script type="text/javascript" src="tablesorter/jquery.tablesorter.js"></script>//http://tablesorter.com/docs/index.html
+<script type="text/javascript" src="tablesorter/jquery.tablesorter.js"></script><!--http://tablesorter.com/docs/index.html-->
+<link rel="stylesheet" type="text/css" href="tablesorter/themes/blue/style.css">
 </head>
 <body>
 
 	<div style="float:right">
 		<?= "Logged in as " . $_SESSION["userInfo"]["userName"] ?>
 	</div>
-<?php if($_SESSION["userInfo"]["Librarian"] == '1'){ ?>
+
 <div id="options">
-	<h2>Librarian options:</h2>
-	<div id = "addForm">
-		<h3>Add a Book</h3>
-			<b>Book Id:</b> <input type="text" id="bookId"><br>
-			<b>Author:</b> <input type="text" id="author"><br>
-			<b>Title:</b> <input type="text" id="title"><br>
-			<b>Shelf:</b> <select id="shelves">
-				<option value="0">Art</option>
-				<option value="1">Science</option>
-				<option value="2">Sport</option>
-				<option value="3">Literature</option>
-			</select><br>
-		<button id="addBook" type="button">Add Book</button>
+	<h1>Smart Shop Inventory Management System</h1>
+	<div id = "newForm">
+		<h3>Add New Product</h3>
+		
+		<b>Name:</b> <input type="text" id="newName"><br>
+		<b>Quantity:</b> <input type="text" id="newQuantity"><br>
+		<b>Value:</b> $<input type="text" id="newValue"><br>
+		
+		<button id="newItem" type="button">Add Product</button>
 	</div>
+	<br>
+	<div id = "editForm">
+		<h3>Update Product</h3>
+		
+		<b>Product ID:</b> <input type="text" id="editID"><br>
+		<b>Name:</b> <input type="text" id="editName"><br>
+		<b>Quantity:</b> <input type="text" id="editQuantity"><br>
+		<b>Value:</b> $<input type="text" id="editValue"><br>
+		
+		<button id="editItem" type="button">Update Product</button>
+	</div>
+	<br>
 	<div id = "deleteForm">
-		<h3>Delete a Book</h3>
-		<b>Book ID:</b> <input type = "text" id = "deletebookid">
-		<button id = "deleteSubmit">Delete Book</button>
-		<div id="deleteStatusMessage"></div>
-	</div>
-	<div id = "historyForm">
-		<h3>View Borrow History</h3>
-			<b>Username:</b> <input type = "text" id = "targetUsername">
-			<button id = "historySubmit">View Borrow History</button>
-			<div id="historyView"></div>
-			<br>	
-	</div>
-	<br>
-
-</div>
-<?php } else { ?>
-<div id="options">
-	<h2>Student options:</h2>
-	<div id = "borrowForm">
-		<h3>Borrow a Book</h3>
-			<b>Book ID:</b> <input type = "text" id = "borrowbookid">
-			<button id = "borrowSubmit">Borrow Book</button>
-			<div id="borrowStatusMessage"></div>
-	</div>
-	<div id = "returnForm">
-		<h3>Return a book</h3>
-			<b>Book ID:</b> <input type = "text" id = "returnbookid">
-			<button id = "returnSubmit">Return Book</button>
-			<div id="returnStatusMessage"></div>
-	</div>
+		<h3>Remove Product</h3>
+		
+		<b>Product ID:</b> <input type="text" id="deleteID"><br>
+		
+		<button id="deleteItem" type="button">Remove Product</button>
+	</div>	
 	<br>
 </div>
 
-<?php } ?>
-<div id="posts">
-	<table id="table" border=2></table>
+<div id="inventory">
+	<table id="table" class="tablesorter" border=2>
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+				<th>Quantity</th>
+				<th>Value</th>
+				<th>Last Updated</th>
+			</tr>
+		</thead>
+		<tbody id="tbod">
+		</tbody>
+	</table>
 </div>
 <br><br>
-
-<div id"bookInfo">
-	<h3>Book Info</h3>
-	<b>Book Id:</b> <span id="infoId"></span><br>
-	<b>Title:</b> <span id="infoTitle"></span><br>
-	<b>Author:</b> <span id="infoAuthor"></span><br>
-	<b>Available:</b> <span id="infoAvailable"></span>
-</div>
 
 <br><br>
 <button type="button" onclick="window.location.href = 'logout.php'">Logout</button>
@@ -83,17 +71,40 @@
 </HTML>
 
 <script>
-	//Attempt to add the book to the database when the "Add Book" button is pressed.
-	$('#addBook').click(function(){
-		if($.isNumeric($("#bookId").val()) && $("#bookId").val() != "" && $("#author").val() != "" && $("#title").val() != ""){
-			$.post("functions.php", {action: "addBook", bookId: $("#bookId").val(), author: $("#author").val(), title: $('#title').val(), shelf: $('#shelves').val()}, 
+	$('#editItem').click(function(){
+		if($.isNumeric($("#editID").val()) && $("#editID").val() != "" && $.isNumeric($("#editQuantity").val()) && $("#editQuantity").val() != "" && $("#editName").val() != "" && $("#editValue").val() != "" && $.isNumeric($("#editValue").val())){
+			$.post("functions.php", {action: "editItem", id: $("#editID").val(), name: $("#editName").val(), quantity: $("#editQuantity").val(), value: $('#editValue').val()}, 
 					function(data){
 						update();
-						clearMessages();
-						$("#bookId").val("");
-						$("#author").val("");
-						$("#title").val("");
-						addListeners();
+						//clearMessages();
+						$("#editID").val("");
+						$("#editName").val("");
+						$("#editQuantity").val("");
+						$("#editValue").val("");
+					});
+		}
+	});
+	
+	$('#newItem').click(function(){
+		if($.isNumeric($("#newQuantity").val()) && $("#newQuantity").val() != "" && $("#newName").val() != "" && $("#newValue").val() != "" && $.isNumeric($("#newValue").val())){
+			$.post("functions.php", {action: "newItem", name: $("#newName").val(), quantity: $("#newQuantity").val(), value: $('#newValue').val()}, 
+					function(data){
+						update();
+						//clearMessages();
+						$("#newName").val("");
+						$("#newQuantity").val("");
+						$("#newValue").val("");
+					});
+		}
+	});
+	
+	$('#deleteItem').click(function(){
+		if($.isNumeric($("#deleteID").val()) && $("#deleteID").val() != "" ){
+			$.post("functions.php", {action: "deleteItem", id: $("#deleteID").val()}, 
+					function(data){
+						update();
+						//clearMessages();
+						$("#deleteID").val("");
 					});
 		}
 	});
@@ -218,8 +229,9 @@
 		$.post("functions.php", {action: "display"},
 			function(data){
 				clearMessages();
-				document.getElementById("table").innerHTML = data;
-				addListeners();
+				document.getElementById("tbod").innerHTML = data;
+				$("#table").trigger("update");
+				//addListeners();
 			});
 	}
 
@@ -230,9 +242,10 @@
 		$("#returnStatusMessage").empty();
 	}
 	
-	$("#table").one("click", function(){addListeners()});
+	//$("#table").one("click", function(){addListeners()});
 	
 $(function() {
+	$("#table").tablesorter();
     update();
 });
 </script>

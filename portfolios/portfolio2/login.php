@@ -1,6 +1,4 @@
 <?php
-	include("classes.php");
-	
 	$username = "dbu319t38"; 
 	$password = "!U8refRA"; 
 	$dbServer = "mysql.cs.iastate.edu";  
@@ -28,10 +26,7 @@
 		
 		if($row["userName"] == $_REQUEST["username"] && $row["Password"] == md5($_REQUEST["pass"])){
 			
-			$user = new Student();
 			$user->username = $row["userName"];
-			$user->firstName = $row["FirstName"];
-			$user->isLibrarian = $row["Librarian"];
 			session_start();
 			$_SESSION["userInfo"] = $row;
 			echo "Success"; 
