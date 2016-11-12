@@ -1,0 +1,61 @@
+body {
+    background-color: lightblue;
+}
+
+/* ######################################################################################*/
+
+button {
+    background-color: #555555; /*black*/
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+}
+
+button:hover {background-color: #444444}
+
+button:active {
+  background-color: #444444;
+  box-shadow: 0 2px #666;
+  transform: translateY(3px);
+}
+
+/* ######################################################################################*/
+
+ul.funcSelect {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+/* Put the buttons together */
+ul.funcSelect li {float: left;}
+
+ul.funcSelect li a {
+    display: inline-block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+/* Change background color of links on hover */
+ul.funcSelect li a:hover {background-color: #555;}
+
+/* separate css to make the login id not highlight on hover */
+ul.funcSelect li span {
+    display: inline-block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    transition: 0.3s;
+    font-size: 17px;
+}

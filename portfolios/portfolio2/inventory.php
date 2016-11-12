@@ -7,45 +7,19 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script type="text/javascript" src="tablesorter/jquery.tablesorter.js"></script><!--http://tablesorter.com/docs/index.html-->
 <link rel="stylesheet" type="text/css" href="tablesorter/themes/blue/style.css">
+<link rel="stylesheet" type="text/css" href="css/app.css">
 </head>
 <body>
+	
+<h1>Smart Shop Inventory Management System</h1>
 
-	<div style="float:right">
-		<?= "Logged in as " . $_SESSION["userInfo"]["userName"] ?>
-	</div>
-
-<div id="options">
-	<h1>Smart Shop Inventory Management System</h1>
-	<div id = "newForm">
-		<h3>Add New Product</h3>
-		
-		<b>Name:</b> <input type="text" id="newName"><br>
-		<b>Quantity:</b> <input type="text" id="newQuantity"><br>
-		<b>Value:</b> $<input type="text" id="newValue"><br>
-		
-		<button id="newItem" type="button">Add Product</button>
-	</div>
-	<br>
-	<div id = "editForm">
-		<h3>Update Product</h3>
-		
-		<b>Product ID:</b> <input type="text" id="editID"><br>
-		<b>Name:</b> <input type="text" id="editName"><br>
-		<b>Quantity:</b> <input type="text" id="editQuantity"><br>
-		<b>Value:</b> $<input type="text" id="editValue"><br>
-		
-		<button id="editItem" type="button">Update Product</button>
-	</div>
-	<br>
-	<div id = "deleteForm">
-		<h3>Remove Product</h3>
-		
-		<b>Product ID:</b> <input type="text" id="deleteID"><br>
-		
-		<button id="deleteItem" type="button">Remove Product</button>
-	</div>	
-	<br>
-</div>
+<ul class="funcSelect" id="funcSelect">
+	<li><a id="newProd">New Product</a></li>
+	<li><a id="editProd">Edit Product</a></li>
+	<li><a id="deleteProd">Delete Product</a></li>
+	<li><span><?= "Logged in as " . $_SESSION["userInfo"]["userName"] ?></span></li>
+	<li><a href="logout.php">Logout</a></li>
+</ul>
 
 <div id="inventory">
 	<table id="table" class="tablesorter" border=2>
@@ -62,15 +36,66 @@
 		</tbody>
 	</table>
 </div>
-<br><br>
+<br>
 
-<br><br>
-<button type="button" onclick="window.location.href = 'logout.php'">Logout</button>
+<div id = "newForm" style="display: none;">
+	<fieldset>
+		<legend><b>Add New Product</b></legend>
+	
+		<b>Name:</b> <input type="text" id="newName"><br>
+		<b>Quantity:</b> <input type="text" id="newQuantity"><br>
+		<b>Value:</b> $<input type="text" id="newValue"><br><br>
+	
+		<button id="newItem" type="button">Add Product</button>
+	</fieldset>
+</div>
+
+<div id = "editForm" style="display: none;">
+	<fieldset>
+		<legend><b>Update Product</b></legend>
+	
+		<b>Product ID:</b> <input type="text" id="editID"><br>
+		<b>Name:</b> <input type="text" id="editName"><br>
+		<b>Quantity:</b> <input type="text" id="editQuantity"><br>
+		<b>Value:</b> $<input type="text" id="editValue"><br><br>
+		
+		<button id="editItem" type="button">Update Product</button>
+	</fieldset>
+</div>
+
+<div id = "deleteForm" style="display: none;">
+	<fieldset>
+		<legend><b>Add New Product</b></legend>	
+	
+		<b>Product ID:</b> <input type="text" id="deleteID"><br><br>
+	
+		<button id="deleteItem" type="button">Remove Product</button>
+	</fieldset>
+</div>	
 
 </body>
 </HTML>
 
 <script>
+
+	$("#newProd").click(function(){
+		$("#newForm").show();
+		$("#editForm").hide();
+		$("#deleteForm").hide();
+	});
+	
+	$("#editProd").click(function(){
+		$("#newForm").hide();
+		$("#editForm").show();
+		$("#deleteForm").hide();
+	});
+	
+	$("#deleteProd").click(function(){
+		$("#newForm").hide();
+		$("#editForm").hide();
+		$("#deleteForm").show();
+	});
+
 	$('#editItem').click(function(){
 		if($.isNumeric($("#editID").val()) && $("#editID").val() != "" && $.isNumeric($("#editQuantity").val()) && $("#editQuantity").val() != "" && $("#editName").val() != "" && $("#editValue").val() != "" && $.isNumeric($("#editValue").val())){
 			$.post("functions.php", {action: "editItem", id: $("#editID").val(), name: $("#editName").val(), quantity: $("#editQuantity").val(), value: $('#editValue').val()}, 

@@ -1,22 +1,28 @@
 <HTML>
 <head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="css/app.css">
 </head>
 <body>
 <h1>Signup Page</h1>
-	<form>
-		Username:<br>
-		<input type="text" name="username" id="username"><div style="display: none; color: red;" id="usernameError"> Invalid username</div>
-		<br>
-		<br>
 
-		Password:<br>
-		<input type="password" name="password" id="password"><div style="display: none; color: red;" id="passwordError"> Invalid Password</div>
-		<br>
-		<br>				
+<ul class="funcSelect" id="funcSelect">
+	<li><a href="login.html">Login</a></li>
+</ul>
+<br>
+<form>
+	Username:<br>
+	<input type="text" name="username" id="username"><div style="display: none; color: red;" id="usernameError"> Invalid username</div>
+	<br>
+	<br>
 
-		<input type="button" value="Signup" id="signup">
-	</form>
+	Password:<br>
+	<input type="password" name="password" id="password"><div style="display: none; color: red;" id="passwordError"> Invalid Password</div>
+	<br>
+	<br>				
+
+	<button type="button"id="signup">Signup</button>
+</form>
 	
 </body>
 
