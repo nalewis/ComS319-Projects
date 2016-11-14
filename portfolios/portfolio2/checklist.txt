@@ -1,3 +1,5 @@
+-sql folder contains the files necessary to create the database tables we use (requires Xampp)
+
 -css/app.css
 	- Specifically the logic behind the ul and dropdown classes
 
@@ -8,3 +10,7 @@
 -inventory.php
 	-Jquery functions for accessing the different views and ajax calls
 	-Use of the css classes for the navbar (the ul element)
+
+-tablesorter and excel folders are for the libraries
+
+- downloands folder is the destination for file outputs of the project
