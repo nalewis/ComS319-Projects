@@ -2,14 +2,14 @@ body {
     background-color: lightblue;
 }
 
-.header {
+.header h1 {
 	text-align: center;
-	padding: 1;
+	padding: 20;
 	background-color: #333333;
 	color: #f2f2f2; 
 }
 
-/* ######################################################################################*/
+/* ###################################################################################### */
 
 button {
     background-color: #555555; /*black*/
@@ -30,7 +30,7 @@ button:active {
   transform: translateY(3px);
 }
 
-/* ######################################################################################*/
+/* ###################################################################################### */
 
 ul.funcSelect {
     list-style-type: none;
@@ -43,6 +43,7 @@ ul.funcSelect {
 /* Put the buttons together */
 ul.funcSelect li {float: left;}
 
+/* Style the button text */
 ul.funcSelect li a {
     display: inline-block;
     color: #f2f2f2;
@@ -57,18 +58,9 @@ ul.funcSelect li a {
 /* Change background color of links on hover */
 ul.funcSelect li a:hover {background-color: #555;}
 
-/* separate css to make the login id not highlight on hover */
-ul.funcSelect li span {
-    display: inline-block;
-    color: #f2f2f2;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    transition: 0.3s;
-    font-size: 17px;
-}
+/* ###################################################################################### */
 
-/* The container <div> - needed to position the dropdown content */
+/* Position the dropdown content */
 ul.funcSelect li .dropdown {
     position: relative;
     display: inline-block;

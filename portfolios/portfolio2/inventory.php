@@ -156,20 +156,11 @@
 	function update(){
 		$.post("functions.php", {action: "display"},
 			function(data){
-				//clearMessages();
 				document.getElementById("tbod").innerHTML = data;
 				$("#table").trigger("update");
 			});
 	}
-
-	//Resets all of the status messages.	
-	function clearMessages(){
-		$("#deleteStatusMessage").empty();
-		$("#borrowStatusMessage").empty();
-		$("#returnStatusMessage").empty();
-	}
 	
-	//$("#table").one("click", function(){addListeners()});
 	
 $(function() {
 	$("#table").tablesorter();
