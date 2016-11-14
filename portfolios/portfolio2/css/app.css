@@ -2,6 +2,13 @@ body {
     background-color: lightblue;
 }
 
+.header {
+	text-align: center;
+	padding: 1;
+	background-color: #333333;
+	color: #f2f2f2; 
+}
+
 /* ######################################################################################*/
 
 button {
@@ -31,7 +38,6 @@ ul.funcSelect {
     padding: 0;
     overflow: hidden;
     background-color: #333;
-	width: %100;
 }
 
 /* Put the buttons together */
@@ -45,6 +51,7 @@ ul.funcSelect li a {
     text-decoration: none;
     transition: 0.3s;
     font-size: 17px;
+	cursor: pointer;
 }
 
 /* Change background color of links on hover */
@@ -59,4 +66,38 @@ ul.funcSelect li span {
     text-decoration: none;
     transition: 0.3s;
     font-size: 17px;
+}
+
+/* The container <div> - needed to position the dropdown content */
+ul.funcSelect li .dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #333;
+    min-width: 145px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	cursor: pointer;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #555}
+
+.dropdown:hover {background-color: #555}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
 }
