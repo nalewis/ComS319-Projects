@@ -17,8 +17,10 @@ function mysqlstuff(){
 	} else { 
 		echo "Connected successfully<br>"; 
 	}
+
+	$saltedPassword = $_REQUEST["username"] . "'s password: " . $_REQUEST["pass"];
 	
-	$sql = "INSERT INTO users (userName, Password) VALUES ('" . $_REQUEST["username"] . "', '" . md5($_REQUEST["pass"]) . "')";
+	$sql = "INSERT INTO portfolio2_users (userName, Password) VALUES ('" . $_REQUEST["username"] . "', '" . md5($saltedPassword) . "')";
 	
 	if ($conn->query($sql) === TRUE) { 
 		echo "New record created successfully<br>"; 
