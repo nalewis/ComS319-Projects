@@ -10,16 +10,23 @@
 <link rel="stylesheet" type="text/css" href="css/app.css">
 </head>
 <body>
-	
-<h1>Smart Shop Inventory Management System</h1>
-
+<div class="header">
+	<h1>Smart Shop Inventory Management System</h1>
+</div>
 <ul class="funcSelect" id="funcSelect">
-	<li><a id="newProd">New Product</a></li>
-	<li><a id="editProd">Edit Product</a></li>
-	<li><a id="deleteProd">Delete Product</a></li>
+	<li class="dropdown"><a>Inventory Functions</a>
+		<div class="dropdown-content">
+			<a id="newProd">New Product   </a><br>
+			<a id="editProd">Edit Product</a><br>
+			<a id="deleteProd">Delete Product</a><br>
+		</div>
+	</li>
 	<li><a id="DL">Download</a></li>
-	<li><span><?= "Logged in as " . $_SESSION["userInfo"]["userName"] ?></span></li>
-	<li><a href="logout.php">Logout</a></li>
+	<li style="float:right" class="dropdown"><a><?= "Logged in as " . $_SESSION["userInfo"]["userName"] ?></a>
+		<div class="dropdown-content">
+			<a href="logout.php">Logout</a>
+		</div>
+	</li>
 </ul>
 
 <div id="inventory">
@@ -66,7 +73,7 @@
 
 <div id = "deleteForm" style="display: none;">
 	<fieldset>
-		<legend><b>Add New Product</b></legend>	
+		<legend><b>Delete Product</b></legend>	
 	
 		<b>Product ID:</b> <input type="text" id="deleteID"><br><br>
 	
@@ -168,20 +175,11 @@
 	function update(){
 		$.post("functions.php", {action: "display"},
 			function(data){
-				//clearMessages();
 				document.getElementById("tbod").innerHTML = data;
 				$("#table").trigger("update");
 			});
 	}
-
-	//Resets all of the status messages.	
-	function clearMessages(){
-		$("#deleteStatusMessage").empty();
-		$("#borrowStatusMessage").empty();
-		$("#returnStatusMessage").empty();
-	}
 	
-	//$("#table").one("click", function(){addListeners()});
 	
 $(function() {
 	$("#table").tablesorter();

@@ -1,7 +1,5 @@
 <?php
 
-include("classes.php");
-
 session_start();
 
 date_default_timezone_set('America/Chicago');
@@ -71,8 +69,7 @@ function getItems(){
 	}
 }
 
-//TODO
-//Returns the information associated with a book with the specified id.	
+//returns an individual item
 function getItem($id){
 	$username = "dbu319t38"; 
 	$password = "!U8refRA"; 
@@ -141,6 +138,7 @@ function deleteItem($idToDelete){
 	}
 }
 
+//changes the values of the specified item
 function editItem($id, $name, $quantity, $value){
 	$username = "dbu319t38"; 
 	$password = "!U8refRA"; 
@@ -201,6 +199,7 @@ function addItem($name, $quantity, $value){
 	}
 }
 
+//outputs the rows for the table data
 function updateDisplay(){
 	$items = getItems();
 	$table = "";
@@ -217,6 +216,7 @@ function updateDisplay(){
 	return $table;
 }
 
+//Downloads the table data in an excel format to the downloads folder
 function download(){
 	/** Include PHPExcel */
 	require_once dirname(__FILE__) . '/Excel/PHPExcel.php';
@@ -281,7 +281,7 @@ function download(){
 	$objPHPExcel->setActiveSheetIndex(0);
 	
 	$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-	$output = "downloads/" . date("Y-m-d") . "_Inventory.xlsx";
+	$output = "downloads/" . date("Y-m-d_H-i") . "_Inventory.xlsx";
 	$objWriter->save($output);
 	
 	return ["success" => true, "message" => $output];

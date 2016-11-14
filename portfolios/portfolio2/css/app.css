@@ -2,7 +2,14 @@ body {
     background-color: lightblue;
 }
 
-/* ######################################################################################*/
+.header h1 {
+	text-align: center;
+	padding: 20;
+	background-color: #333333;
+	color: #f2f2f2; 
+}
+
+/* ###################################################################################### */
 
 button {
     background-color: #555555; /*black*/
@@ -23,7 +30,7 @@ button:active {
   transform: translateY(3px);
 }
 
-/* ######################################################################################*/
+/* ###################################################################################### */
 
 ul.funcSelect {
     list-style-type: none;
@@ -31,12 +38,12 @@ ul.funcSelect {
     padding: 0;
     overflow: hidden;
     background-color: #333;
-	width: %100;
 }
 
 /* Put the buttons together */
 ul.funcSelect li {float: left;}
 
+/* Style the button text */
 ul.funcSelect li a {
     display: inline-block;
     color: #f2f2f2;
@@ -45,18 +52,44 @@ ul.funcSelect li a {
     text-decoration: none;
     transition: 0.3s;
     font-size: 17px;
+	cursor: pointer;
 }
 
 /* Change background color of links on hover */
 ul.funcSelect li a:hover {background-color: #555;}
 
-/* separate css to make the login id not highlight on hover */
-ul.funcSelect li span {
+/* ###################################################################################### */
+
+/* Position the dropdown content */
+ul.funcSelect li .dropdown {
+    position: relative;
     display: inline-block;
-    color: #f2f2f2;
-    text-align: center;
-    padding: 14px 16px;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #333;
+    min-width: 145px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	cursor: pointer;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
     text-decoration: none;
-    transition: 0.3s;
-    font-size: 17px;
+    display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #555}
+
+.dropdown:hover {background-color: #555}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
 }
