@@ -5,7 +5,7 @@
 <HTML>
 <head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script type="text/javascript" src="tablesorter/jquery.tablesorter.js"></script><!--http://tablesorter.com/docs/index.html-->
+<script type="text/javascript" src="tablesorter/jquery.tablesorter.js"></script>
 <link rel="stylesheet" type="text/css" href="tablesorter/themes/blue/style.css">
 <link rel="stylesheet" type="text/css" href="css/app.css">
 </head>
@@ -89,8 +89,6 @@
 		function() {
 			$.post("functions.php", {action: "updateCSRF"},
 				function(data) {
-				//	console.log(data);
-				
 					validateCSRF();
 				}
 			);
@@ -128,7 +126,6 @@
 			$.post("functions.php", {action: "editItem", id: $("#editID").val(), name: $("#editName").val(), quantity: $("#editQuantity").val(), value: $('#editValue').val()}, 
 					function(data){
 						update();
-						//clearMessages();
 						$("#editID").val("");
 						$("#editName").val("");
 						$("#editQuantity").val("");
@@ -142,7 +139,6 @@
 			$.post("functions.php", {action: "newItem", name: $("#newName").val(), quantity: $("#newQuantity").val(), value: $('#newValue').val()}, 
 					function(data){
 						update();
-						//clearMessages();
 						$("#newName").val("");
 						$("#newQuantity").val("");
 						$("#newValue").val("");
@@ -155,7 +151,6 @@
 			$.post("functions.php", {action: "deleteItem", id: $("#deleteID").val()}, 
 					function(data){
 						update();
-						//clearMessages();
 						$("#deleteID").val("");
 					});
 		}
