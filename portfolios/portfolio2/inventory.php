@@ -78,7 +78,26 @@
 </HTML>
 
 <script>
+	$(document).ready(
+		function() {
+			$.post("functions.php", {action: "updateCSRF"},
+				function(data) {
+				//	console.log(data);
+				
+					validateCSRF();
+				}
+			);
+		}
+	);
 
+	function validateCSRF() {
+		$.post("functions.php", {action: "validateCSRF"},
+			function(data) {
+				document.cookie = ("csrfValid=" + data + ";");
+			}
+		);
+	}
+	
 	$("#newProd").click(function(){
 		$("#newForm").show();
 		$("#editForm").hide();

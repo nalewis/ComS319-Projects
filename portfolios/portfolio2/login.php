@@ -15,8 +15,9 @@
 	}
 
 
+	$saltedPassword = $_REQUEST["username"] . "'s password: " . $_REQUEST["pass"];
 
-	$sql = "SELECT * FROM users WHERE userName = '" . $_REQUEST['username'] . "' AND Password = '" . md5($_REQUEST['pass']) . "'"; 
+	$sql = "SELECT * FROM portfolio2_users WHERE userName = '" . $_REQUEST['username'] . "' AND Password = '" . md5($saltedPassword) . "'"; 
 	
 	$result = $conn->query($sql); 
 
@@ -24,7 +25,7 @@
 		// output data of each row 
 		$row = $result->fetch_assoc();
 		
-		if($row["userName"] == $_REQUEST["username"] && $row["Password"] == md5($_REQUEST["pass"])){
+		if($row["userName"] == $_REQUEST["username"] && $row["password"] == md5($saltedPassword)){
 			
 			$user->username = $row["userName"];
 			session_start();

@@ -26,6 +26,19 @@ if($_REQUEST["action"] == "download"){
 	echo json_encode(download());
 }
 
+if($_REQUEST["action"] == "getCSRF"){
+	echo json_encode(getCSRF());
+}
+
+if ($_REQUEST["action"] == "updateCSRF"){
+	updateCSRF();
+	echo json_encode(getCSRF());
+}
+
+if ($_REQUEST["action"] == "validateCSRF") {
+	echo json_encode(validateCSRF());
+}
+
 function getItems(){
 	$username = "dbu319t38"; 
 	$password = "!U8refRA"; 
@@ -66,26 +79,30 @@ function getItem($id){
 	$dbServer = "mysql.cs.iastate.edu";  
 	$dbName   = "db319t38"; 
 	
-	// Create connection 
-	$conn = new mysqli($dbServer, $username, $password, $dbName);
-	
-	// Check connection 
-	if ($conn->connect_error) { 
-		die("Connection failed: " . $conn->connect_error); 
-	}
+	if (validateCSRF()){	
+		// Create connection 
+		$conn = new mysqli($dbServer, $username, $password, $dbName);
+		
+		// Check connection 
+		if ($conn->connect_error) { 
+			die("Connection failed: " . $conn->connect_error); 
+		}
 
-	$sql = "SELECT * FROM books WHERE BookId = " . $id;
+		$sql = "SELECT * FROM books WHERE BookId = " . $id;
 
-	$result = $conn->query($sql); 
-	if ($result->num_rows > 0) { 
-		// output data of each row 
-		while($row = $result->fetch_assoc()) {
+		$result = $conn->query($sql); 
+		if ($result->num_rows > 0) { 
+			// output data of each row 
+			while($row = $result->fetch_assoc()) {
+				$conn->close();
+				return ["id" => $row["BookId"], "title" => $row["BookTitle"], "author" => $row["Author"], "availability" => $row["Availability"]];
+			}
+		} else {
 			$conn->close();
-			return ["id" => $row["BookId"], "title" => $row["BookTitle"], "author" => $row["Author"], "availability" => $row["Availability"]];
+			//echo "0 results"; 
 		}
 	} else {
-		$conn->close();
-		//echo "0 results"; 
+		return ["success" => false, "message" => "Error: CSRF Token has expired. Please reload the page and submit the form again."];
 	}
 }
 
@@ -96,26 +113,31 @@ function deleteItem($idToDelete){
 	$dbServer = "mysql.cs.iastate.edu";  
 	$dbName   = "db319t38"; 
 	
-	// Create connection 
-	$conn = new mysqli($dbServer, $username, $password, $dbName);
+	if (validateCSRF()){	
 	
-	// Check connection 
-	if ($conn->connect_error) { 
-		die("Connection failed: " . $conn->connect_error); 
-	}
+		// Create connection 
+		$conn = new mysqli($dbServer, $username, $password, $dbName);
+		
+		// Check connection 
+		if ($conn->connect_error) { 
+			die("Connection failed: " . $conn->connect_error); 
+		}
 
-	$sql = "DELETE FROM inventory WHERE Id = " . $idToDelete;
-	$result = $conn->query($sql);
-	$rowsDeleted = $conn->affected_rows;
-	
-	$conn->close();
+		$sql = "DELETE FROM inventory WHERE Id = " . $idToDelete;
+		$result = $conn->query($sql);
+		$rowsDeleted = $conn->affected_rows;
+		
+		$conn->close();
 
-	if ($result && ($rowsDeleted > 0)){
-		return ["success" => true];
-	}else if ($result && ($rowsDeleted == 0)){
-		return ["success" => false, "message" => "Unable to locate item with specified id."];
-	}else{
-		return ["success" => false, "message" => "Unable to delete specified item."];
+		if ($result && ($rowsDeleted > 0)){
+			return ["success" => true];
+		}else if ($result && ($rowsDeleted == 0)){
+			return ["success" => false, "message" => "Unable to locate item with specified id."];
+		}else{
+			return ["success" => false, "message" => "Unable to delete specified item."];
+		}
+	} else {
+		return ["success" => false, "message" => "Error: CSRF Token has expired. Please reload the page and submit the form again."];
 	}
 }
 
@@ -125,22 +147,26 @@ function editItem($id, $name, $quantity, $value){
 	$dbServer = "mysql.cs.iastate.edu";  
 	$dbName   = "db319t38"; 
 	
-	// Create connection 
-	$conn = new mysqli($dbServer, $username, $password, $dbName);
-	
-	// Check connection 
-	if ($conn->connect_error) { 
-		die("Connection failed: " . $conn->connect_error); 
-	}
+	if (validateCSRF()){	
+		// Create connection 
+		$conn = new mysqli($dbServer, $username, $password, $dbName);
+		
+		// Check connection 
+		if ($conn->connect_error) { 
+			die("Connection failed: " . $conn->connect_error); 
+		}
 
-	$sql = "UPDATE inventory SET Name = '" . $name . "', Quantity = '" . $quantity . "', Value = '" . $value . "', Updated = '" . date('Y-m-d') . "' WHERE Id = " . $id;
+		$sql = "UPDATE inventory SET Name = '" . $name . "', Quantity = '" . $quantity . "', Value = '" . $value . "', Updated = '" . date('Y-m-d') . "' WHERE Id = " . $id;
 
-	$conn->query($sql);
+		$conn->query($sql);
 
-	if ($conn->query($sql) === TRUE) {
-		return ["success" => true];
+		if ($conn->query($sql) === TRUE) {
+			return ["success" => true];
+		} else {
+			return ["success" => false];
+		}
 	} else {
-		return ["success" => false];
+		return ["success" => false, "message" => "Error: CSRF Token has expired. Please reload the page and submit the form again."];
 	}
 }
 
@@ -150,25 +176,29 @@ function addItem($name, $quantity, $value){
 	$password = "!U8refRA"; 
 	$dbServer = "mysql.cs.iastate.edu";  
 	$dbName   = "db319t38"; 
+
+	if (validateCSRF()){	
+		// Create connection 
+		$conn = new mysqli($dbServer, $username, $password, $dbName);
 	
-	// Create connection 
-	$conn = new mysqli($dbServer, $username, $password, $dbName);
-	
-	// Check connection 
-	if ($conn->connect_error) { 
-		die("Connection failed: " . $conn->connect_error); 
-	}
-	
-	//add to inventory
-	$sql = "INSERT INTO inventory (Name, Quantity, Value, Updated) VALUES ('" . $name . "', '" . $quantity . "', '" . $value . "', '" . date('Y-m-d') . "')";
-	
-	if ($conn->query($sql) === TRUE) { 
-		return ["success" => true];
-	} else { 
-		return ["success" => false, "message" => "Error: " . $sql . "<br>" . $conn->error]; 
-	}
+		// Check connection 
+		if ($conn->connect_error) { 
+			die("Connection failed: " . $conn->connect_error); 
+		}
 		
-	$conn->close();
+		//add to inventory
+		$sql = "INSERT INTO inventory (Name, Quantity, Value, Updated) VALUES ('" . $name . "', '" . $quantity . "', '" . $value . "', '" . date('Y-m-d') . "')";
+		
+		if ($conn->query($sql) === TRUE) { 
+			return ["success" => true];
+		} else { 
+			return ["success" => false, "message" => "Error: " . $sql . "<br>" . $conn->error]; 
+		}
+			
+		$conn->close();
+	} else {
+		return ["success" => false, "message" => "Error: CSRF Token has expired. Please reload the page and submit the form again."];
+	}
 }
 
 function updateDisplay(){
@@ -257,4 +287,51 @@ function download(){
 	return ["success" => true, "message" => $output];
 }
 
+//Recalculates the current and previous CSRF tokens
+function updateCSRF()
+{
+	//If the current minute is >= 30, round down to 30, else, round down to 00
+	$minute = (date("i") >= 30) ? "30" : "00";
+
+	//Construct a string of the current date and time rounded to the previous half-hour
+	$time = (date("Y-m-d H:") . $minute);
+
+	$past = (new datetime("30 minutes ago"));
+	
+	$pastMinute = $past->format("i");
+	$pastMinute = ($pastMinute >= 30) ? "30" : "00";
+
+	//Create a CSRF token string for the previous 30 minutes with the date, time, and user's username
+	$pastCsrfToken = ($past->format("Y-m-d H:") . $pastMinute . " " . $_SESSION["userInfo"]["userName"]);
+
+	//Create a CSRF token string for the current 30 minutes with the date, time, and user's username
+	$csrfToken = $time . " " . $_SESSION["userInfo"]["userName"];
+
+	//Return the hashed value of the current and previous CSRF tokens
+	$_SESSION["csrf"] = md5($csrfToken);
+	$_SESSION["pastCsrf"] = md5($pastCsrfToken);
+
+}
+
+//Returns the current and prevous CSRF tokens without recalculating
+function getCSRF()
+{
+	$return["csrf"] = $_SESSION["csrf"];
+	$return["pastCsrf"] = $_SESSION["pastCsrf"];
+
+	return $return;
+}
+
+//Checks the current CSRF token against the updated CSRF token
+function validateCSRF()
+{
+	$currentToken = (getCSRF()["csrf"]);
+
+	updateCSRF();
+
+	$updated = getCSRF();
+
+
+	return ( (($currentToken == $updated["csrf"]) | ($currentToken == $updated["pastCsrf"])) ); 
+}
 ?>
