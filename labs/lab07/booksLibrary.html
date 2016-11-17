@@ -1,0 +1,297 @@
+<HTML>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+	<style>
+	
+		body
+		{
+			font-family: Arial, Helvetica, sans-serif; 
+		}
+
+		#submit 
+		{
+			background-color: yellow;
+			border-style: solid;
+		}
+	
+		#failure
+		{
+			color: #ff0000;
+			background-color: #ffe6e6;
+		}
+
+	</style>
+</head>
+<body ng-app="myApp">
+<div ng-view></div>
+
+<script>
+var app = angular.module('myApp', ["ngRoute"]);
+app.config(function($routeProvider) {
+    $routeProvider
+    .when("/", {
+        templateUrl : "login.htm",
+        controller : "loginCtrl"
+    })
+	.when("/undergradLibrary", {
+        templateUrl : "undergradLibrary.htm",
+		controller : "undergradCtrl"
+    })
+	.when("/adminLibrary", {
+        templateUrl : "adminLibrary.htm",
+		controller : "adminCtrl"
+    });
+});
+app.controller("loginCtrl", function ($scope, $location) {
+    $scope.loginCheck = function(){
+		if($scope.name && $scope.password){
+			if($scope.name == 'admin' && $scope.password == 'admin'){
+				$scope.showMe = false;
+				localStorage.username = $scope.name;
+				$location.path('adminLibrary');
+			} else if($scope.name.startsWith('U')){
+				$scope.showMe = false;
+				localStorage.username = $scope.name;
+				$location.path('undergradLibrary');
+			} else {
+				$scope.showMe = true;
+			}
+		} else {
+			$scope.showMe = true;
+		}
+	}
+});
+
+app.controller("adminCtrl", function ($scope, $location) {
+		//Call on page load to initialize values from localStorage
+		var init = function(){
+			$scope.updateBooks();
+		}
+		
+		$scope.logoutFunc = function(){
+			localStorage.removeItem("username");
+			$location.path('/');
+		}
+		
+		//return an array of size num, used in ng-repeat call
+		$scope.getNumber = function(num) {
+			return new Array(num);   
+		}
+		
+		//Finds the largest of the shelves, to be used in setting a limit for ng-repeat
+		$scope.getLargestShelf = function() {
+			var largest = 0;
+			if($scope.books.Literature.length > largest){
+				largest = $scope.books.Literature.length;
+			}
+			if($scope.books.Science.length > largest){
+				largest = $scope.books.Science.length;
+			}
+			if($scope.books.Sport.length > largest){
+				largest = $scope.books.Sport.length;
+			}
+			if($scope.books.Art.length > largest){
+				largest = $scope.books.Art.length;
+			}
+			
+			return largest;
+		}
+		
+		//Checks if a different instance of books is already stored, if not, set books to localStorage
+		$scope.updateBooks = function(){
+			if(localStorage.getItem("books") === null){
+				localStorage.books = JSON.stringify($scope.books);
+			} else {
+				console.log(JSON.parse(localStorage.books));
+				$scope.books = JSON.parse(localStorage.books);
+			}
+		}
+		
+		$scope.updateStorage = function(){
+			localStorage.books = JSON.stringify($scope.books);
+		}
+		
+		$scope.addBook = function(title, shelf, isReference){
+			if(title && shelf){
+				if(isReference){
+					var book = {
+						"BookName" : title,
+						"BookType" : "R",
+						"BorrowedBy" : "",
+						"Present" : 1
+					};
+				} else {
+					var book = {
+						"BookName" : title,
+						"BookType" : "B",
+						"BorrowedBy" : "",
+						"Present" : 1
+					};
+				}
+				
+				if(shelf == "Literature"){
+					$scope.books.Literature.push(book);
+				} else if(shelf == "Science"){
+					$scope.books.Science.push(book);
+				} else if(shelf == "Sport"){
+					$scope.books.Sport.push(book);
+				} else if(shelf == "Art"){
+					$scope.books.Art.push(book);
+				}
+				
+				$scope.updateStorage();
+				$scope.title = "";
+				$scope.shelf = "";
+				$scope.isReference = false;
+			}
+		}
+		
+		//Value of books if none have been added or changed in any way
+		$scope.books = {
+			"Literature" : [
+				{
+					"BookName" : "Book1",
+					"BookType" : "R",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book2",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book3",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book4",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book5",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book6",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},
+			],
+			"Science" : [
+				{
+					"BookName" : "Book7",
+					"BookType" : "R",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book8",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book9",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book10",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book11",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book12",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},
+			],
+			"Sport" : [
+				{
+					"BookName" : "Book13",
+					"BookType" : "R",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book14",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book15",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book16",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book17",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book18",
+					"BookType" : "R",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},
+			],
+			"Art" : [
+				{
+					"BookName" : "Book19",
+					"BookType" : "R",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book20",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book21",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book22",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book23",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book24",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book25",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},
+			]
+		}
+		
+		init();
+	
+});
+</script>
+
+</body>
+</HTML>

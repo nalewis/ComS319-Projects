@@ -1,0 +1,26 @@
+<div ng-init="showMe=false" style="margin:0 auto;width:30%;">
+	<div style="margin:0 auto;width:200px;">
+		<h2>Login</h2>
+		<br>
+		<br>
+	
+		<div id="failure" ng-show="showMe">
+			Username/password combination invalid. Please enter a valid username and password and try again.
+		<br>
+		</div>	
+		<br>
+		<form>
+			Username:<br>
+			<input ng-model="name">	
+			<br>
+			<br>	
+			Password:<br>
+			<input type="password" ng-model="password">
+			
+			<br>
+			<br>					
+    
+			<input type="button" value="Login" ng-click="loginCheck()">
+		</form>
+	</div>
+</div>

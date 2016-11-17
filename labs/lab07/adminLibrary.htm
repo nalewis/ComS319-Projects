@@ -1,0 +1,39 @@
+<div id="libraryDiv">
+	<table id="table" border=2>
+		<tr>
+			<th>Literature</th>
+			<th>Science</th>
+			<th>Sport</th>
+			<th>Art</th>
+		</tr>
+		<tr ng-repeat="x in getNumber(getLargestShelf()) track by $index">
+			<td>{{ books.Literature[$index].BookType + ': ' + books.Literature[$index].BookName }}</td>
+			<td>{{ books.Science[$index].BookType + ': ' + books.Science[$index].BookName }}</td>
+			<td>{{ books.Sport[$index].BookType + ': ' + books.Sport[$index].BookName }}</td>
+			<td>{{ books.Art[$index].BookType + ': ' + books.Art[$index].BookName }}</td>
+		</tr>
+	</table>
+	<br><br>
+		
+	<form>
+		<fieldset>
+			<legend>Add Book</legend>
+			
+			Title: <input type="text" ng-model="title">
+			<br>
+			Shelf:
+			<select ng-model="shelf">
+				<option value="Literature">Literature
+				<option value="Science">Science
+				<option value="Sport">Sport
+				<option value="Art">Art
+			</select>
+			<br>
+			Is Reference: <input type="checkbox" ng-model="isReference">
+			<br>
+			<input type="button" value="Add Book" ng-click="addBook(title, shelf, isReference)">
+		</fieldset>
+	</form>
+		
+	<button ng-click="logoutFunc()">Logout</button>
+</div>
