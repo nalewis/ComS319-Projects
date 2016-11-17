@@ -7,13 +7,27 @@
 			<th>Art</th>
 		</tr>
 		<tr ng-repeat="x in getNumber(getLargestShelf()) track by $index">
-			<td>{{ books.Literature[$index].BookType + ': ' + books.Literature[$index].BookName }}</td>
-			<td>{{ books.Science[$index].BookType + ': ' + books.Science[$index].BookName }}</td>
-			<td>{{ books.Sport[$index].BookType + ': ' + books.Sport[$index].BookName }}</td>
-			<td>{{ books.Art[$index].BookType + ': ' + books.Art[$index].BookName }}</td>
+			<td ng-click="detailsFunc('Literature', $index)">{{ books.Literature[$index].BookType + ': ' + books.Literature[$index].BookName }}</td>
+			<td ng-click="detailsFunc('Science', $index)">{{ books.Science[$index].BookType + ': ' + books.Science[$index].BookName }}</td>
+			<td ng-click="detailsFunc('Sport', $index)">{{ books.Sport[$index].BookType + ': ' + books.Sport[$index].BookName }}</td>
+			<td ng-click="detailsFunc('Art', $index)">{{ books.Art[$index].BookType + ': ' + books.Art[$index].BookName }}</td>
 		</tr>
 	</table>
 	<br><br>
+	
+	<fieldset>
+		<legend>Book Details</legend>
+		Title: {{ bookDetailsTitle }}
+		<br>
+		Type: {{ bookDetailsType }}
+		<br>
+		Shelf: {{ bookDetailsShelf }}
+		<br>
+		Borrowed By: {{ bookDetailsBorrowedBy }}
+		<br>
+		Present: {{ bookDetailsPresent }}
+	
+	</fieldset>
 		
 	<form>
 		<fieldset>

@@ -69,6 +69,12 @@ app.controller("adminCtrl", function ($scope, $location) {
 			$scope.updateBooks();
 		}
 		
+		$scope.bookDetailsTitle = "";
+		$scope.bookDetailsType = "";
+		$scope.bookDetailsShelf = "";
+		$scope.bookDetailsBorrowedBy = "";
+		$scope.bookDetailsPresent = "";
+		
 		$scope.logoutFunc = function(){
 			localStorage.removeItem("username");
 			$location.path('/');
@@ -111,6 +117,48 @@ app.controller("adminCtrl", function ($scope, $location) {
 		$scope.updateStorage = function(){
 			localStorage.books = JSON.stringify($scope.books);
 		}
+		
+		$scope.detailsFunc = function(shelf, index){
+			$scope.bookDetailsShelf = shelf;
+			if(shelf == "Literature"){
+				$scope.bookDetailsTitle = $scope.books.Literature[index].BookName;
+				$scope.bookDetailsType = $scope.books.Literature[index].BookType;
+				$scope.bookDetailsPresent = $scope.books.Literature[index].Present;
+				if($scope.books.Literature[index].BorrowedBy){
+					$scope.bookDetailsBorrowedBy = $scope.books.Literature[index].BorrowedBy;
+				} else {
+					$scope.bookDetailsBorrowedBy = "NA";
+				}
+			} else if(shelf == "Science"){
+				$scope.bookDetailsTitle = $scope.books.Science[index].BookName;
+				$scope.bookDetailsType = $scope.books.Science[index].BookType;
+				$scope.bookDetailsPresent = $scope.books.Science[index].Present;
+				if($scope.books.Science[index].BorrowedBy){
+					$scope.bookDetailsBorrowedBy = $scope.books.Science[index].BorrowedBy;
+				} else {
+					$scope.bookDetailsBorrowedBy = "NA";
+				}
+			} else if(shelf == "Sport"){
+				$scope.bookDetailsTitle = $scope.books.Sport[index].BookName;
+				$scope.bookDetailsType = $scope.books.Sport[index].BookType;
+				$scope.bookDetailsPresent = $scope.books.Sport[index].Present;
+				if($scope.books.Sport[index].BorrowedBy){
+					$scope.bookDetailsBorrowedBy = $scope.books.Sport[index].BorrowedBy;
+				} else {
+					$scope.bookDetailsBorrowedBy = "NA";
+				}
+			} else if(shelf == "Art"){
+				$scope.bookDetailsTitle = $scope.books.Art[index].BookName;
+				$scope.bookDetailsType = $scope.books.Art[index].BookType;
+				$scope.bookDetailsPresent = $scope.books.Art[index].Present;
+				if($scope.books.Art[index].BorrowedBy){
+					$scope.bookDetailsBorrowedBy = $scope.books.Art[index].BorrowedBy;
+				} else {
+					$scope.bookDetailsBorrowedBy = "NA";
+				}
+			}
+		}
+		
 		
 		$scope.addBook = function(title, shelf, isReference){
 			if(title && shelf){
