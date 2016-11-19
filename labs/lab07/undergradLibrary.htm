@@ -1,6 +1,39 @@
 <div id="libraryDiv">
-	<table id="table" border=2></table>
-	<br>
+	<table id="table" border=2>
+		<tr>
+			<th>Literature</th>
+			<th>Science</th>
+			<th>Sport</th>
+			<th>Art</th>
+		</tr>
+		<tr ng-repeat="x in getNumber(getLargestShelf()) track by $index">
+			<td id="{{ books.Literature[$index].BookName }}" style="background-color: white" ng-click="detailsFunc('Literature', $index)">{{ books.Literature[$index].BookType + ': ' + books.Literature[$index].BookName }}</td>
+			<td id="{{ books.Science[$index].BookName }}" style="background-color: white" ng-click="detailsFunc('Science', $index)">{{ books.Science[$index].BookType + ': ' + books.Science[$index].BookName }}</td>
+			<td id="{{ books.Sport[$index].BookName }}" style="background-color: white" ng-click="detailsFunc('Sport', $index)">{{ books.Sport[$index].BookType + ': ' + books.Sport[$index].BookName }}</td>
+			<td id="{{ books.Art[$index].BookName }}" style="background-color: white" ng-click="detailsFunc('Art', $index)">{{ books.Art[$index].BookType + ': ' + books.Art[$index].BookName }}</td>
+		</tr>
+	</table>
+	<br><br>
+
+	<div id="Borrow options">
+		<button ng-click="borrowFunc()">Borrow Book</button>
+		<button ng-click="returnFunc()">Return Book</button>
+		<div id="errors"> {{ errorMessage }} </div>	
+	</div>
+	
+	<fieldset>
+		<legend>Book Details</legend>
+		Title: {{ bookDetailsTitle }}
+		<br>
+		Type: {{ bookDetailsType }}
+		<br>
+		Shelf: {{ bookDetailsShelf }}
+		<br>
+		Borrowed By: {{ bookDetailsBorrowedBy }}
+		<br>
+		Present: {{ bookDetailsPresent }}
+	
+	</fieldset>
 		
-	<button id="logoutButton">Logout</button>
+	<button ng-click="logoutFunc()">Logout</button>
 </div>

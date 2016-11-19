@@ -63,6 +63,433 @@ app.controller("loginCtrl", function ($scope, $location) {
 	}
 });
 
+app.controller("undergradCtrl", function($scope, $location) {
+
+		var init = function(){
+			$scope.updateBooks();
+		}
+	
+		$scope.bookDetailsTitle = "";
+		$scope.bookDetailsType = "";
+		$scope.bookDetailsShelf = "";
+		$scope.bookDetailsBorrowedBy = "";
+		$scope.bookDetailsPresent = "";
+		
+		$scope.logoutFunc = function(){
+			localStorage.removeItem("username");
+			$location.path('/');
+		}
+		
+		//return an array of size num, used in ng-repeat call
+		$scope.getNumber = function(num) {
+			return new Array(num);   
+		}
+		
+		//Finds the largest of the shelves, to be used in setting a limit for ng-repeat
+		$scope.getLargestShelf = function() {
+			var largest = 0;
+			if($scope.books.Literature.length > largest){
+				largest = $scope.books.Literature.length;
+			}
+			if($scope.books.Science.length > largest){
+				largest = $scope.books.Science.length;
+			}
+			if($scope.books.Sport.length > largest){
+				largest = $scope.books.Sport.length;
+			}
+			if($scope.books.Art.length > largest){
+				largest = $scope.books.Art.length;
+			}
+			
+			return largest;
+		}
+		
+		//Checks if a different instance of books is already stored, if not, set books to localStorage
+		$scope.updateBooks = function(){
+			if(localStorage.getItem("books") === null){
+				localStorage.books = JSON.stringify($scope.books);
+			} else {
+				$scope.books = JSON.parse(localStorage.books);
+			}
+		}
+		
+		$scope.updateStorage = function(){
+			localStorage.books = JSON.stringify($scope.books);
+			localStorage.checkedOut = JSON.stringify($scope.checkedOut);
+		}
+
+		//Helper for the borrowFunc.
+		//Checks if the currently logged in user has more than 2 books checked out.
+		//If so, then canBorrow returns false.
+		//If not, then canBorrow will increment their number of checked out books and return true.
+		var canBorrow = function(){
+
+			//If there is no list of checked out books, then create the list and return true. 
+			if ($scope.checkedOut == null) {
+				$scope.checkedOut = new Array(0)
+
+				var userEntry = {
+					"user" : localStorage.username,
+					"booksBorrowed" : 1,
+				}
+
+				$scope.checkedOut.push(userEntry);
+				return true;
+			} else {
+
+				//If there is a list of records, loop through it and find a record for the current user, if one exists.
+				var curr = $scope.checkedOut.pop();
+				var isFound = false;
+				var currentUsersRecords = null;
+
+				var tempRecords = new Array(0);
+				while (curr != null) {
+					if (curr.user == localStorage.username) {
+						isFound = true;
+						currentUsersRecords = curr;
+					} else {
+					
+						tempRecords.push(curr);
+					}
+					curr = $scope.checkedOut.pop();
+				}
+
+				$scope.checkedOut = tempRecords;
+
+				//If there isn't an existing record for the current user, create on and return true.
+				if (currentUsersRecords == null) {
+						
+					var userEntry = {
+						"user" : localStorage.username,
+						"booksBorrowed" : 1,
+					}
+
+					$scope.checkedOut.push(userEntry);
+
+					return true;
+				} else {
+					//If there is an existing record, check if the user has borrowed more than two books and return accordingly.
+					if( currentUsersRecords.booksBorrowed >= 2) {
+						$scope.checkedOut.push(currentUsersRecords);
+						return false;
+					} else { 
+						currentUsersRecords.booksBorrowed++;
+						$scope.checkedOut.push(currentUsersRecords);
+						return true;
+					} 
+				}
+			}
+		}
+
+
+		//Helper for the returnFunc.
+		//Checks if the currently logged in user has less than 0 books checked out.
+		//If so, then canReturn returns false.
+		//If not, then canReturn will decrement their number of checked out books and return true.
+		var canReturn = function(){
+
+			//If there is no list of checked out books, then the user can not return a book. 
+			if ($scope.checkedOut == null) {
+				return false;
+			} else {
+
+				//If there is a list of records, loop through it and find a record for the current user, if one exists.
+				var curr = $scope.checkedOut.pop();
+				var isFound = false;
+				var currentUsersRecords = null;
+
+				var tempRecords = new Array(0);
+				while (curr != null) {
+					if (curr.user == localStorage.username) {
+						isFound = true;
+						currentUsersRecords = curr;
+					} else {
+					
+						tempRecords.push(curr);
+					}
+					curr = $scope.checkedOut.pop();
+				}
+
+				$scope.checkedOut = tempRecords;
+
+				//If there isn't an existing record for the current user, then the user can't return a book
+				if (currentUsersRecords == null) {
+					return false;
+				} else {
+					//If there is an existing record, check if the user has any books currently borrowed and return accordingly.
+					if( currentUsersRecords.booksBorrowed <= 0) {
+						return false;
+					} else { 
+						currentUsersRecords.booksBorrowed--;
+						$scope.checkedOut.push(currentUsersRecords);
+						return true;
+					} 
+				}
+			}
+		}
+
+		$scope.borrowFunc = function(){
+				//If the book is not borrowed and is not a reference book, continue.
+				if ($scope.bookDetailsPresent && $scope.bookDetailsBorrowedBy == "NA" && $scope.bookDetailsType == "B") {
+					canUserBorrow = canBorrow();
+
+					//If the current user has not already borrowed two books, then borrow the book
+					if (canUserBorrow) {
+						if ($scope.bookDetailsShelf == "Literature") {
+							$scope.books.Literature[$scope.currentIndex].Present = 0;
+							$scope.books.Literature[$scope.currentIndex].BorrowedBy = localStorage.username;
+
+						} else if ($scope.bookDetailsShelf == "Science") {
+							$scope.books.Science[$scope.currentIndex].Present = 0;
+							$scope.books.Science[$scope.currentIndex].BorrowedBy = localStorage.username;
+							
+						} else if ($scope.bookDetailsShelf == "Sport") {
+						
+							$scope.books.Sport[$scope.currentIndex].Present = 0;
+							$scope.books.Sport[$scope.currentIndex].BorrowedBy = localStorage.username;
+
+						} else if ($scope.bookDetailsShelf == "Art") {
+						
+							$scope.books.Art[$scope.currentIndex].Present = 0;
+							$scope.books.Art[$scope.currentIndex].BorrowedBy = localStorage.username;
+						}
+						$scope.errorMessage = "";
+						tableid = $scope.bookDetailsTitle;
+						angular.element(document.getElementById(tableid)).css("background-color", "red");
+					} else {
+						$scope.errorMessage = "Unable to borrow book: You may not borrow more than two books at a time." 
+					}
+					
+				}else{
+					$scope.errorMessage = "Unable to borrow book: The book is either already borrowed or is a reference book.";
+				}
+
+				$scope.detailsFunc($scope.bookDetailsShelf, $scope.currentIndex);
+		}
+
+		$scope.returnFunc = function() {
+			if (!$scope.bookDetailsPresent && $scope.bookDetailsType == "B" && $scope.bookDetailsBorrowedBy == localStorage.username){
+				ableToReturn = canReturn();
+				
+				if (ableToReturn) {
+					
+					if ($scope.bookDetailsShelf == "Literature") {
+						$scope.books.Literature[$scope.currentIndex].Present = 1;
+						$scope.books.Literature[$scope.currentIndex].BorrowedBy = "NA";
+
+					} else if ($scope.bookDetailsShelf == "Science") {
+						$scope.books.Science[$scope.currentIndex].Present = 1;
+						$scope.books.Science[$scope.currentIndex].BorrowedBy = "NA";
+						
+					} else if ($scope.bookDetailsShelf == "Sport") {
+					
+						$scope.books.Sport[$scope.currentIndex].Present = 1;
+						$scope.books.Sport[$scope.currentIndex].BorrowedBy = "NA";
+
+					} else if ($scope.bookDetailsShelf == "Art") {
+					
+						$scope.books.Art[$scope.currentIndex].Present = 1;
+						$scope.books.Art[$scope.currentIndex].BorrowedBy = "NA";
+					}
+					$scope.errorMessage = "";
+					tableid = $scope.bookDetailsTitle;
+					angular.element(document.getElementById(tableid)).css("background-color", "white");
+				} else {
+					$scope.errorMessage = "Unable to return book";	
+				}
+			} else {
+				$scope.errorMessage = "Unable to return book: This book is not currently borrowed by you.";
+			}
+			
+			$scope.detailsFunc($scope.bookDetailsShelf, $scope.currentIndex);
+		}
+		
+		$scope.detailsFunc = function(shelf, index){
+			$scope.bookDetailsShelf = shelf;
+			$scope.currentIndex = index;
+			if(shelf == "Literature"){
+				$scope.bookDetailsTitle = $scope.books.Literature[index].BookName;
+				$scope.bookDetailsType = $scope.books.Literature[index].BookType;
+				$scope.bookDetailsPresent = $scope.books.Literature[index].Present;
+				if($scope.books.Literature[index].BorrowedBy){
+					$scope.bookDetailsBorrowedBy = $scope.books.Literature[index].BorrowedBy;
+				} else {
+					$scope.bookDetailsBorrowedBy = "NA";
+				}
+			} else if(shelf == "Science"){
+				$scope.bookDetailsTitle = $scope.books.Science[index].BookName;
+				$scope.bookDetailsType = $scope.books.Science[index].BookType;
+				$scope.bookDetailsPresent = $scope.books.Science[index].Present;
+				if($scope.books.Science[index].BorrowedBy){
+					$scope.bookDetailsBorrowedBy = $scope.books.Science[index].BorrowedBy;
+				} else {
+					$scope.bookDetailsBorrowedBy = "NA";
+				}
+			} else if(shelf == "Sport"){
+				$scope.bookDetailsTitle = $scope.books.Sport[index].BookName;
+				$scope.bookDetailsType = $scope.books.Sport[index].BookType;
+				$scope.bookDetailsPresent = $scope.books.Sport[index].Present;
+				if($scope.books.Sport[index].BorrowedBy){
+					$scope.bookDetailsBorrowedBy = $scope.books.Sport[index].BorrowedBy;
+				} else {
+					$scope.bookDetailsBorrowedBy = "NA";
+				}
+			} else if(shelf == "Art"){
+				$scope.bookDetailsTitle = $scope.books.Art[index].BookName;
+				$scope.bookDetailsType = $scope.books.Art[index].BookType;
+				$scope.bookDetailsPresent = $scope.books.Art[index].Present;
+				if($scope.books.Art[index].BorrowedBy){
+					$scope.bookDetailsBorrowedBy = $scope.books.Art[index].BorrowedBy;
+				} else {
+					$scope.bookDetailsBorrowedBy = "NA";
+				}
+			}
+		}
+		
+		//Value of books if none have been added or changed in any way
+		$scope.books = {
+			"Literature" : [
+				{
+					"BookName" : "Book1",
+					"BookType" : "R",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book2",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book3",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book4",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book5",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book6",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},
+			],
+			"Science" : [
+				{
+					"BookName" : "Book7",
+					"BookType" : "R",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book8",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book9",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book10",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book11",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book12",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},
+			],
+			"Sport" : [
+				{
+					"BookName" : "Book13",
+					"BookType" : "R",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book14",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book15",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book16",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book17",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book18",
+					"BookType" : "R",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},
+			],
+			"Art" : [
+				{
+					"BookName" : "Book19",
+					"BookType" : "R",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book20",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book21",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book22",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book23",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book24",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},{
+					"BookName" : "Book25",
+					"BookType" : "B",
+					"BorrowedBy" : "",
+					"Present" : 1
+				},
+			]
+		}
+		
+		init();
+});
+
 app.controller("adminCtrl", function ($scope, $location) {
 		//Call on page load to initialize values from localStorage
 		var init = function(){
