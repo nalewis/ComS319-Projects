@@ -256,6 +256,7 @@ app.controller("undergradCtrl", function($scope, $location) {
 						$scope.errorMessage = "";
 						tableid = $scope.bookDetailsTitle;
 						angular.element(document.getElementById(tableid)).css("background-color", "red");
+						$scope.updateStorage();
 					} else {
 						$scope.errorMessage = "Unable to borrow book: You may not borrow more than two books at a time." 
 					}
@@ -294,6 +295,7 @@ app.controller("undergradCtrl", function($scope, $location) {
 					$scope.errorMessage = "";
 					tableid = $scope.bookDetailsTitle;
 					angular.element(document.getElementById(tableid)).css("background-color", "white");
+					$scope.updateStorage();
 				} else {
 					$scope.errorMessage = "Unable to return book";	
 				}
