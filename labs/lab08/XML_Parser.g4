@@ -40,10 +40,20 @@ fragment OTHEREND: '</' (~('x')~('m')~('l')(ALPHA | UNDER))(ALPHA | DIGIT | SYMB
 //################RULES###################
 
 ELEMEMAIL: STARTEMAIL EMAIL ENDEMAIL {System.out.println("Valid email found " + getText());};
+ELEMEMAILINV: STARTEMAIL .*? ENDEMAIL {System.out.println("Invalid email found " + getText());};
+
 ELEMDATE: STARTDATE DATE ENDDATE {System.out.println("Valid Date found " + getText());};
+ELEMDATEINV: STARTDATE .*? ENDDATE {System.out.println("Invalid Date found " + getText());};
+
 ELEMPHONE: STARTPHONE PHONE ENDPHONE {System.out.println("Valid Phone number found " + getText());};
-ELEMCREDIT: STARTCREDIT CREDIT ENDCREDIT {System.out.println("Credit Card found " + getText());};
-ELEMOTHER: OTHERSTART (ALPHA | DIGIT | SPECIALCHARS | ' ')+ OTHEREND {System.out.println("Element found " + getText());};
-	
+ELEMPHONEINV: STARTPHONE .*? ENDPHONE {System.out.println("Invalid Phone number found " + getText());};
+
+ELEMCREDIT: STARTCREDIT CREDIT ENDCREDIT {System.out.println("Valid credit card found " + getText());};
+ELEMCREDITINV: STARTCREDIT .*? ENDCREDIT {System.out.println("Invalid credit card found " + getText());};
+
+ELEMOTHER: OTHERSTART (ALPHA | DIGIT | SPECIALCHARS | ' ')+ OTHEREND {System.out.println("Valid Element found " + getText());};
+ELEMOTHERINV: OTHERSTART .*? OTHEREND {System.out.println("Invalid element found " + getText());};
+
+INVALID: '<'.*?'>'.*?'<''/'.*?'>' {System.out.println("Invalid element found " + getText());};
 
 WS: [ \r\n\t]+ {skip();};
