@@ -1,5 +1,5 @@
 
-lexer grammar XML_Parser;
+lexer grammar JSON_Parser;
 
 //###############FRAGMENTS################
 
@@ -10,29 +10,36 @@ fragment SYMBOLS: [-_.];
 fragment SPECIALCHARS: [-_~!$&'()*+,;=:];
 fragment AT: '@';
 fragment SLASH: '/';
+fragment QUOTE: '"';
+fragment COMMA: [,];
+fragment NEWLINE: [\n];
 
-fragment START: '<';
-fragment STOP: '</' (ALPHA | DIGIT)+ '>';
 
-fragment STARTEMAIL: '<EMAIL>';
-fragment EMAIL: (ALPHA | DIGIT | SPECIALCHARS)(~('.')(ALPHA | DIGIT | SPECIALCHARS | '.')~('.'))+(ALPHA | DIGIT | SPECIALCHARS) AT (ALPHA | DIGIT | '-' | '.')+;
-fragment ENDEMAIL: '</EMAIL>';
+fragment START: '{';
+fragment STOP: '}';
 
-fragment STARTDATE: '<DATE>';
-fragment DATE: ([1-2]?[0-9] | '3'[0-1]) SLASH ([1][0-2] | [1-9]) SLASH ('2''0'[0-9][0-9] | '2''1''0''0');
-fragment ENDDATE: '</DATE>';
+fragment STARTEMAIL: '\"EMAIL\":';
+fragment EMAIL: (ALPHA | DIGIT | AT)*;
+//Trying a really easy email rule to try to figure out why it's not matching
+//fragment EMAIL: (ALPHA | DIGIT | SPECIALCHARS)(~('.')(ALPHA | DIGIT | SPECIALCHARS | '.')~('.'))+(ALPHA | DIGIT | SPECIALCHARS) AT (ALPHA | DIGIT | '-' | '.')+;
+fragment ENDEMAIL: ',';
 
-fragment STARTPHONE: '<PHONE>';
-fragment PHONE: ([0-9][0-9][0-9]'-'[0-9][0-9][0-9]'-'[0-9][0-9][0-9][0-9] | '('[0-9][0-9][0-9]')'' '[0-9][0-9][0-9]'-'[0-9][0-9][0-9][0-9] | [0-9][0-9][0-9]' '[0-9][0-9][0-9]' '[0-9][0-9][0-9][0-9] | [0-9][0-9][0-9]'.'[0-9][0-9][0-9]'.'[0-9][0-9][0-9][0-9]); 
-fragment ENDPHONE: '</PHONE>';
+fragment STARTDATE: '"DATE":';
+fragment DATE: (QUOTE ([1-2]?[0-9] | '3'[0-1]) SLASH ([1][0-2] | [1-9]) SLASH ('2''0'[0-9][0-9] | '2''1''0''0') QUOTE);
+fragment ENDDATE: ',';
+
+fragment STARTPHONE: '"PHONE":';
+fragment PHONE: (QUOTE ([0-9][0-9][0-9]'-'[0-9][0-9][0-9]'-'[0-9][0-9][0-9][0-9] | '('[0-9][0-9][0-9]')'' '[0-9][0-9][0-9]'-'[0-9][0-9][0-9][0-9] | [0-9][0-9][0-9]' '[0-9][0-9][0-9]' '[0-9][0-9][0-9][0-9] | [0-9][0-9][0-9]'.'[0-9][0-9][0-9]'.'[0-9][0-9][0-9][0-9]) QUOTE); 
+fragment ENDPHONE: ',';
 
 fragment STARTCREDIT: '<CREDITCARD>';
 //TODO
 fragment CREDIT: DIGIT+;
 fragment ENDCREDIT: '</CREDITCARD>';
 
-fragment OTHERSTART: '<' (~('x')~('m')~('l')(ALPHA | UNDER))(ALPHA | DIGIT | SYMBOLS)* '>';
-fragment OTHEREND: '</' (~('x')~('m')~('l')(ALPHA | UNDER))(ALPHA | DIGIT | SYMBOLS)* '>';
+fragment OTHERSTART: ["](ALPHA | DIGIT | SPECIALCHARS | ' ')+["][:];
+fragment OTHER: (QUOTE (ALPHA | DIGIT | SPECIALCHARS | ' ')+ QUOTE);
+fragment OTHEREND: ',';
 
 //fragment ELEMENT: '<'(?:(?!xml)(?!XML)(?!Xml))(ALPHA | '_')[a-zA-Z0-9-_.]* '>';
 //fragment ELEMENT: (ALPHA | '_')[a-zA-Z0-9-_.]* '>';
@@ -51,7 +58,7 @@ ELEMPHONEINV: STARTPHONE .*? ENDPHONE {System.out.println("Invalid Phone number 
 ELEMCREDIT: STARTCREDIT CREDIT ENDCREDIT {System.out.println("Valid credit card found " + getText());};
 ELEMCREDITINV: STARTCREDIT .*? ENDCREDIT {System.out.println("Invalid credit card found " + getText());};
 
-ELEMOTHER: OTHERSTART (ALPHA | DIGIT | SPECIALCHARS | ' ')+ OTHEREND {System.out.println("Valid Element found " + getText());};
+ELEMOTHER: OTHERSTART  OTHEREND {System.out.println("Valid Element found " + getText());};
 ELEMOTHERINV: OTHERSTART .*? OTHEREND {System.out.println("Invalid element found " + getText());};
 
 INVALID: '<'.*?'>'.*?'<''/'.*?'>' {System.out.println("Invalid element found " + getText());};
