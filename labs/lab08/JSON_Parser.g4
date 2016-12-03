@@ -49,27 +49,27 @@ fragment OTHEREND: ',';
 
 //################RULES###################
 
-ELEMEMAIL: STARTEMAIL QUOTE EMAIL QUOTE ENDEMAIL {System.out.println("Valid email found: " + getText());};
-ELEMEMAILINV: STARTEMAIL .*? ENDEMAIL {System.out.println("Invalid email found: " + getText());};
+ELEMEMAIL: 			STARTEMAIL QUOTE EMAIL QUOTE ENDEMAIL {System.out.println("Valid email found: " + getText());};
+ELEMEMAILINV: 		STARTEMAIL .*? ENDEMAIL {System.out.println("Invalid email found: " + getText());};
 
-ELEMDATE: STARTDATE QUOTE DATE QUOTE ENDDATE {System.out.println("Valid Date found: " + getText());};
-ELEMDATEINV: STARTDATE .*? ENDDATE {System.out.println("Invalid Date found: " + getText());};
+ELEMDATE: 			STARTDATE QUOTE DATE QUOTE ENDDATE {System.out.println("Valid Date found: " + getText());};
+ELEMDATEINV: 		STARTDATE .*? ENDDATE {System.out.println("Invalid Date found: " + getText());};
 
-ELEMPHONE: STARTPHONE QUOTE PHONE QUOTE ENDPHONE {System.out.println("Valid Phone number found: " + getText());};
-ELEMPHONEINV: STARTPHONE .*? ENDPHONE {System.out.println("Invalid Phone number found: " + getText());};
+ELEMPHONE: 			STARTPHONE QUOTE PHONE QUOTE ENDPHONE {System.out.println("Valid Phone number found: " + getText());};
+ELEMPHONEINV: 		STARTPHONE .*? ENDPHONE {System.out.println("Invalid Phone number found: " + getText());};
 
-ELEMCREDITNEWVISA: STARTCREDIT QUOTE NEWVISA QUOTE ENDCREDIT {System.out.println("Valid new Visa credit card found: " + getText());};
-ELEMCREDITOLDVISA: STARTCREDIT QUOTE OLDVISA QUOTE ENDCREDIT {System.out.println("Valid old Visa credit card found: " + getText());};
-ELEMCREDITMASTER: STARTCREDIT QUOTE MASTERCARD QUOTE ENDCREDIT {System.out.println("Valid Mastercard credit card found: " + getText());};
+ELEMCREDITNEWVISA: 	STARTCREDIT QUOTE NEWVISA QUOTE ENDCREDIT {System.out.println("Valid new Visa credit card found: " + getText());};
+ELEMCREDITOLDVISA: 	STARTCREDIT QUOTE OLDVISA QUOTE ENDCREDIT {System.out.println("Valid old Visa credit card found: " + getText());};
+ELEMCREDITMASTER: 	STARTCREDIT QUOTE MASTERCARD QUOTE ENDCREDIT {System.out.println("Valid Mastercard credit card found: " + getText());};
 ELEMCREDITAMERICAN: STARTCREDIT QUOTE AMERICAN QUOTE ENDCREDIT {System.out.println("Valid American Express credit card found: " + getText());};
-ELEMCREDITDINER: STARTCREDIT QUOTE DINER QUOTE ENDCREDIT {System.out.println("Valid Diners Club credit card found: " + getText());};
+ELEMCREDITDINER: 	STARTCREDIT QUOTE DINER QUOTE ENDCREDIT {System.out.println("Valid Diners Club credit card found: " + getText());};
 ELEMCREDITDISCOVER: STARTCREDIT QUOTE DISCOVER QUOTE ENDCREDIT {System.out.println("Valid Discover credit card found: " + getText());};
-ELEMCREDITJCB: STARTCREDIT QUOTE JCB QUOTE ENDCREDIT {System.out.println("Valid JCB credit card found: " + getText());};
-ELEMCREDITINV: STARTCREDIT .*? ENDCREDIT {System.out.println("Invalid credit card found: " + getText());};
+ELEMCREDITJCB: 		STARTCREDIT QUOTE JCB QUOTE ENDCREDIT {System.out.println("Valid JCB credit card found: " + getText());};
+ELEMCREDITINV: 		STARTCREDIT .*? ENDCREDIT {System.out.println("Invalid credit card found: " + getText());};
 
-ELEMOTHER: OTHERSTART QUOTE OTHER QUOTE OTHEREND {System.out.println("Valid Element found: " + getText());};
-ELEMOTHERINV: OTHERSTART QUOTE .*? QUOTE OTHEREND {System.out.println("Invalid element found: " + getText());};
+ELEMOTHER: 			OTHERSTART QUOTE OTHER QUOTE OTHEREND {System.out.println("Valid Element found: " + getText());};
+ELEMOTHERINV: 		OTHERSTART QUOTE .*? QUOTE OTHEREND {System.out.println("Invalid element found: " + getText());};
 
-//INVALID: '<'.*?'>'.*?'<''/'.*?'>' {System.out.println("Invalid element found: " + getText());};
+INVALID: '"'.*?'"'.*?'"'.*?'"'',' {System.out.println("Invalid element found: " + getText());};
 
 WS: [ \r\n\t{}]+ {skip();};
