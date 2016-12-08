@@ -1,0 +1,30 @@
+<div id="mainDiv">
+	<table id="table" border=2>
+		<tr>
+			<th>Created</th>
+			<th>Task</th>
+			<th>Due</th>
+			<th>Actions</th>
+		</tr>
+		<tr ng-repeat="x in tasks track by $index">
+			<td ng-click="">{{ x.creationDate }}</td>
+			<td ng-click="">{{ x.task }}</td>
+			<td ng-click="">{{ x.dueDate }}</td>
+			<td>
+				<button ng-click="editTask($index)">Edit</button>
+				<button ng-click="deleteTask($index)">Delete</button>
+			</td>
+		</tr>
+	</table>
+	<br><br>
+	
+	<div id="taskForm">
+		<form>
+			Task: <input type="text" ng-model="task"><br>
+			Due Date(optional): <input type="date" ng-model="dueDate"><br>
+			<button ng-click="addFunc()">Add Task</button>
+		</form>
+	</div>
+	
+	<button ng-click="clearTasks()">Clear List</button>
+</div>
