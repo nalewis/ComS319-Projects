@@ -1,24 +1,35 @@
 {
-  "manifest_version": 2,
-
-  "name": "myDash",
-  "description": "Portfolio 3 for Com S 319",
-  "version": "1.0",
-
-  "browser_action": {
-    "default_icon": "icon.png",
-    "default_popup": "popup.html"
-  },
-    "background": {
-    "persistent": false,
-    "scripts": ["background.js"]
-  },
-  
-  "permissions": [
-    "activeTab",
-	"tabs",
-    "https://ajax.googleapis.com/"
-  ],
-  
-  "content_security_policy": "script-src 'self'; object-src 'self'"
+	"manifest_version": 2,
+	
+	"name": "myDash",
+	"description": "Portfolio 3 for Com S 319",
+	"version": "1.0",
+	
+	"browser_action": {
+		"default_icon": "myDash_icon.png",
+		"default_popup": "popup.html"
+	},
+	"background": {
+		"persistent": false,
+		"scripts": ["background.js"]
+	},
+	"content_scripts": [
+		{
+			"matches": ["http://*/*","https://*/*"],
+			"js": ["source/jquery-3.1.1.min.js","party/partyPage.js"]
+		}
+	],
+	
+	"permissions": [
+		"activeTab",
+		"tabs",
+		"https://ajax.googleapis.com/"
+	],
+	
+	"content_security_policy": "script-src 'self'; object-src 'self'",
+	
+	"web_accessible_resources": [
+		"party/partyPic.png",
+		"party/Nicolas_Cage.png"
+	]
 }
