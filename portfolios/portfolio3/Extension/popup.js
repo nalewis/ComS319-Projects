@@ -10,5 +10,8 @@ document.addEventListener('DOMContentLoaded', function () {
         })();
     }
 	
-	
+	document.getElementById("picSwap").addEventListener('click', function(){
+		console.log("clicked");
+		chrome.runtime.sendMessage({command: "displayImage"});
+	});
 });
