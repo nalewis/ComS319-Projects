@@ -7,11 +7,11 @@ $(document).ready(function(){
 				$(image).attr('src', partyPic);
 			});
 			document.body.style.backgroundColor = '#F83DFE';
-			$('div').css({'backgroundColor': '#F83DFE'});
-			$('p').css({'color': '#E6E02A'});
-			$('h1').css({'color': '#E6E02A'});
-			$('h2').css({'color': '#E6E02A'});
-			$('h3').css({'color': '#E6E02A'});
+			$('div').css({'color': '#E6E02A', 'backgroundColor': '#F83DFE'});
+			$('p').css({'color': '#E6E02A', 'backgroundColor': '#F83DFE'});
+			$('h1').css({'color': '#E6E02A', 'backgroundColor': '#F83DFE'});
+			$('h2').css({'color': '#E6E02A', 'backgroundColor': '#F83DFE'});
+			$('h3').css({'color': '#E6E02A', 'backgroundColor': '#F83DFE'});
 			$('span').css({'color': '#E6E02A', 'backgroundColor': '#F83DFE'});
 			$('a').css({'color': 'cyan', 'backgroundColor': '#F83DFE'});
 
