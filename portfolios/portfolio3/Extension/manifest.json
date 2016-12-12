@@ -17,12 +17,18 @@
 		{
 			"matches": ["http://*/*","https://*/*"],
 			"js": ["source/jquery-3.1.1.min.js","party/partyPage.js"]
+		},
+		{
+			"matches": ["http://*/*","https://*/*"],
+			"js": ["source/jquery-3.1.1.min.js","siteBlock/siteBlock.js"],
+			"run_at": "document_start"
 		}
 	],
 	
 	"permissions": [
 		"activeTab",
 		"tabs",
+		"storage",
 		"https://ajax.googleapis.com/"
 	],
 	
