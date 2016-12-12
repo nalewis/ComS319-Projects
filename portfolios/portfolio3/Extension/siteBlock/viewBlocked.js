@@ -1,4 +1,5 @@
 $(document).ready(function(){
+	//Creates a list of all of the blocked hostnames
 	chrome.storage.local.get('blocked', function(item) {
 		for (var key in item.blocked){
 			var node = document.createElement("LI");

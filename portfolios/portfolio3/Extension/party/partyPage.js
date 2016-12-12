@@ -1,11 +1,13 @@
 $(document).ready(function(){
+	//Begins listening for messages from background.js
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-		console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
 		if(request.command == "displayImage"){
+			//insert the partyPic into all <img> elements on the DOM
 			var partyPic = chrome.extension.getURL("party/Nicolas_Cage.png");
 			$('img').each(function(index, image){
 				$(image).attr('src', partyPic);
 			});
+			//Alters the DOM's colors
 			document.body.style.backgroundColor = '#F83DFE';
 			$('div').css({'color': '#E6E02A', 'backgroundColor': '#F83DFE'});
 			$('p').css({'color': '#E6E02A', 'backgroundColor': '#F83DFE'});
