@@ -15,7 +15,7 @@ app.controller("mainCtrl", function ($scope, $location) {
 			}
 			
 			if($scope.dueDate){
-				var newTask = {"creationDate" : datetime, "task" : $scope.task, "dueDate" : $scope.dueDate.toLocaleString(), "color" : "white"};
+				var newTask = {"creationDate" : datetime, "task" : $scope.task, "dueDate" : $scope.dueDate, "color" : "white"};
 				//clear date
 				$scope.dueDate = "";
 			} else {
@@ -30,12 +30,14 @@ app.controller("mainCtrl", function ($scope, $location) {
 			
 			//Update the local storage
 			updateStorage();
+			checkExpired();
 		}
 	}
 	
 	$scope.deleteTask = function(index){
 		//remove the index from the array
 		$scope.tasks.splice(index, 1);
+		updateStorage();
 		checkExpired();
 	}
 	

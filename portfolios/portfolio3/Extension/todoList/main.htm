@@ -9,7 +9,7 @@
 		<tr ng-repeat="x in tasks track by $index" ng-style="{'background-color': tasks[$index].color}">
 			<td ng-click="">{{ x.creationDate }}</td>
 			<td ng-click="">{{ x.task }}</td>
-			<td ng-click="">{{ x.dueDate }}</td>
+			<td ng-click="">{{ x.dueDate.toLocaleString() }}</td>
 			<td>
 				<button ng-click="deleteTask($index)">Delete</button>
 			</td>
