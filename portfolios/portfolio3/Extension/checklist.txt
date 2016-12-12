@@ -1,0 +1,11 @@
+background.js - Handling popup.js and content script communication, as well as location redirect
+
+party/partyPage.js - line 6 handles the replacing of every image in a DOM
+
+popup.js 	- line 35, using chrome.storage to set the blocked sites
+		- line 4, redirect all link elements to open in new tabs
+		- line 19, check that the hostname isn't google, then add to blocked list
+
+siteBlock/siteBlock.js - Checks chrome.storage and compares contents to window hostname
+
+todoList/mainCtrl.js - line 64 checks if the task is past due and changes the table color if so
