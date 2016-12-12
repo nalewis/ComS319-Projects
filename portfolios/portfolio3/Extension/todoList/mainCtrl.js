@@ -3,18 +3,23 @@ app.controller("mainCtrl", function ($scope, $location) {
 		if($scope.task){
 			//get dates
 			var currentdate = new Date(); 
-			var datetime = currentdate.getDate() + "/"
-                + (currentdate.getMonth()+1)  + "/" 
-                + currentdate.getFullYear() + " @ "  
-                + currentdate.getHours() + ":"  
-                + currentdate.getMinutes();
+			var datetime = (currentdate.getMonth()+1) + "/"
+                + currentdate.getDate() + "/" 
+                + currentdate.getFullYear() + ", "  
+                + currentdate.getHours() + ":";
+				
+			if(currentdate.getMinutes().length == 1){
+				datetime += "0" + currentdate.getMinutes();
+			} else {
+				datetime += currentdate.getMinutes();
+			}
 			
 			if($scope.dueDate){
-				var newTask = {"creationDate" : datetime, "task" : $scope.task, "dueDate" : $scope.dueDate};
+				var newTask = {"creationDate" : datetime, "task" : $scope.task, "dueDate" : $scope.dueDate.toLocaleString(), "color" : "white"};
 				//clear date
 				$scope.dueDate = "";
 			} else {
-				var newTask = {"creationDate" : datetime, "task" : $scope.task, "dueDate" : "N/A"};
+				var newTask = {"creationDate" : datetime, "task" : $scope.task, "dueDate" : "N/A", "color" : "white"};
 			}
 			
 			//add task to the array
@@ -28,20 +33,16 @@ app.controller("mainCtrl", function ($scope, $location) {
 		}
 	}
 	
-	//sets up the form to edit a task
-	//TODO
-	$scope.editTask = function(index){
-		console.log(index);
-	}
-	
 	$scope.deleteTask = function(index){
 		//remove the index from the array
 		$scope.tasks.splice(index, 1);
+		checkExpired();
 	}
 	
 	//function to initially set the tasks to the localstorage on page load
 	var updateTasks = function(){
 		if(localStorage.getItem("tasks") === null){
+			checkExpired();
 			localStorage.tasks = JSON.stringify($scope.tasks);
 		} else {
 			$scope.tasks = JSON.parse(localStorage.tasks);
@@ -50,6 +51,7 @@ app.controller("mainCtrl", function ($scope, $location) {
 	
 	//sets the local tasks to localstorage
 	var updateStorage = function(){
+		checkExpired();
 		localStorage.tasks = JSON.stringify($scope.tasks);
 	}
 	
@@ -59,6 +61,15 @@ app.controller("mainCtrl", function ($scope, $location) {
 		$scope.tasks = [];
 	}
 	
+	var checkExpired = function(){
+		angular.forEach($scope.tasks, function(value, key){
+			if($scope.tasks[key].dueDate < new Date() && $scope.tasks[key].dueDate != "N/A"){
+				$scope.tasks[key].color = "IndianRed";
+			}
+		});
+	}
+	
 	$scope.tasks = [];
 	updateTasks();
+	checkExpired();
 });

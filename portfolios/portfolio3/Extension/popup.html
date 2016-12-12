@@ -2,15 +2,21 @@
 
 <!--Shown when the extension icon is clicked -->
 <html>
-  <head>
-    <title>myDash Popup Menu</title>
-    <script src="popup.js"></script>
-  </head>
-  <body>
-  <!-- if things don't load, check that the extension id matches the url below. Id is located at
-  chrome://extensions next to the extension-->
-	<button><a href="/todoList/index.html">Go to Tasks</a></button>
-	<button><a href="/newsReader/index.html">Go to News Reader</a></button><br>
-  </body>
+	<head>
+		<title>myDash Popup Menu</title>
+		<script src="popup.js"></script>
+	</head>
+	<body>
+		<h1>myDash</h1>
+		<fieldset>
+			<button><a href="todoList/index.html">Go to Tasks</a></button><br>
+			<button id="picSwap">Party Time!</button>
+			<fieldset>
+				<button id="blockSite">Block This Domain</button>
+				<button><a href="siteBlock/viewBlocked.html">View Blocked</a></button>
+				<button id="unblockSite">Clear All Blocks</button>
+			</fieldset>
+		</fieldset>
+	</body>
 </html>
 
